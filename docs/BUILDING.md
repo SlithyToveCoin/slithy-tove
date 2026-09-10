@@ -12,7 +12,7 @@ Ubuntu 24.04 is the reference build environment. Install dependencies:
 sudo apt-get update
 sudo apt-get install build-essential cmake pkgconf python3 libevent-dev libboost-dev libsqlite3-dev
 bash tools/build-core.sh linux
-ctest --test-dir build/native/linux --output-on-failure -j2
+ctest --test-dir build/native/linux --output-on-failure --timeout 600 -j2
 ```
 
 The four programs are in `build/native/linux/bin`. The menu and Windows app
@@ -94,6 +94,9 @@ The full inherited native suite is not green yet. The September 10, 2026 run
 found Bitcoin-specific expectations, including the fixed Bitcoin block hash in
 `TestChain100Setup` and Bitcoin network/address vectors. Other failures still
 need triage. Do not change Slithy's consensus rules to make those fixtures pass.
+The 15,000-header chainwork stress test exceeded a ten-minute review limit.
+Keep build output and test logs in your checkout's ignored `build/` directory,
+not in `/tmp`, which your system can clear when it restarts.
 
 The GitHub workflow runs Slithy's proof-of-work and isolated integration checks,
 along with the app, terms and publication checks. That is a defined regression

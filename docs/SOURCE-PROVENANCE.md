@@ -15,6 +15,10 @@ The upstream dependency archive has SHA256
 Temporary pre-change copies and private treasury setup instructions were excluded.
 Upstream license headers remain in the source files.
 
+SOURCE-MANIFEST.json records checkout file bytes. Git archive can expand the
+upstream version placeholder in core/src/clientversion.cpp through export-subst;
+compare committed blobs or a normal clone when checking the manifest.
+
 The beta genesis is
 `000f888cdb70403cd5310d02d7983951ee146ac799485bca337a7b52c24643f2`.
 The network identity is also recorded in `site/install/linux/slithy-network.json`

@@ -11945,11 +11945,11 @@
   },
   {
     "path": "docs/BUILDING.md",
-    "sha256": "8cab452d4ef9847c259a5b647a68b17ac601941ea90e6698dfb7b75d74347b9d"
+    "sha256": "cc92e54060880c05be66fb27728162a8a2331f0c0a9b8ff09ac42cfb89f8f612"
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
-    "sha256": "acf7b02c83ec0e7791f8f6600a91ed9ea4838f7fcdd325e649e80b367f60d47d"
+    "sha256": "e21d1e6cd47ce11bef52f069266856e4c66a04a23d2af6ea2f7e2e750459d21e"
   },
   {
     "path": "docs/TERMS-ACCEPTANCE.md",
