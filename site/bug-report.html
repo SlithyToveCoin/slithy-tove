@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Report a Slithy Tove bug to support@slithy.io.">
+  <title>Report a bug | Slithy Tove</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a class="active" aria-current="page" href="/community.html">Community</a>
+      <a class="nav-cta" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> Bug reports</span>
+  </header>
+
+  <main id="main" class="page">
+    <section class="page-hero">
+      <p class="eyebrow">Bug reports</p>
+      <h1>Something not working?</h1>
+      <p class="lede">Tell me what happened. This form prepares an email to <a href="mailto:support@slithy.io">support@slithy.io</a> for you to review and send.</p>
+    </section>
+
+    <section class="bug-report-panel" aria-labelledby="bug-report-title">
+      <div class="bug-report-intro">
+        <p class="eyebrow">Report a bug</p>
+        <h2 id="bug-report-title">What happened?</h2>
+        <p>Start with what you clicked or typed before the problem appeared. Copy the exact error if there was one. You can add exported diagnostics or terminal output at the bottom.</p>
+        <p class="bug-report-note">This page does not upload your report or files. Your email app sends the message when you choose to send it.</p>
+      </div>
+
+      <form id="bug-report-form" class="bug-report-form">
+        <div class="form-field">
+          <label for="bug-title">What broke?</label>
+          <input id="bug-title" name="title" autocomplete="off" required placeholder="Example: mining button stayed disabled after sync">
+        </div>
+
+        <div class="form-field">
+          <label for="bug-steps">What were you doing?</label>
+          <textarea id="bug-steps" name="steps" rows="5" required placeholder="List the clicks or commands that led to the problem."></textarea>
+        </div>
+
+        <div class="bug-report-grid">
+          <div class="form-field">
+            <label for="bug-expected">What did you expect?</label>
+            <textarea id="bug-expected" name="expected" rows="4" placeholder="Example: the wallet should show mining as stopped."></textarea>
+          </div>
+          <div class="form-field">
+            <label for="bug-actual">What happened instead?</label>
+            <textarea id="bug-actual" name="actual" rows="4" required placeholder="Paste the error or describe the wrong behavior."></textarea>
+          </div>
+        </div>
+
+        <div class="bug-report-grid">
+          <div class="form-field">
+            <label for="bug-version">Slithy version</label>
+            <input id="bug-version" name="version" autocomplete="off" placeholder="The version shown in your app">
+          </div>
+          <div class="form-field">
+            <label for="bug-os">Operating system</label>
+            <input id="bug-os" name="os" autocomplete="off" placeholder="Example: Windows 11 or Ubuntu 24.04">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="bug-diagnostics">Diagnostics or terminal output</label>
+          <textarea id="bug-diagnostics" name="diagnostics" rows="7" placeholder="Paste exported diagnostics, app log lines, or terminal output here. Do not paste recovery words."></textarea>
+        </div>
+
+        <p class="bug-report-warning">Do not include recovery words, wallet passwords, private keys, seed files or wallet files. Slithy support will never ask for them.</p>
+
+        <div class="bug-report-actions">
+          <button class="button" type="submit">Review in your email app</button>
+        </div>
+        <p id="bug-report-fallback" class="bug-report-fallback" hidden>If the email window did not open, send this report to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+
+  <script>
+    const form = document.getElementById("bug-report-form");
+    const fallback = document.getElementById("bug-report-fallback");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const title = document.getElementById("bug-title").value.trim();
+      const report = [
+        "Slithy Tove bug report",
+        "",
+        `Problem: ${title}`,
+        "",
+        "What I was doing:",
+        document.getElementById("bug-steps").value.trim(),
+        "",
+        "What I expected:",
+        document.getElementById("bug-expected").value.trim(),
+        "",
+        "What happened:",
+        document.getElementById("bug-actual").value.trim(),
+        "",
+        "Version:",
+        document.getElementById("bug-version").value.trim(),
+        "",
+        "Operating system:",
+        document.getElementById("bug-os").value.trim(),
+        "",
+        "Diagnostics:",
+        document.getElementById("bug-diagnostics").value.trim()
+      ].join("\n");
+
+      const subject = `Slithy bug: ${title || "report"}`;
+      const mailto = `mailto:support@slithy.io?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(report)}`;
+      window.location.href = mailto;
+      fallback.hidden = false;
+    });
+  </script>
+</body>
+</html>

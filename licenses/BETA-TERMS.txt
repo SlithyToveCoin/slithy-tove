@@ -1,0 +1,88 @@
+Slithy Tove Terms of Use and Beta Testing
+Terms version: 1.0
+https://slithy.io/terms.html
+
+Terms of use
+
+Using Slithy during beta
+
+Please read this before testing the wallet or miner. Slithy is experimental software. The test coins will reset before launch, and mining uses your computer's resources.
+
+Version 1.0  |  Effective September 10, 2026
+
+1. Who these terms cover
+
+CS Idea Labs LLC runs slithy.io, publishes official Slithy software and operates official project services. These terms describe use of those services and participation in the public beta. They do not give the company ownership of the blockchain or authority over independent node operators.
+
+Slithy's software and its components have their own licenses. Those licenses govern your rights to use, copy, modify and distribute the code. These terms do not replace them or take away rights they grant.
+
+2. Test coins and resets
+
+The current downloads connect to a test network. Test SLTHY has no market value and must not be bought or sold. Test balances do not convert into live-network coins or give you a claim to future coins.
+
+The test chain and wallets will reset before the live launch. Further resets may be needed during beta. A reset can remove test balances and transaction history from the active network. Old wallet files may remain on your computer and may not work with a replacement network.
+
+November 1, 2026 is the target for the live launch. Testing may require that date to change.
+
+3. Mining uses your computer
+
+Mining runs on your computer's CPU. It can increase electricity use, heat and fan noise, and slow other programs. The local node also uses storage and internet bandwidth to download and verify the chain.
+
+You are responsible for those costs and for checking that your computer has enough cooling and free disk space. Start with a lower power setting if you are unsure. Stop mining if the computer overheats or becomes unstable.
+
+Mining does not guarantee a reward. Your results depend on your hardware, network difficulty and chance. Run the miner on equipment you own or have permission to use, in accordance with the rules of your workplace, hosting provider or network.
+
+4. Your wallet and recovery information
+
+Your wallet files and private keys belong on your computer or in backups you control. Protect your password and recovery words. Anyone who obtains the information needed to spend from your wallet may be able to take its coins.
+
+Support cannot promise to recover a lost wallet, recreate missing recovery words or reverse a confirmed transaction. Check the address and amount before sending. Test backups and recovery before relying on them.
+
+Never send wallet passwords, recovery words, private keys or wallet files to support. An official support reply will not ask for them.
+
+5. Experimental software and service availability
+
+Bugs can cause incorrect balances, failed updates, lost data or interrupted mining. Back up important files before testing. Do not rely on beta software for funds or records you cannot afford to lose.
+
+Official nodes, downloads and data feeds may be unavailable or change during testing. There is no guarantee of uninterrupted service, a particular mining result or a deadline for a fix. Verify that you are using the intended network and release before mining.
+
+Use the official downloads page and check the published signatures and hashes. A valid signature identifies the publisher and helps detect changes to a signed file. It does not mean the software has no bugs.
+
+6. The literacy treasury
+
+The network rules allocate ten percent of each block subsidy to the literacy treasury. Transaction fees go to the miner. The treasury's test balance will reset with the test chain.
+
+For the live launch, CS Idea Labs LLC plans to control an encrypted offline treasury wallet. Community voting is planned and is not available today. Holding or mining SLTHY does not currently grant a binding vote, ownership in the company, a share of treasury assets or a right to payment.
+
+The company does not claim nonprofit or tax-exempt status. Mining and treasury allocations should not be treated as tax-deductible charitable donations. The treasury page explains the spending plans and current controls.
+
+7. No investment promises
+
+This website and its software do not promise profit, an exchange listing or a future market price. Nothing here is an offer to sell an investment or personalized financial, legal or tax advice. You are responsible for understanding the laws and tax obligations that apply to your activities.
+
+8. Responsible testing
+
+Do not use official services to distribute malware, impersonate support, obtain someone else's secrets or deliberately disrupt other users. Do not attempt to enter systems or accounts without permission. The public beta is not permission to attack the website or official servers.
+
+Report suspected security problems privately to support@slithy.io. Avoid posting details that would expose other users before the problem can be assessed. Access to company-operated services may be restricted to address abuse or security problems; this does not transfer control of your wallet to the company.
+
+9. Warranties and responsibility for losses
+
+To the extent permitted by applicable law, the website and official beta services are provided as is and as available, without warranties of merchantability, fitness for a particular purpose or noninfringement. Software warranty provisions are also set out in the applicable licenses.
+
+To the extent permitted by applicable law, CS Idea Labs LLC is not liable for indirect, incidental, special or consequential losses arising from use of the website or official beta services, including lost profits or lost data.
+
+These terms do not exclude liability that cannot lawfully be excluded, including liability for fraud, or remove mandatory consumer rights. Some jurisdictions limit warranty exclusions and liability restrictions, so parts of this section may not apply to you.
+
+10. Privacy and outside services
+
+The Privacy Policy explains server logs, support messages and public blockchain information. Discord and other linked services have their own terms. Review them before using those services.
+
+11. Changes and questions
+
+Revisions will be published here with an updated version and effective date. A changed webpage does not by itself record your acceptance of new terms. If an app asks you to agree, it should show the terms that apply before you make that choice.
+
+You can stop testing at any time. These terms do not authorize deleting your wallet files or taking your coins. For questions about the terms or beta, write to support@slithy.io.
+
+Thank you for helping test Slithy.
+

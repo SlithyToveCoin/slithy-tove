@@ -1,0 +1,483 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/slithy-common.sh"
+
+APP_NAME="Slithy Tove"
+COIN_TICKER="SLTHY"
+CONFIG_DIR="${SLITHY_CONFIG_DIR:-$HOME/.config/slithy/beta-20260909}"
+CONFIG_FILE="$CONFIG_DIR/menu.conf"
+SYSTEM_CONFIG_FILE="${SLITHY_SYSTEM_CONFIG_FILE:-/etc/slithy/beta-20260909/menu.conf}"
+NODE_CONFIG_FILE="${SLITHY_NODE_CONFIG_FILE:-/etc/slithy/beta-20260909/slithy-node.conf}"
+SERVICE_NAME="${SLITHY_SERVICE_NAME:-slithy-node}"
+LOG_FILE="${SLITHY_LOG_FILE:-/var/log/slithy/slithyd.log}"
+SCRIPT_BIN_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+SCRIPT_INSTALL_DIR="$(dirname "$SCRIPT_BIN_DIR")"
+INSTALL_DIR="${SLITHY_INSTALL_DIR:-$SCRIPT_INSTALL_DIR}"
+BIN_DIR="${SLITHY_BIN_DIR:-$INSTALL_DIR/bin}"
+CLI="$BIN_DIR/slithy-cli"
+UPDATE_SCRIPT="${SLITHY_UPDATE_HELPER:-$BIN_DIR/slithy-update.sh}"
+CHAIN="${SLITHY_CHAIN:-testnet}"
+RPC_CONNECT="${SLITHY_RPC_CONNECT:-127.0.0.1}"
+RPC_PORT="${SLITHY_RPC_PORT:-53426}"
+RPC_USER="${SLITHY_RPC_USER:-slithy}"
+RPC_PASSWORD="${SLITHY_RPC_PASSWORD:-}"
+WALLET_DIR="${SLITHY_WALLET_DIR:-/var/lib/slithy/beta-20260909/wallets}"
+USE_NODE_CONF="0"
+NODE_CONF_NEEDS_SUDO="0"
+
+mkdir -p "$CONFIG_DIR"
+
+load_config() {
+  read_menu_config "$SYSTEM_CONFIG_FILE"
+  read_menu_config "$CONFIG_FILE"
+
+  local node_config_text=""
+  if [[ -r "$NODE_CONFIG_FILE" ]]; then
+    node_config_text="$(cat "$NODE_CONFIG_FILE")"
+    USE_NODE_CONF="1"
+  elif command -v sudo >/dev/null 2>&1; then
+    node_config_text="$(sudo -n cat "$NODE_CONFIG_FILE" 2>/dev/null || true)"
+    if [[ -n "$node_config_text" ]]; then
+      USE_NODE_CONF="1"
+      NODE_CONF_NEEDS_SUDO="1"
+    fi
+  fi
+
+  if [[ -n "$node_config_text" ]]; then
+    while IFS='=' read -r key value; do
+      case "$key" in
+        rpcuser)
+          RPC_USER="$value"
+          ;;
+        rpcpassword)
+          RPC_PASSWORD="$value"
+          ;;
+      esac
+    done <<< "$node_config_text"
+  fi
+
+  SERVICE_NAME="${SLITHY_SERVICE_NAME:-${SERVICE_NAME:-slithy-node}}"
+  LOG_FILE="${SLITHY_LOG_FILE:-${LOG_FILE:-/var/log/slithy/slithyd.log}}"
+  CHAIN="${SLITHY_CHAIN:-${CHAIN:-testnet}}"
+  RPC_CONNECT="${SLITHY_RPC_CONNECT:-${RPC_CONNECT:-127.0.0.1}}"
+  RPC_PORT="${SLITHY_RPC_PORT:-${RPC_PORT:-53426}}"
+  RPC_USER="${SLITHY_RPC_USER:-${RPC_USER:-slithy}}"
+  RPC_PASSWORD="${SLITHY_RPC_PASSWORD:-${RPC_PASSWORD:-}}"
+  WALLET_DIR="${SLITHY_WALLET_DIR:-${WALLET_DIR:-/var/lib/slithy/beta-20260909/wallets}}"
+}
+
+safe_clear() {
+  clear >/dev/null 2>&1 || true
+}
+
+logo() {
+  safe_clear
+  cat <<'LOGO'
+
+   ____  _ _ _   _             _____               
+  / ___|| (_) |_| |__  _   _  |_   _|____   _____ 
+  \___ \| | | __| '_ \| | | |   | |/ _ \ \ / / _ \
+   ___) | | | |_| | | | |_| |   | | (_) \ V /  __/
+  |____/|_|_|\__|_| |_|\__, |   |_|\___/ \_/ \___|
+                       |___/                      
+
+LOGO
+}
+
+chain_args() {
+  case "$CHAIN" in
+    main|mainnet)
+      ;;
+    test|testnet)
+      echo "-testnet"
+      ;;
+    regtest)
+      echo "-regtest"
+      ;;
+    signet)
+      echo "-signet"
+      ;;
+    *)
+      echo "-testnet"
+      ;;
+  esac
+}
+
+cli_args() {
+  if [[ "$USE_NODE_CONF" == "1" ]]; then
+    echo "-conf=$NODE_CONFIG_FILE"
+  fi
+  chain_args
+  echo "-rpcconnect=$RPC_CONNECT"
+  echo "-rpcport=$RPC_PORT"
+  if [[ "$USE_NODE_CONF" != "1" ]]; then
+    echo "-rpcuser=$RPC_USER"
+    echo "-stdinrpcpass"
+  fi
+}
+
+call_cli_unchecked() {
+  local args=() method="$1"
+  shift
+  mapfile -t args < <(cli_args)
+  if [[ "$NODE_CONF_NEEDS_SUDO" == "1" ]]; then
+    sudo -n "$CLI" "${args[@]}" "$method" "$@" 2>"$SLITHY_TMP/node-rpc-error"
+  elif [[ "$USE_NODE_CONF" == "1" ]]; then
+    "$CLI" "${args[@]}" "$method" "$@" 2>"$SLITHY_TMP/node-rpc-error"
+  else
+    rpc_input "$@" | "$CLI" "${args[@]}" -stdin "$method" 2>"$SLITHY_TMP/node-rpc-error"
+  fi
+}
+
+json_field() {
+  local field="$1"
+  python3 -c "import json,sys; data=json.load(sys.stdin); print(data.get('$field', ''))"
+}
+
+format_bytes() {
+  python3 - "$1" <<'PY'
+import sys
+value = float(sys.argv[1] or 0)
+for unit in ["B", "KB", "MB", "GB", "TB"]:
+    if value < 1024 or unit == "TB":
+        print(f"{value:.1f} {unit}" if unit != "B" else f"{int(value)} B")
+        break
+    value /= 1024
+PY
+}
+
+service_state() {
+  if ! command -v systemctl >/dev/null 2>&1; then
+    echo "systemctl unavailable"
+    return
+  fi
+
+  if systemctl is-active --quiet "$SERVICE_NAME"; then
+    echo "running"
+  else
+    echo "stopped"
+  fi
+}
+
+service_uptime() {
+  if ! command -v systemctl >/dev/null 2>&1; then
+    echo "unknown"
+    return
+  fi
+
+  systemctl show "$SERVICE_NAME" -p ActiveEnterTimestamp --value 2>/dev/null | sed 's/^$/unknown/'
+}
+
+disk_line() {
+  local path="/var/lib/slithy"
+  if [[ -n "${WALLET_DIR:-}" ]]; then
+    path="$(dirname "$WALLET_DIR")"
+  fi
+  [[ -d "$path" ]] || path="$HOME"
+
+  local used free total chain_size
+  used="$(df -h "$path" | awk 'NR==2 {print $3}')"
+  free="$(df -h "$path" | awk 'NR==2 {print $4}')"
+  total="$(df -h "$path" | awk 'NR==2 {print $2}')"
+
+  chain_size="$(call_cli getblockchaininfo 2>/dev/null | json_field size_on_disk 2>/dev/null || true)"
+  if [[ ! "$chain_size" =~ ^[0-9]+$ ]]; then
+    chain_size=""
+  fi
+  if [[ -z "$chain_size" ]]; then
+    chain_size="$(sudo du -sb "$path" 2>/dev/null | awk 'NR==1 {print $1}')"
+  fi
+  if [[ -z "$chain_size" ]]; then
+    chain_size="0"
+  fi
+  echo "chain data $(format_bytes "$chain_size") | disk $used used, $free free, $total total"
+}
+
+rpc_snapshot() {
+  if [[ ! -x "$CLI" ]]; then
+    echo "rpc=missing-cli"
+    return
+  fi
+
+  local info mining peers
+  if ! info="$(call_cli getblockchaininfo)"; then
+    echo "rpc=offline"
+    sed -n '1p' "$SLITHY_TMP/node-rpc-error" 2>/dev/null || true
+    rm -f "$SLITHY_TMP/node-rpc-error"
+    return
+  fi
+
+  mining="$(call_cli getmininginfo || true)"
+  peers="$(call_cli getconnectioncount || true)"
+
+  local chain blocks headers ibd difficulty hashps active_mining peer_count
+  chain="$(printf '%s' "$info" | json_field chain)"
+  blocks="$(printf '%s' "$info" | json_field blocks)"
+  headers="$(printf '%s' "$info" | json_field headers)"
+  ibd="$(printf '%s' "$info" | json_field initialblockdownload)"
+  difficulty="$(printf '%s' "$info" | json_field difficulty)"
+  hashps="$(printf '%s' "$mining" | json_field networkhashps 2>/dev/null || echo "")"
+  active_mining="$(call_cli getcpumininginfo | json_field active 2>/dev/null || echo unknown)"
+  peer_count="$(printf '%s' "$peers" | tr -d '\r\n ')"
+
+  echo "rpc=ready"
+  echo "chain=$chain"
+  echo "blocks=$blocks"
+  echo "headers=$headers"
+  echo "syncing=$ibd"
+  echo "difficulty=$difficulty"
+  echo "networkhashps=$hashps"
+  echo "peers=${peer_count:-0}"
+  echo "mining=${active_mining:-false}"
+}
+
+print_dashboard() {
+  logo
+  echo "Slithy Tove node console"
+  echo
+  echo "Service"
+  echo "  State:     $(service_state)"
+  echo "  Started:   $(service_uptime)"
+  echo "  Service:   $SERVICE_NAME"
+  echo
+
+  local snapshot
+  snapshot="$(rpc_snapshot)"
+  if printf '%s\n' "$snapshot" | grep -q '^rpc=ready$'; then
+    local chain blocks headers syncing difficulty hashps peers mining
+    chain="$(printf '%s\n' "$snapshot" | awk -F= '/^chain=/{print $2}')"
+    blocks="$(printf '%s\n' "$snapshot" | awk -F= '/^blocks=/{print $2}')"
+    headers="$(printf '%s\n' "$snapshot" | awk -F= '/^headers=/{print $2}')"
+    syncing="$(printf '%s\n' "$snapshot" | awk -F= '/^syncing=/{print $2}')"
+    difficulty="$(printf '%s\n' "$snapshot" | awk -F= '/^difficulty=/{print $2}')"
+    hashps="$(printf '%s\n' "$snapshot" | awk -F= '/^networkhashps=/{print $2}')"
+    peers="$(printf '%s\n' "$snapshot" | awk -F= '/^peers=/{print $2}')"
+    mining="$(printf '%s\n' "$snapshot" | awk -F= '/^mining=/{print $2}')"
+
+    echo "Network"
+    echo "  Chain:     $chain"
+    echo "  Height:    $blocks / $headers"
+    echo "  Syncing:   $syncing"
+    echo "  Peers:     $peers"
+    echo "  Difficulty:$difficulty"
+    echo "  Hashrate:  ${hashps:-unknown}"
+    echo "  Mining:    ${mining:-false}"
+  else
+    echo "Network"
+    echo "  RPC is not ready."
+    echo "  $snapshot"
+  fi
+
+  echo
+  echo "Storage"
+  echo "  $(disk_line)"
+  echo
+  echo "Support: support@slithy.io"
+  echo
+  echo "Commands"
+  echo "  1  Refresh"
+  echo "  2  Watch live"
+  echo "  3  Peers"
+  echo "  4  Logs"
+  echo "  5  Start node"
+  echo "  6  Stop node"
+  echo "  7  Restart node"
+  echo "  8  Check updates"
+  echo "  9  Install update"
+  echo "  b  Report bug"
+  echo "  q  Quit"
+}
+
+pause() {
+  echo
+  read -r -p "Press Enter to continue. " _
+}
+
+show_peers() {
+  logo
+  echo "Connected peers"
+  echo
+  local peers_json
+  if ! peers_json="$(call_cli getpeerinfo)"; then
+    sed -n '1p' "$SLITHY_TMP/node-rpc-error" 2>/dev/null || true
+    rm -f "$SLITHY_TMP/node-rpc-error"
+    pause
+    return
+  fi
+
+  printf '%s' "$peers_json" | python3 -c '
+import json, sys
+try:
+    peers = json.load(sys.stdin)
+except Exception as exc:
+    print(f"Could not read peers: {exc}")
+    raise SystemExit(1)
+if not peers:
+    print("No peers connected.")
+else:
+    for peer in peers:
+        addr = peer.get("addr", "unknown")
+        subver = peer.get("subver", "")
+        height = peer.get("synced_headers", "")
+        inbound = "in" if peer.get("inbound") else "out"
+        print(f"{addr:28} {inbound:3} headers {height} {subver}")
+'
+  rm -f "$SLITHY_TMP/node-rpc-error"
+  pause
+}
+
+show_logs() {
+  logo
+  echo "Live node log"
+  echo "Press Ctrl+C to leave this screen."
+  echo
+  if command -v journalctl >/dev/null 2>&1; then
+    sudo journalctl -u "$SERVICE_NAME" -f -n 80
+  elif [[ -r "$LOG_FILE" ]]; then
+    tail -f "$LOG_FILE"
+  else
+    sudo tail -f "$LOG_FILE"
+  fi
+}
+
+run_update() {
+  local action="$1"
+  logo
+  if [[ -x "$UPDATE_SCRIPT" ]]; then
+    if [[ "$action" == install && "$EUID" -ne 0 ]]; then
+      sudo "$UPDATE_SCRIPT" "$action" --service "$SERVICE_NAME" --install-dir "$INSTALL_DIR" || return 1
+    else
+      "$UPDATE_SCRIPT" "$action" --service "$SERVICE_NAME" --install-dir "$INSTALL_DIR" || return 1
+    fi
+  elif command -v slithy-update.sh >/dev/null 2>&1; then
+    slithy-update.sh "$action"
+  else
+    echo "Update helper was not found."
+  fi
+  pause
+}
+
+report_bug() {
+  local report_file="$(create_report_file)"
+  {
+    echo "Slithy Tove node bug report"
+    echo
+    echo "Please describe what broke:"
+    echo
+    echo "What were you doing?"
+    echo
+    echo "What did you expect?"
+    echo
+    echo "What happened instead?"
+    echo
+    echo "Diagnostics"
+    echo "==========="
+    date -Is
+    echo "Service: $SERVICE_NAME"
+    echo "State: $(service_state)"
+    echo "Started: $(service_uptime)"
+    echo "RPC: $RPC_CONNECT:$RPC_PORT"
+    echo "Storage: $(disk_line)"
+    echo
+    echo "Node snapshot"
+    rpc_snapshot 2>&1 || true
+  } > "$report_file"
+
+  logo
+  echo "Bug report draft written to:"
+  echo "  $report_file"
+  echo
+  echo "Send it to support@slithy.io."
+  echo "Do not send recovery words, wallet passwords, or private keys."
+  pause
+}
+
+service_action() {
+  local action="$1"
+  logo
+  sudo systemctl "$action" "$SERVICE_NAME"
+  echo "Node $action requested."
+  pause
+}
+
+watch_dashboard() {
+  while true; do
+    print_dashboard
+    echo
+    echo "Refreshing every 5 seconds. Press Ctrl+C to leave."
+    sleep 5
+  done
+}
+
+main_menu() {
+  while true; do
+    print_dashboard
+    echo
+    read -r -p "Choose: " choice
+    case "$choice" in
+      1|"")
+        ;;
+      2)
+        watch_dashboard
+        ;;
+      3)
+        show_peers
+        ;;
+      4)
+        show_logs
+        ;;
+      5)
+        service_action start
+        ;;
+      6)
+        service_action stop
+        ;;
+      7)
+        service_action restart
+        ;;
+      8)
+        run_update check
+        ;;
+      9)
+        run_update install
+        ;;
+      b|B)
+        report_bug
+        ;;
+      q|Q)
+        exit 0
+        ;;
+      *)
+        echo "Unknown choice."
+        sleep 1
+        ;;
+    esac
+  done
+}
+
+load_config
+
+case "${1:-}" in
+  status|"")
+    main_menu
+    ;;
+  once)
+    print_dashboard
+    ;;
+  watch)
+    watch_dashboard
+    ;;
+  logs)
+    show_logs
+    ;;
+  peers)
+    show_peers
+    ;;
+  report-bug|bug-report)
+    report_bug
+    ;;
+  *)
+    echo "Usage: slithy-node [status|once|watch|logs|peers|report-bug]"
+    exit 1
+    ;;
+esac

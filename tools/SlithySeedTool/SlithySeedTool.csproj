@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- The Linux package copies one helper executable, so bundle its runtime too. -->
+    <PublishSingleFile Condition="'$(RuntimeIdentifier)' == 'linux-x64'">true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract Condition="'$(RuntimeIdentifier)' == 'linux-x64'">true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../shared/RecoveryWords.cs" Link="RecoveryWords.cs" />
+    <PackageReference Include="NBitcoin" Version="7.0.49" />
+  </ItemGroup>
+</Project>

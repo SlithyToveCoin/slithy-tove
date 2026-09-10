@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="The Slithy Tove white paper: a transparent proof-of-work network that sets aside part of each block reward for children's literacy.">
+  <title>White Paper | Slithy Tove</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> White paper</span>
+  </header>
+
+  <main id="main" class="page whitepaper-page">
+    <section class="page-hero whitepaper-hero">
+      <p class="eyebrow">Slithy Tove white paper</p>
+      <h1>A proof-of-work network with a public reading fund.</h1>
+      <p class="lede">Slithy uses CPU mining to fund children's literacy. Ten percent of each block subsidy goes to a treasury whose transactions you can inspect on the public chain.</p>
+      <p class="paper-meta">Version 1.3 &middot; Revised September 10, 2026 &middot; slithy.io</p>
+    </section>
+
+    <section class="paper-summary" aria-label="White paper summary">
+      <article>
+        <span>Network</span>
+        <strong>Transparent proof of work</strong>
+        <p>A Bitcoin-style ledger lets you check transactions and follow treasury payments yourself.</p>
+      </article>
+      <article>
+        <span>Mining</span>
+        <strong>Mine with your CPU</strong>
+        <p>Slithy uses yespower so you can mine with the processor in an ordinary computer.</p>
+      </article>
+      <article>
+        <span>Treasury</span>
+        <strong>10 percent for literacy</strong>
+        <p>The treasury is for children's books and literacy programs, including costs directly tied to that work.</p>
+      </article>
+    </section>
+
+    <article class="paper-body">
+      <section>
+        <h2>Abstract</h2>
+        <p>Slithy Tove is a transparent proof-of-work cryptocurrency. Wallet owners sign transactions, and miners include them in blocks. Nodes check each block against the network rules and follow the valid chain with the most accumulated work. A miner receives 90 percent of the new coins in its block, plus transaction fees. The other 10 percent goes to a public treasury address for children&rsquo;s literacy.</p>
+        <p>You can inspect the treasury payments on Slithy's public ledger. It does not provide a smart-contract platform or promise a financial return.</p>
+      </section>
+
+      <section>
+        <h2>1. Why Slithy exists</h2>
+        <p>The mission is to bring the magic of reading to more kids. Slithy takes part of the reward from cryptocurrency mining and puts it toward that work. The software should make it easy to join in without buying expensive mining hardware or learning a long list of terminal commands.</p>
+        <p>The name comes from Lewis Carroll&rsquo;s poem <cite>Jabberwocky</cite>. I wanted a name connected to books because helping kids read is the reason for the project.</p>
+      </section>
+
+      <section>
+        <h2>2. Design principles</h2>
+        <div class="paper-principles">
+          <div><strong>No premine.</strong><p>Coins enter circulation through mining. There is no private founder allocation.</p></div>
+          <div><strong>Public records.</strong><p>You should be able to follow treasury payments on the chain.</p></div>
+          <div><strong>Usable software.</strong><p>You should not need a background in cryptocurrency to open a wallet or stop a miner.</p></div>
+          <div><strong>CPU mining.</strong><p>An ordinary computer should be enough to participate.</p></div>
+          <div><strong>A required literacy payment.</strong><p>A valid block must include the treasury share.</p></div>
+          <div><strong>No price promises.</strong><p>The project must not promise adoption or an exchange listing it cannot deliver.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. Network model</h2>
+        <p>Slithy follows Bitcoin&rsquo;s peer-to-peer model. A node checks transactions before passing them to its peers. It also checks blocks and follows the valid chain with the most accumulated proof of work. Running a full node lets you verify the history yourself.</p>
+        <p>The treasury uses the same public records as every other address. You can inspect a block and confirm the required treasury payment without asking the project for a report.</p>
+      </section>
+
+      <section>
+        <h2>4. Proof of work and mining</h2>
+        <p>A miner assembles a candidate block and tries different block headers until one produces a hash below the current difficulty target. It then sends the block to its peers. Each node checks the proof of work and the block contents, including the miner reward and treasury payment, before accepting it.</p>
+        <p>Slithy uses yespower, an algorithm designed for general-purpose CPUs. You can contribute work with the processor already in your computer. I chose CPU mining because requiring a separate mining machine would shut a lot of people out before they could try the software.</p>
+        <p>Computers do not have equal mining power. Faster hardware and cheaper electricity give some miners an advantage, and pools can gather a large share of the network&rsquo;s hashrate. Specialized hardware may appear over time. The project should publish mining observations and discuss concentration risks with the community. Changing proof of work would require published software, advance notice and testing, followed by adoption from independent node operators. CS Idea Labs LLC or a future foundation cannot impose that change on nodes that reject it.</p>
+        <p>Slithy targets an average of 2 minutes per block. Difficulty adjusts from observed block timing as miners join or leave. Individual blocks can take much longer or arrive close together, and a laptop may go days without finding one. Official project nodes are intended to relay and verify blocks without mining.</p>
+      </section>
+
+      <section>
+        <h2>5. Block reward and literacy treasury</h2>
+        <p>The initial block subsidy is 10 SLTHY. Each reward block creates 9 SLTHY for its miner and 1 SLTHY for the literacy treasury. Any transaction fees in the block go to the miner as well.</p>
+        <p>The subsidy halves every 1,051,200 blocks, roughly four years at the target block interval. It starts at 10 SLTHY, then falls to 5 SLTHY and later 2.5 SLTHY. The 90/10 split applies after each halving. For example, a 5 SLTHY subsidy pays 4.5 SLTHY to the miner and 0.5 SLTHY to the treasury.</p>
+        <p>Transaction fees come from people sending transactions. The miner that includes those transactions receives the fees, which provide an incentive to secure the chain as new coin rewards shrink. Fees are separate from the subsidy and its treasury split.</p>
+        <p>Nodes reject blocks that omit the required treasury output or pay the wrong amount. A miner cannot choose to skip that payment.</p>
+      </section>
+
+      <section>
+        <h2>6. Treasury use</h2>
+        <p>The treasury is for children&rsquo;s books, reading materials and literacy programs, including costs directly tied to that work. The website should show the address and balance, with incoming payments, outgoing grants and a note explaining what each grant paid for.</p>
+        <p>At launch, CS Idea Labs LLC will control one encrypted offline wallet. Community control is a future goal. Before spending treasury funds, the project should record the literacy purpose and internal approval, then publish the transaction.</p>
+        <p>Community voting on proposed donations is planned for later, after the network has regular activity and a community taking part in it. Eligible proposals must support the literacy mission. There is no binding voting system today. Before voting begins, the project must publish who can propose and vote, the required turnout and approval thresholds, and rules for conflicts of interest. It must also explain the review period, how approved payments get made, and how disputed results get resolved.</p>
+        <p>The website must never hold treasury spend keys. Its reports should come from public chain data or tools that can read the wallet without spending from it.</p>
+      </section>
+
+      <section>
+        <h2>7. Wallet and user experience</h2>
+        <p>The desktop app combines a wallet with a local miner. You can create or open a wallet, make a backup and check your balance from the same program. Mining controls apply to your computer. The app also shows network and treasury information.</p>
+        <p>The app checks for updates because this software will need fixes as testing continues. It checks release signatures before accepting update packages and shows progress during installation.</p>
+      </section>
+
+      <section>
+        <h2>8. How nodes connect</h2>
+        <p>Official seed nodes help new nodes find the network. Community nodes give them additional peers and reduce dependence on project servers. Every full node still checks the blocks it receives.</p>
+        <p>A public peer connection lets nodes exchange blocks and transactions. Wallet RPC is a separate control interface and should stay restricted unless an operator deliberately provides a public service with appropriate limits.</p>
+      </section>
+
+      <section>
+        <h2>9. Public launch</h2>
+        <p>The launch plan has no premine, hidden founder reward or private sale. The literacy allocation is the disclosed 10 percent treasury share.</p>
+        <p>People should have the software and network details before mining opens. The launch announcement must include the start time, file checksums, treasury address, genesis hash and official node list. Official Slithy nodes should relay and verify the network without mining.</p>
+      </section>
+
+      <section>
+        <h2>10. CS Idea Labs LLC and plans for a foundation</h2>
+        <p>CS Idea Labs LLC operates slithy.io and publishes the official software during development. It also manages project servers and contracts, and supports public treasury reporting. Running those services does not give the company ownership of the blockchain. You control your wallet, and independent miners and node operators choose the software they run.</p>
+        <p>Once a community is established, the project plans to consider a separate Slithy Tove foundation. None exists today, and no nonprofit or tax-exempt status is claimed. Its legal form, location, board and relationship with CS Idea Labs LLC would need community discussion and legal and tax advice.</p>
+        <p>A foundation could handle grant applications and community votes, then publish receipts and spending reports. It could also arrange independent audits, maintain conflict-of-interest rules and look after shared project resources. As qualified independent people join, treasury custody should gain documented controls for multiple approvers, separated keys and spending limits.</p>
+        <p>A foundation would have no claim to your coins or authority to force a software change on independent nodes. Before any transition, the project should publish its proposed charter, board selection and custody arrangements. The plan must also cover conflicts of interest, financial reporting and the division of responsibilities with CS Idea Labs LLC.</p>
+      </section>
+
+      <section>
+        <h2>11. Roadmap</h2>
+        <p>The live network target is November 1, 2026. The date can move if testing finds problems that need more time. Public beta testing covers the Windows wallet and local miner, Linux tools and signed updates. The test chain and balances will reset before the live launch.</p>
+        <p>Launch checks must confirm that the final Slithy Tove Treasury wallet can be restored from its backups, that the network rules require payment to its public script, and that every release agrees on the final genesis block. The public launch details described above must be available before mining begins.</p>
+        <p>After launch, work will continue on reliable node connections and signed releases for Windows and Linux. Treasury reporting should follow the public chain, with grant notes added as funds are spent on literacy work.</p>
+        <p>Some decisions remain open. The project has not settled whether rewards eventually end or continue with a small tail subsidy. Community voting rules and the move beyond one treasury wallet also need public discussion, along with mining performance and the conditions for a future foundation. Those decisions must be published before they become final policy. This roadmap makes no promise about price, adoption or exchange listings.</p>
+      </section>
+
+      <section>
+        <h2>12. Risks and limits</h2>
+        <p>Slithy is experimental software. Bugs or mistakes can cause losses, and a small network can be vulnerable to attacks or concentrated mining. There may be little liquidity, exchanges may decline to list SLTHY, and regulatory requirements can change.</p>
+        <p>Nothing in this paper is investment advice, a fundraising offer or a promise that SLTHY will have market value.</p>
+      </section>
+
+      <section>
+        <h2>13. Influences</h2>
+        <p>Bitcoin&rsquo;s proof-of-work ledger is the basis for Slithy&rsquo;s network model. Litecoin and Dogecoin offer examples of payment networks built on that approach. Ravencoin is another Bitcoin-based project with a stated purpose. The treasury arrangements in Decred, Dash and Zcash offer different examples of using block rewards to fund work.</p>
+        <p>For Slithy, the funded work is children&rsquo;s literacy. The references below informed the design; they do not imply those projects endorse Slithy.</p>
+      </section>
+
+      <section class="paper-references">
+        <h2>References reviewed</h2>
+        <ol>
+          <li><a href="https://bitcoin.org/bitcoin.pdf">Bitcoin: A Peer-to-Peer Electronic Cash System</a></li>
+          <li><a href="https://ethereum.org/whitepaper/">Ethereum white paper and current context</a></li>
+          <li><a href="https://litecoin.org/">Litecoin public project material</a></li>
+          <li><a href="https://dogecoin.com/">Dogecoin public project material</a></li>
+          <li><a href="https://ravencoin.org/whitepaper/">Ravencoin white paper</a></li>
+          <li><a href="https://docs.decred.org/">Decred documentation and treasury model</a></li>
+          <li><a href="https://docs.dash.org/en/stable/docs/user/governance/using.html">Dash governance and budget documentation</a></li>
+          <li><a href="https://zips.z.cash/zip-0207">Zcash ZIP 207 funding streams</a></li>
+          <li><a href="https://www.openwall.com/yespower/">Openwall yespower design and implementation notes</a></li>
+        </ol>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

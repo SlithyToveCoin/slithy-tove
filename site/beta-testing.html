@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Slithy Tove public beta testing notes, download checksums, node status, and bug reporting guidance.">
+  <title>Beta Testing Notes | Slithy Tove</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta active" aria-current="page" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> Public beta</span>
+  </header>
+
+  <main id="main" class="page">
+    <section class="page-hero">
+      <p class="eyebrow">Beta testing notes</p>
+      <h1>Help me find what needs fixing.</h1>
+      <p class="lede">Start with the checks below. If you get stuck, tell me which step caused the problem and what the app showed.</p>
+      <div class="testnet-warning page-warning">
+        <strong>This is a test network.</strong> Test SLTHY has no market value. Wallets, balances, and the chain will reset before live launch. Do not buy or sell test coins.
+      </div>
+    </section>
+
+    <section class="detail-grid three">
+      <article>
+        <span class="card-number">01</span>
+        <h2>Start with a new wallet</h2>
+        <p>Write down its recovery words and try mining. After you receive a reward, stop mining and reopen the app. Check that your balance returns once the wallet catches up with the chain.</p>
+      </article>
+      <article>
+        <span class="card-number">02</span>
+        <h2>Try the controls</h2>
+        <p>Change mining power or select a different public node. Give updates a try too. If a button or status message behaves oddly, note what you did just before it happened.</p>
+      </article>
+      <article>
+        <span class="card-number">03</span>
+        <h2>Test recovery and sending</h2>
+        <p>Restore a test wallet from its recovery words and check its address and balance. Once rewards are spendable, send a small amount to a second wallet and confirm it arrives.</p>
+      </article>
+    </section>
+
+    <section class="notice">
+      <h2>Download checksums</h2>
+      <p>Compare your file's SHA256 hash with its entry in the <a href="/downloads/SHA256SUMS.txt">current checksum list</a>. Match the filename and version, not a hash from an older release. The <a href="/downloads.html">downloads page</a> also lists the current files and hashes.</p>
+    </section>
+
+    <section class="notice">
+      <h2>Choosing a node</h2>
+      <p>Borogove is on the US East Coast, Mome is on the West Coast, and Rath is in Europe. Try a different one if your connection is slow.</p>
+      <p>Your computer does the mining. The public nodes check and pass along blocks. The <a href="/explorer.html">explorer</a> shows recent chain activity if you want to compare it with your wallet.</p>
+    </section>
+
+    <section class="notice">
+      <h2>Send me the details</h2>
+      <p>Include your Slithy version and operating system, then describe what you clicked and what happened. For a mining or connection problem, add the selected node and power setting. A screenshot often helps explain it.</p>
+      <p>Never send recovery words, wallet passwords, private keys, or seed files. Support will not ask for them. Thank you for helping test Slithy.</p>
+      <p><a class="button" href="/bug-report.html">Report a bug</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

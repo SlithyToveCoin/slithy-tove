@@ -1,0 +1,28 @@
+The root MIT license covers original Slithy source code and documentation.
+It does not replace the licenses or copyrights of upstream components.
+
+core/ is derived from Bitcoin Core v31.0, commit
+6574cb40869b96b9ffc79c19dc8f4e467d60f321. Its COPYING file and the
+copyright notices throughout its source remain in place. Bundled libraries,
+test data and dependency recipes retain their own notices.
+
+The yespower files under core/src/crypto/yespower retain their redistribution
+conditions and attribution to Colin Percival and Alexander Peslyak.
+See licenses/NATIVE-NOTICES.txt and the source headers.
+
+licenses/NATIVE-DEPENDENCIES.txt includes Boost, Libevent, LevelDB, crc32c,
+minisketch and secp256k1 notices. The Windows dependency recipes pin Boost
+1.90.0, Libevent 2.1.12-stable and SQLite 3.50.4. SQLite's library source is
+public domain. Linux builds using system development packages use the
+versions provided by that distribution instead. Check core/depends/packages
+when changing a dependency; this list is not a substitute for its license.
+
+The application uses NBitcoin 7.0.49 and QRCoder 1.6.0 under their MIT
+licenses. See licenses/DOTNET-NOTICES.md for their upstream locations.
+The .NET runtime and its dependencies have separate Microsoft and upstream
+notices when included in self-contained distribution packages.
+
+The software license does not grant rights to represent a modified build as
+an official Slithy release. Slithy branding and original artwork are not
+licensed by the root MIT grant. Third-party artwork and fonts retain their
+own licenses. See docs/ARTWORK.md for the source-publication boundary.

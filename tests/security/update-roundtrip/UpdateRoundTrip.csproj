@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Slithy Tove</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>0.2.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/UpdateInstaller.cs" Link="UpdateInstaller.cs" />
+  </ItemGroup>
+</Project>

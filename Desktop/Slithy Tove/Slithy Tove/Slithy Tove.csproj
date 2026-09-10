@@ -1,0 +1,167 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Basic app identity and build settings for the Windows Forms project. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <RootNamespace>Slithy_Tove</RootNamespace>
+    <AssemblyName>Slithy Tove</AssemblyName>
+    <Product>Slithy Tove</Product>
+    <Company>CS Idea Labs LLC</Company>
+    <Copyright>Copyright © 2026 CS Idea Labs LLC</Copyright>
+    <Description>Slithy Tove desktop wallet and node manager</Description>
+    <Version>0.1.41</Version>
+    <!-- The app, updater and file properties must report the same release. -->
+    <FileVersion>$(Version).0</FileVersion>
+    <AssemblyVersion>$(Version).0</AssemblyVersion>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Assets\slithy.ico</ApplicationIcon>
+    <!-- Override this directory to test a reviewed core without replacing the published binaries. -->
+    <SlithyNativeDirectory Condition="'$(SlithyNativeDirectory)' == ''">$(MSBuildProjectDirectory)\..\..\..\build\native\windows\bin</SlithyNativeDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../../../licenses/BETA-TERMS.txt" LogicalName="Slithy.BetaTerms" />
+    <Compile Update="TermsDialog.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="TermsDialog.Designer.cs"><DependentUpon>TermsDialog.cs</DependentUpon></Compile>
+  </ItemGroup>
+
+  <!-- These entries tell Visual Studio which .cs files belong to each form. -->
+  <ItemGroup>
+    <Compile Update="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="WalletAccessDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WalletAccessDialog.Designer.cs">
+      <DependentUpon>WalletAccessDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="WalletAccessDialog.resx">
+      <DependentUpon>WalletAccessDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="WalletManageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="WalletManageDialog.Designer.cs">
+      <DependentUpon>WalletManageDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RecoveryWordsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="RecoveryWordsDialog.Designer.cs">
+      <DependentUpon>RecoveryWordsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Update="RestoreWordsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="RestoreWordsDialog.Designer.cs">
+      <DependentUpon>RestoreWordsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Update="SendDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SendDialog.Designer.cs">
+      <DependentUpon>SendDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="SendDialog.resx">
+      <DependentUpon>SendDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="ReceiveDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="ReceiveDialog.Designer.cs">
+      <DependentUpon>ReceiveDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="ReceiveDialog.resx">
+      <DependentUpon>ReceiveDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Update="TransactionDetailsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="TransactionDetailsDialog.Designer.cs">
+      <DependentUpon>TransactionDetailsDialog.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="TransactionDetailsDialog.resx">
+      <DependentUpon>TransactionDetailsDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Slithy command line binaries that ship beside the desktop app. -->
+  <ItemGroup>
+    <Content Include="../../../licenses/*.txt;../../../licenses/*.md" Exclude="../../../licenses/NATIVE-NOTICES.txt">
+      <Link>licenses/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="../../../LICENSE;../../../NOTICE">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="../../../licenses/NATIVE-NOTICES.txt">
+      <Link>NATIVE-NOTICES.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(SlithyNativeDirectory)\slithyd.exe">
+      <Link>Binaries\slithyd.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(SlithyNativeDirectory)\slithy-cli.exe">
+      <Link>Binaries\slithy-cli.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(SlithyNativeDirectory)\slithy-wallet.exe">
+      <Link>Binaries\slithy-wallet.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(SlithyNativeDirectory)\slithy-tx.exe">
+      <Link>Binaries\slithy-tx.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- NuGet packages used by the app. QRCoder draws the receive-address QR code. -->
+  <ItemGroup>
+    <PackageReference Include="NBitcoin" Version="7.0.49" />
+    <Compile Include="../../../shared/RecoveryWords.cs" Link="RecoveryWords.cs" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+  </ItemGroup>
+
+  <!-- Images and icons embedded inside the app executable. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\slithy.ico">
+      <LogicalName>Slithy_Tove.Assets.slithy.ico</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\slithy-mark.png">
+      <LogicalName>Slithy_Tove.Assets.slithy-mark.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="CheckNativeBuild" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'">
+    <Error Condition="!Exists('$(SlithyNativeDirectory)\slithyd.exe')" Text="Build the Windows native tools first using tools/build-core.sh windows in Linux or WSL. See docs/BUILDING.md. You can also set SlithyNativeDirectory to an existing reviewed build." />
+  </Target>
+
+  <!-- Publishing sometimes misses linked binaries, so this target copies them explicitly. -->
+  <Target Name="CopySlithyBinariesToPublish" AfterTargets="Publish">
+    <MakeDir Directories="$(PublishDir)Binaries" />
+    <Copy SourceFiles="$(SlithyNativeDirectory)\slithyd.exe" DestinationFolder="$(PublishDir)Binaries" />
+    <Copy SourceFiles="$(SlithyNativeDirectory)\slithy-cli.exe" DestinationFolder="$(PublishDir)Binaries" />
+    <Copy SourceFiles="$(SlithyNativeDirectory)\slithy-wallet.exe" DestinationFolder="$(PublishDir)Binaries" />
+    <Copy SourceFiles="$(SlithyNativeDirectory)\slithy-tx.exe" DestinationFolder="$(PublishDir)Binaries" />
+  </Target>
+
+</Project>

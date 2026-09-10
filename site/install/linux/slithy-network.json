@@ -1,0 +1,8 @@
+{
+  "id": "beta-20260909",
+  "chain": "test",
+  "genesis": "000f888cdb70403cd5310d02d7983951ee146ac799485bca337a7b52c24643f2",
+  "messageMagic": "53423926",
+  "dataSubdirectory": "beta-20260909",
+  "genesisRewardAtomic": 0
+}

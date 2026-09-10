@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Public Slithy Tove literacy treasury status and spending policy.">
+  <title>Slithy Tove | Literacy Treasury</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/treasury.js" defer></script>
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a class="active" aria-current="page" href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> Treasury</span>
+  </header>
+
+  <main id="main" class="page">
+    <section class="page-hero">
+      <p class="eyebrow">Literacy treasury</p>
+      <h1>The literacy fund</h1>
+      <p class="lede">Ten percent of the new coins in each block go to the literacy treasury. You can check the balance here and follow its transactions on the chain. For the live fund, spending reports should name the reading project each payment supports.</p>
+    </section>
+
+    <section class="treasury treasury-page" aria-labelledby="treasury-title">
+      <div class="treasury-copy">
+        <p class="eyebrow">Test network</p>
+        <h2 id="treasury-title">The fund so far</h2>
+        <p>The figures here come from the test treasury. These coins are for testing and will reset before launch.</p>
+        <p>The address prepared for the live network is <strong>slithy1qpye0hj9eqsssjpj08j2y6adeq57wfyu7a9kum2</strong>. That network has not started yet.</p>
+        <p class="treasury-note">This website displays the records. It does not hold the keys needed to spend treasury funds.</p>
+      </div>
+      <div class="treasury-card">
+        <span>Treasury balance</span>
+        <strong data-treasury-amount>Loading treasury status...</strong>
+        <dl>
+          <div><dt>Chain height</dt><dd data-treasury-height>Not available</dd></div>
+          <div><dt>Available now</dt><dd data-treasury-unlocked>Not available</dd></div>
+          <div><dt>Last updated</dt><dd data-treasury-updated>Not available</dd></div>
+          <div><dt>Treasury address</dt><dd class="treasury-address" data-treasury-address>Not available</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="detail-grid three" aria-label="Treasury policy summary">
+      <article>
+        <span class="card-number">01</span>
+        <h2>What it can fund</h2>
+        <p>Children's books and reading programs are the purpose of the treasury. Related materials and practical costs must support that literacy work.</p>
+      </article>
+      <article>
+        <span class="card-number">02</span>
+        <h2>Who holds the wallet</h2>
+        <p>At launch, CS Idea Labs LLC will control one encrypted offline treasury wallet. Its spending key will stay off this website and the public nodes.</p>
+      </article>
+      <article>
+        <span class="card-number">03</span>
+        <h2>How spending is reported</h2>
+        <p>Each payment should have a public record naming its recipient and purpose, with the amount and transaction ID. Supporting documents should be included when available.</p>
+      </article>
+    </section>
+
+    <section class="notice">
+      <h2>How community voting would work</h2>
+      <p>I want people taking part in Slithy to vote on how the fund is spent. That is planned for later, after the network has regular activity and a community taking part in it. Proposals must support children's literacy.</p>
+      <p>Voting is not available yet. Before a vote can be binding, the published rules need to explain who can vote, how many people must take part, and what approval requires. They also need to cover conflicts of interest, time to review a proposal, and how an approved payment gets signed.</p>
+      <p>A vote would not give this website access to the wallet. Publishing records, approving spending, and signing a payment would remain separate steps.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

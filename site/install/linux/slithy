@@ -1,0 +1,1365 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/slithy-common.sh"
+
+APP_NAME="Slithy Tove"
+COIN_TICKER="SLTHY"
+CONFIG_DIR="${SLITHY_CONFIG_DIR:-$HOME/.config/slithy/beta-20260909}"
+CONFIG_FILE="$CONFIG_DIR/menu.conf"
+SYSTEM_CONFIG_FILE="${SLITHY_SYSTEM_CONFIG_FILE:-/etc/slithy/beta-20260909/menu.conf}"
+UPDATE_CACHE_FILE="$CONFIG_DIR/update-status.txt"
+UPDATE_CACHE_SECONDS="${SLITHY_UPDATE_CACHE_SECONDS:-900}"
+TREASURY_STATUS_URL="${SLITHY_TREASURY_STATUS_URL:-https://slithy.io/data/treasury-beta-20260909.json}"
+TREASURY_CACHE_FILE="$CONFIG_DIR/treasury-status.txt"
+TREASURY_CACHE_SECONDS="${SLITHY_TREASURY_CACHE_SECONDS:-300}"
+WALLET_DIR="${SLITHY_WALLET_DIR:-/var/lib/slithy/beta-20260909/wallets}"
+SEED_MARKER_FILE=".slithy-seed-wallet.json"
+
+DEFAULT_BIN_DIRS=(
+  "${SLITHY_BIN_DIR:-}"
+  "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+  "/opt/slithy/bin"
+  "$HOME/slithy/bin"
+  "$HOME/slithy"
+)
+
+CHAIN="${SLITHY_CHAIN:-testnet}"
+RPC_CONNECT="${SLITHY_RPC_CONNECT:-127.0.0.1}"
+RPC_PORT="${SLITHY_RPC_PORT:-53426}"
+RPC_USER="${SLITHY_RPC_USER:-slithy}"
+RPC_PASSWORD="${SLITHY_RPC_PASSWORD:-}"
+WALLET_NAME="${SLITHY_WALLET:-}"
+USE_SUDO="${SLITHY_USE_SUDO:-auto}"
+UPDATE_SCRIPT="${SLITHY_UPDATE_SCRIPT:-https://slithy.io/install/linux/slithy-update.sh}"
+SERVICE_NAME="${SLITHY_SERVICE_NAME:-slithy-node}"
+LOG_FILE="${SLITHY_LOG_FILE:-/var/log/slithy/slithyd.log}"
+
+ENV_CHAIN="${SLITHY_CHAIN:-}"
+ENV_RPC_CONNECT="${SLITHY_RPC_CONNECT:-}"
+ENV_RPC_PORT="${SLITHY_RPC_PORT:-}"
+ENV_RPC_USER="${SLITHY_RPC_USER:-}"
+ENV_RPC_PASSWORD="${SLITHY_RPC_PASSWORD:-}"
+ENV_WALLET_NAME="${SLITHY_WALLET:-}"
+ENV_USE_SUDO="${SLITHY_USE_SUDO:-}"
+ENV_SERVICE_NAME="${SLITHY_SERVICE_NAME:-}"
+ENV_LOG_FILE="${SLITHY_LOG_FILE:-}"
+ENV_WALLET_DIR="${SLITHY_WALLET_DIR:-}"
+
+mkdir -p "$CONFIG_DIR"
+
+load_config() {
+  read_menu_config "$SYSTEM_CONFIG_FILE"
+  read_menu_config "$CONFIG_FILE"
+
+  if [[ -n "$ENV_CHAIN" ]]; then CHAIN="$ENV_CHAIN"; fi
+  if [[ -n "$ENV_RPC_CONNECT" ]]; then RPC_CONNECT="$ENV_RPC_CONNECT"; fi
+  if [[ -n "$ENV_RPC_PORT" ]]; then RPC_PORT="$ENV_RPC_PORT"; fi
+  if [[ -n "$ENV_RPC_USER" ]]; then RPC_USER="$ENV_RPC_USER"; fi
+  if [[ -n "$ENV_RPC_PASSWORD" ]]; then RPC_PASSWORD="$ENV_RPC_PASSWORD"; fi
+  if [[ -n "$ENV_WALLET_NAME" ]]; then WALLET_NAME="$ENV_WALLET_NAME"; fi
+  if [[ -n "$ENV_USE_SUDO" ]]; then USE_SUDO="$ENV_USE_SUDO"; fi
+  if [[ -n "$ENV_SERVICE_NAME" ]]; then SERVICE_NAME="$ENV_SERVICE_NAME"; fi
+  if [[ -n "$ENV_LOG_FILE" ]]; then LOG_FILE="$ENV_LOG_FILE"; fi
+  if [[ -n "$ENV_WALLET_DIR" ]]; then WALLET_DIR="$ENV_WALLET_DIR"; fi
+}
+
+save_config() {
+  local key value temporary
+  temporary="$(mktemp "$CONFIG_DIR/menu.XXXXXXXX")"
+  printf '%s\n' '# slithy-data-v2' > "$temporary"
+  for key in CHAIN RPC_CONNECT RPC_PORT RPC_USER RPC_PASSWORD WALLET_NAME USE_SUDO SERVICE_NAME LOG_FILE WALLET_DIR; do
+    value="${!key}"
+    if [[ "$value" == *$'\n'* || "$value" == *$'\r'* ]]; then
+      rm -f -- "$temporary"
+      echo "Settings cannot contain line breaks." >&2
+      return 1
+    fi
+    printf '%s=%s\n' "$key" "$value" >> "$temporary"
+  done
+  chmod 600 "$temporary"
+  mv -f -- "$temporary" "$CONFIG_FILE"
+}
+
+find_bin_dir() {
+  if [[ -n "${SLITHY_BIN_DIR:-}" ]]; then
+    echo "$SLITHY_BIN_DIR"
+    return 0
+  fi
+
+  local dir
+  for dir in "${DEFAULT_BIN_DIRS[@]}"; do
+    if [[ -n "$dir" && -x "$dir/slithy-cli" ]]; then
+      echo "$dir"
+      return 0
+    fi
+  done
+
+  for dir in "${DEFAULT_BIN_DIRS[@]}"; do
+    if [[ -n "$dir" && -f "$dir/slithy-cli" ]]; then
+      echo "$dir"
+      return 0
+    fi
+  done
+
+  echo ""
+}
+
+BIN_DIR="$(find_bin_dir)"
+CLI="$BIN_DIR/slithy-cli"
+DAEMON="$BIN_DIR/slithyd"
+WALLET_TOOL="$BIN_DIR/slithy-wallet"
+SEED_TOOL="$BIN_DIR/slithy-seed-tool"
+
+run_tool() {
+  local tool="$1"
+  shift
+
+  if [[ ! -f "$tool" ]]; then
+    if [[ "$USE_SUDO" == "1" || "$USE_SUDO" == "true" || "$USE_SUDO" == "auto" ]]; then
+      if sudo test -f "$tool"; then
+        sudo "$tool" "$@"
+        return
+      fi
+    fi
+    echo "Missing tool: $tool"
+    return 1
+  fi
+
+  if [[ "$USE_SUDO" == "1" || "$USE_SUDO" == "true" ]]; then
+    sudo "$tool" "$@"
+    return
+  fi
+
+  if [[ "$USE_SUDO" == "auto" && ! -x "$tool" ]]; then
+    sudo "$tool" "$@"
+    return
+  fi
+
+  "$tool" "$@"
+}
+
+chain_args() {
+  case "$CHAIN" in
+    main|mainnet)
+      ;;
+    test|testnet)
+      echo "-testnet"
+      ;;
+    regtest)
+      echo "-regtest"
+      ;;
+    signet)
+      echo "-signet"
+      ;;
+    *)
+      echo "-testnet"
+      ;;
+  esac
+}
+
+cli_args() {
+  chain_args
+  echo "-rpcconnect=$RPC_CONNECT"
+  echo "-rpcport=$RPC_PORT"
+  echo "-rpcuser=$RPC_USER"
+  echo "-stdinrpcpass"
+}
+
+wallet_cli_args() {
+  cli_args
+  if [[ -n "$WALLET_NAME" ]]; then
+    echo "-rpcwallet=$WALLET_NAME"
+  fi
+}
+
+service_tool() {
+  if command -v systemctl >/dev/null 2>&1; then
+    sudo systemctl "$@" "$SERVICE_NAME"
+  else
+    echo "systemctl was not found on this system."
+    return 1
+  fi
+}
+
+call_cli_unchecked() {
+  local args=() method="$1"
+  shift
+  mapfile -t args < <(cli_args)
+  rpc_input "$@" | run_tool "$CLI" "${args[@]}" -stdin "$method"
+}
+
+call_wallet_cli() {
+  verify_beta_network || return 1
+  local args=() method="$1"
+  shift
+  mapfile -t args < <(wallet_cli_args)
+  rpc_input "$@" | run_tool "$CLI" "${args[@]}" -stdin "$method"
+}
+
+pause() {
+  echo
+  read -r -p "Press Enter to continue. " _
+}
+
+safe_clear() {
+  clear >/dev/null 2>&1 || true
+}
+
+logo() {
+  safe_clear
+  cat <<'LOGO'
+
+   ____  _ _ _   _             _____               
+  / ___|| (_) |_| |__  _   _  |_   _|____   _____ 
+  \___ \| | | __| '_ \| | | |   | |/ _ \ \ / / _ \
+   ___) | | | |_| | | | |_| |   | | (_) \ V /  __/
+  |____/|_|_|\__|_| |_|\__, |   |_|\___/ \_/ \___|
+                       |___/                      
+
+LOGO
+  echo "A simple wallet that helps support children's literacy"
+  echo "Support: support@slithy.io"
+  echo
+}
+
+show_status() {
+  echo "Node status"
+  echo
+  call_cli getblockchaininfo
+}
+
+show_version() {
+  echo "$APP_NAME versions"
+  echo
+  if [[ -f "$BIN_DIR/VERSION" ]]; then
+    echo "Linux menu: $(tr -d '\r\n' < "$BIN_DIR/VERSION")"
+  elif [[ -f "$(dirname "$BIN_DIR")/VERSION" ]]; then
+    echo "Linux menu: $(tr -d '\r\n' < "$(dirname "$BIN_DIR")/VERSION")"
+  fi
+  run_tool "$DAEMON" -version | head -n 2 || true
+  run_tool "$CLI" -version | head -n 2 || true
+  run_tool "$WALLET_TOOL" -version | head -n 2 || true
+}
+
+show_peers() {
+  echo "Peers"
+  echo
+  call_cli getpeerinfo
+}
+
+show_mining() {
+  echo "Mining"
+  echo
+  call_cli getmininginfo
+}
+
+show_doctor() {
+  echo "$APP_NAME check"
+  echo
+
+  local failed=0
+  local tool
+  for tool in "$DAEMON" "$CLI" "$WALLET_TOOL"; do
+    if [[ -f "$tool" ]]; then
+      echo "found: $tool"
+    elif [[ "$USE_SUDO" == "auto" || "$USE_SUDO" == "1" || "$USE_SUDO" == "true" ]] && sudo test -f "$tool"; then
+      echo "found with sudo: $tool"
+    else
+      echo "missing: $tool"
+      failed=1
+    fi
+  done
+
+  echo
+  echo "Node RPC: $RPC_CONNECT:$RPC_PORT"
+  if call_cli getblockchaininfo >"$SLITHY_TMP/slithy-doctor-chain.$$" 2>"$SLITHY_TMP/slithy-doctor-error.$$"; then
+    echo "node RPC: ok"
+    grep -E '"chain"|"blocks"|"initialblockdownload"|"warnings"' "$SLITHY_TMP/slithy-doctor-chain.$$" || true
+  else
+    echo "node RPC: failed"
+    cat "$SLITHY_TMP/slithy-doctor-error.$$" || true
+    failed=1
+  fi
+  rm -f "$SLITHY_TMP/slithy-doctor-chain.$$" "$SLITHY_TMP/slithy-doctor-error.$$"
+
+  echo
+  if [[ -n "$WALLET_NAME" ]]; then
+    echo "Selected wallet: $WALLET_NAME"
+    if call_wallet_cli getwalletinfo >"$SLITHY_TMP/slithy-doctor-wallet.$$" 2>"$SLITHY_TMP/slithy-doctor-wallet-error.$$"; then
+      echo "wallet RPC: ok"
+      grep -E '"walletname"|"private_keys_enabled"|"descriptors"|"scanning"' "$SLITHY_TMP/slithy-doctor-wallet.$$" || true
+    else
+      echo "wallet RPC: failed"
+      cat "$SLITHY_TMP/slithy-doctor-wallet-error.$$" || true
+      failed=1
+    fi
+    rm -f "$SLITHY_TMP/slithy-doctor-wallet.$$" "$SLITHY_TMP/slithy-doctor-wallet-error.$$"
+  else
+    echo "Selected wallet: none"
+  fi
+
+  return "$failed"
+}
+
+json_value() {
+  local key="$1"
+  python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get(sys.argv[1], ""))' "$key"
+}
+
+wallet_balance_json() {
+  if [[ -z "$WALLET_NAME" ]]; then
+    return 1
+  fi
+
+  call_wallet_cli getbalances 2>/dev/null
+}
+
+wallet_amount_field() {
+  local path="$1"
+  python3 -c '
+import json
+import sys
+
+data = json.load(sys.stdin)
+value = data
+for part in sys.argv[1].split("."):
+    if isinstance(value, dict):
+        value = value.get(part, 0)
+    else:
+        value = 0
+        break
+print(value)
+' "$path"
+}
+
+wallet_balance_line() {
+  if [[ -z "$WALLET_NAME" ]]; then
+    echo "Wallet: none selected"
+    return
+  fi
+
+  local balances spendable immature
+  balances="$(wallet_balance_json || true)"
+  if [[ -n "$balances" ]]; then
+    spendable="$(printf '%s' "$balances" | wallet_amount_field mine.trusted 2>/dev/null || echo 0)"
+    immature="$(printf '%s' "$balances" | wallet_amount_field mine.immature 2>/dev/null || echo 0)"
+    echo "Wallet: $WALLET_NAME  Spendable: $spendable $COIN_TICKER  Immature: $immature $COIN_TICKER"
+  else
+    echo "Wallet: $WALLET_NAME  Balance unavailable"
+  fi
+}
+
+watch_mining() {
+  local last_blocks=""
+  local last_spendable=""
+  local last_immature=""
+
+  while true; do
+    local info blocks difficulty networkhashps target next_height balances spendable immature pending_total now
+    now="$(date '+%Y-%m-%d %H:%M:%S')"
+    info="$(call_cli getmininginfo 2>/dev/null || true)"
+
+    if [[ -n "$info" ]]; then
+      blocks="$(printf '%s' "$info" | json_value blocks)"
+      difficulty="$(printf '%s' "$info" | json_value difficulty)"
+      networkhashps="$(printf '%s' "$info" | json_value networkhashps)"
+      target="$(printf '%s' "$info" | json_value target)"
+      next_height="$(printf '%s' "$info" | python3 -c 'import json,sys; data=json.load(sys.stdin); print((data.get("next") or {}).get("height", ""))')"
+    else
+      blocks=""
+      difficulty=""
+      networkhashps=""
+      target=""
+      next_height=""
+    fi
+
+    balances=""
+    spendable=""
+    immature=""
+    pending_total=""
+    if [[ -n "$WALLET_NAME" ]]; then
+      balances="$(wallet_balance_json || true)"
+      if [[ -n "$balances" ]]; then
+        spendable="$(printf '%s' "$balances" | wallet_amount_field mine.trusted 2>/dev/null || echo 0)"
+        immature="$(printf '%s' "$balances" | wallet_amount_field mine.immature 2>/dev/null || echo 0)"
+        pending_total="$(printf '%s' "$balances" | wallet_amount_field mine.untrusted_pending 2>/dev/null || echo 0)"
+      fi
+    fi
+
+    safe_clear
+    cat <<'LOGO'
+
+     ____  _ _ _   _           
+    / ___|| (_) |_| |__  _   _ 
+    \___ \| | | __| '_ \| | | |
+     ___) | | | |_| | | | |_| |
+    |____/|_|_|\__|_| |_|\__, |
+                          |___/ 
+
+LOGO
+    local cpu_status mining_state
+    cpu_status="$(call_cli getcpumininginfo 2>/dev/null || true)"
+    mining_state="$(printf '%s' "$cpu_status" | python3 -c 'import json,sys; active=json.load(sys.stdin).get("active"); print("Mining is on" if active is True else "Mining is off" if active is False else "Mining state is unknown")' 2>/dev/null || echo 'Mining state is unavailable')"
+    echo "$mining_state"
+    echo
+    echo "Time: $now"
+    echo "Working on block: ${next_height:-unknown}"
+    echo "Current height: ${blocks:-unknown}"
+    echo "Difficulty: ${difficulty:-unknown}"
+    echo "Network hash rate estimate: ${networkhashps:-unknown}"
+    echo "Target: ${target:-unknown}"
+    echo
+
+    if [[ -n "$WALLET_NAME" ]]; then
+      echo "Wallet: $WALLET_NAME"
+      echo "Spendable: ${spendable:-unavailable} $COIN_TICKER"
+      echo "Immature mining rewards: ${immature:-unavailable} $COIN_TICKER"
+      echo "Pending incoming: ${pending_total:-unavailable} $COIN_TICKER"
+    else
+      echo "Wallet: none selected"
+    fi
+
+    if [[ -n "$last_blocks" && -n "$blocks" && "$blocks" != "$last_blocks" ]]; then
+      echo
+      echo "New block noticed. Height moved from $last_blocks to $blocks."
+    fi
+
+    if [[ -n "$last_spendable" && -n "$spendable" && "$spendable" != "$last_spendable" ]]; then
+      echo "Spendable balance changed from $last_spendable to $spendable $COIN_TICKER."
+    fi
+
+    if [[ -n "$last_immature" && -n "$immature" && "$immature" != "$last_immature" ]]; then
+      echo "Immature mining rewards changed from $last_immature to $immature $COIN_TICKER."
+    fi
+
+    echo
+    echo "Press Ctrl+C to leave this screen. This does not send a mining stop request."
+    echo "Run 'slithy stop-mining' or use menu option 5 to stop mining."
+
+    last_blocks="$blocks"
+    last_spendable="$spendable"
+    last_immature="$immature"
+    sleep 5
+  done
+}
+
+show_balance() {
+  require_wallet
+  echo "Wallet balance for $WALLET_NAME"
+  echo
+  call_wallet_cli getbalances
+}
+
+unlock_wallet_if_needed() {
+  require_wallet
+
+  local info encrypted
+  info="$(call_wallet_cli getwalletinfo 2>/dev/null || true)"
+  encrypted="$(printf '%s' "$info" | python3 -c 'import json,sys; data=json.load(sys.stdin); print(data.get("unlocked_until", ""))' 2>/dev/null || true)"
+
+  if [[ -z "$encrypted" ]]; then
+    return 0
+  fi
+
+  if [[ "$encrypted" != "0" ]]; then
+    return 0
+  fi
+
+  local passphrase=""
+  IFS= read -r -s -p "Wallet password: " passphrase
+  echo
+  call_wallet_cli walletpassphrase "$passphrase" 300
+  SLITHY_UNLOCKED_WALLET="$WALLET_NAME"
+}
+
+new_address() {
+  require_wallet
+  echo "Receive address for $WALLET_NAME"
+  echo
+  call_wallet_cli getnewaddress
+}
+
+send_coins() {
+  require_wallet
+
+  local address="${1:-}"
+  local amount="${2:-}"
+  local confirm=""
+  local txid=""
+
+  if [[ -z "$address" ]]; then
+    read -r -p "Destination address: " address
+  fi
+
+  if [[ -z "$amount" ]]; then
+    read -r -p "Amount $COIN_TICKER: " amount
+  fi
+
+  if [[ -z "$address" || -z "$amount" ]]; then
+    echo "Address and amount are required."
+    return 1
+  fi
+
+  if ! python3 - "$amount" <<'PY'
+from decimal import Decimal, InvalidOperation
+import sys
+
+try:
+    value = Decimal(sys.argv[1])
+except InvalidOperation:
+    raise SystemExit(1)
+
+raise SystemExit(0 if value > 0 else 1)
+PY
+  then
+    echo "Amount must be greater than zero."
+    return 1
+  fi
+
+  echo
+  echo "Send $amount $COIN_TICKER to:"
+  echo "$address"
+  echo
+  read -r -p "Type send to broadcast this transaction: " confirm
+  if [[ "$confirm" != "send" ]]; then
+    echo "Send cancelled."
+    return 0
+  fi
+
+  unlock_wallet_if_needed
+  if ! txid="$(call_wallet_cli sendtoaddress "$address" "$amount")"; then
+    relock_wallet || true
+    echo "The send result is unknown. Check wallet history before sending again." >&2
+    return 1
+  fi
+  relock_wallet || return 1
+  echo
+  echo "Transaction sent."
+  echo "Transaction ID: $txid"
+}
+
+require_wallet() {
+  if [[ -z "$WALLET_NAME" ]]; then
+    echo "No wallet selected."
+    echo "Use menu option 7, or run: slithy use-wallet WALLET_NAME"
+    exit 1
+  fi
+}
+
+create_wallet() {
+  local name="${1:-}"
+  local passphrase=""
+  local confirm_passphrase=""
+  local seed_json=""
+  local words=""
+
+  echo "Create a recovery-word wallet"
+  echo
+  if [[ -z "$name" ]]; then
+    read -r -p "Wallet name: " name
+  fi
+
+  validate_wallet_name "$name" || return 1
+
+  if [[ ! -f "$SEED_TOOL" ]]; then
+    echo "Missing recovery-word helper: $SEED_TOOL"
+    echo "Run the latest Slithy Linux update, then try again."
+    return 1
+  fi
+
+  IFS= read -r -s -p "Wallet password: " passphrase
+  echo
+  IFS= read -r -s -p "Confirm password: " confirm_passphrase
+  echo
+
+  if [[ "$passphrase" != "$confirm_passphrase" ]]; then
+    echo "Passwords did not match."
+    return 1
+  fi
+
+  confirm_wallet_password "$passphrase" || return 1
+  seed_json="$(run_tool "$SEED_TOOL" create --network "$CHAIN")"
+  words="$(printf '%s' "$seed_json" | json_value words)"
+
+  create_wallet_from_seed_json "$name" "$passphrase" "$seed_json" "now"
+
+  echo
+  echo "Recovery words for $name"
+  echo
+  echo "$words"
+  echo
+  echo "Write these words down before you mine or receive $COIN_TICKER."
+  echo "They restore the wallet if this computer fails."
+  echo
+  read -r -p "Type saved after you have written them down: " saved
+  if [[ "$saved" != "saved" ]]; then
+    echo "Wallet was created, but the recovery words were not confirmed."
+    echo "Open this wallet and back it up before using it."
+    return 1
+  fi
+
+  echo "Wallet created: $WALLET_NAME"
+}
+
+restore_words_wallet() {
+  local name="${1:-}"
+  local passphrase=""
+  local confirm_passphrase=""
+  local words=""
+  local seed_json=""
+
+  echo "Restore a recovery-word wallet"
+  echo
+  if [[ -z "$name" ]]; then
+    read -r -p "New wallet name: " name
+  fi
+
+  validate_wallet_name "$name" || return 1
+
+  if [[ ! -f "$SEED_TOOL" ]]; then
+    echo "Missing recovery-word helper: $SEED_TOOL"
+    echo "Run the latest Slithy Linux update, then try again."
+    return 1
+  fi
+
+  echo "Paste the recovery words on one line."
+  read -r -s -p "Recovery words: " words
+  echo
+  IFS= read -r -s -p "New wallet password: " passphrase
+  echo
+  IFS= read -r -s -p "Confirm password: " confirm_passphrase
+  echo
+
+  if [[ "$passphrase" != "$confirm_passphrase" ]]; then
+    echo "Passwords did not match."
+    return 1
+  fi
+
+  confirm_wallet_password "$passphrase" || return 1
+  seed_json="$(printf '%s' "$words" | run_tool "$SEED_TOOL" descriptors --network "$CHAIN")"
+  create_wallet_from_seed_json "$name" "$passphrase" "$seed_json" "0"
+
+  echo "Wallet restored: $WALLET_NAME"
+  echo "The node will rescan from the start of this test chain."
+}
+
+create_wallet_from_seed_json() {
+  local name="$1"
+  local passphrase="$2"
+  local seed_json="$3"
+  local timestamp_mode="$4"
+  local external_descriptor internal_descriptor checked_external checked_internal import_json
+
+  external_descriptor="$(printf '%s' "$seed_json" | json_value externalDescriptor)"
+  internal_descriptor="$(printf '%s' "$seed_json" | json_value internalDescriptor)"
+
+  if [[ -z "$external_descriptor" || -z "$internal_descriptor" ]]; then
+    echo "Recovery-word helper did not return wallet descriptors."
+    return 1
+  fi
+
+  checked_external="$(descriptor_with_checksum "$external_descriptor")"
+  checked_internal="$(descriptor_with_checksum "$internal_descriptor")"
+
+  call_cli createwallet "$name" false true "$passphrase" false true false >/dev/null
+  WALLET_NAME="$name"
+  save_config
+
+  if [[ -n "$passphrase" ]]; then
+    call_wallet_cli walletpassphrase "$passphrase" 600 >/dev/null
+    SLITHY_UNLOCKED_WALLET="$WALLET_NAME"
+  fi
+
+  # Descriptors travel through stdin, never through the process arguments.
+  import_json="$(printf '%s\n' "$checked_external" "$checked_internal" "$timestamp_mode" | python3 -c '
+import json,sys
+external,internal,mode=sys.stdin.read().splitlines()
+print(json.dumps([dict(desc=desc,active=True,range=[0,1000],next_index=0,
+timestamp=0 if mode=="0" else "now",internal=branch)
+for desc,branch in [(external,False),(internal,True)]],separators=(",",":")))
+')"
+
+  call_wallet_cli importdescriptors "$import_json" >"$SLITHY_TMP/slithy-importdescriptors.$$" 2>"$SLITHY_TMP/slithy-importdescriptors-error.$$" || {
+    relock_wallet || true
+    cat "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+    rm -f "$SLITHY_TMP/slithy-importdescriptors.$$" "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+    return 1
+  }
+
+  if ! python3 - "$SLITHY_TMP/slithy-importdescriptors.$$" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    result = json.load(handle)
+if not isinstance(result, list) or not all(item.get("success") is True for item in result):
+    print(json.dumps(result, indent=2))
+    raise SystemExit(1)
+PY
+  then
+    rm -f "$SLITHY_TMP/slithy-importdescriptors.$$" "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+    relock_wallet || true
+    echo "Recovery-word descriptors were not imported."
+    return 1
+  fi
+
+  rm -f "$SLITHY_TMP/slithy-importdescriptors.$$" "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+  relock_wallet || return 1
+  mark_seed_wallet "$name"
+}
+
+descriptor_with_checksum() {
+  local descriptor="$1"
+  local info checksum
+
+  info="$(call_cli getdescriptorinfo "$descriptor")"
+  checksum="$(printf '%s' "$info" | json_value checksum)"
+  if [[ -z "$checksum" ]]; then
+    echo "$descriptor"
+  else
+    echo "$descriptor#$checksum"
+  fi
+}
+
+mark_seed_wallet() {
+  local name="$1"
+  local wallet_path="$WALLET_DIR/$name"
+  local marker="$wallet_path/$SEED_MARKER_FILE"
+  local user_marker_dir="$CONFIG_DIR/seed-wallets"
+  local user_marker="$user_marker_dir/$name.json"
+  local marker_json
+
+  marker_json="$(python3 - "$name" <<'PY'
+import json
+import sys
+from datetime import datetime, timezone
+
+print(json.dumps({
+    "wallet": sys.argv[1],
+    "format": "slithy-seed-descriptor",
+    "createdUtc": datetime.now(timezone.utc).isoformat(),
+}))
+PY
+)"
+
+  if [[ -d "$wallet_path" && -w "$wallet_path" ]]; then
+    printf '%s\n' "$marker_json" > "$marker"
+  elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+    printf '%s\n' "$marker_json" | sudo tee "$marker" >/dev/null
+    sudo chown slithy:slithy "$marker" 2>/dev/null || true
+  else
+    mkdir -p "$user_marker_dir"
+    printf '%s\n' "$marker_json" > "$user_marker"
+    chmod 600 "$user_marker"
+  fi
+}
+
+archive_old_wallets() {
+  echo "Archive old Linux wallets"
+  echo
+  echo "Wallet folder: $WALLET_DIR"
+  if [[ ! -d "$WALLET_DIR" ]]; then
+    echo "No wallet folder found."
+    return 0
+  fi
+
+  require_stopped_service || return 1
+  local stamp archive_root wallet path marker user_marker moved
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  archive_root="$CONFIG_DIR/archived-pre-seed-wallets/$stamp"
+  moved=0
+
+  while IFS= read -r path; do
+    wallet="$(basename "$path")"
+    marker="$path/$SEED_MARKER_FILE"
+    user_marker="$CONFIG_DIR/seed-wallets/$wallet.json"
+    if [[ ! -f "$path/wallet.dat" || -f "$marker" || -f "$user_marker" ]]; then
+      continue
+    fi
+
+    mkdir -p "$archive_root"
+    if [[ -w "$path" && -w "$(dirname "$path")" ]]; then
+      mv "$path" "$archive_root/$wallet"
+    else
+      sudo mv "$path" "$archive_root/$wallet"
+      sudo chown -R "$(id -u):$(id -g)" "$archive_root" 2>/dev/null || true
+    fi
+    echo "Archived: $wallet"
+    if [[ "$WALLET_NAME" == "$wallet" ]]; then
+      WALLET_NAME=""
+      save_config
+    fi
+    moved=1
+  done < <(find "$WALLET_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+
+  if [[ "$moved" -eq 0 ]]; then
+    echo "No old pre-seed wallets were found."
+    return 0
+  fi
+
+  echo
+  echo "Archived wallets are in:"
+  echo "$archive_root"
+}
+
+reset_testnet_rehearsal() {
+  echo "This beta uses a separate chain and wallet folder."
+  echo "Previous beta wallets stay in their original folders. Their balances do not transfer."
+  echo "A network reset needs the matching release and node configuration."
+  echo "Ask the operator to follow the beta migration guide before updating an old installation."
+  echo "No files or services were changed."
+}
+
+use_wallet() {
+  local name="${1:-}"
+  if [[ -z "$name" ]]; then
+    read -r -p "Wallet name: " name
+  fi
+
+  validate_wallet_name "$name" || return 1
+
+  if ! call_cli loadwallet "$name" >"$SLITHY_TMP/slithy-loadwallet.$$" 2>"$SLITHY_TMP/slithy-loadwallet-error.$$"; then
+    if ! grep -qi "already loaded" "$SLITHY_TMP/slithy-loadwallet-error.$$"; then
+      cat "$SLITHY_TMP/slithy-loadwallet-error.$$"
+      rm -f "$SLITHY_TMP/slithy-loadwallet.$$" "$SLITHY_TMP/slithy-loadwallet-error.$$"
+      return 1
+    fi
+  fi
+  rm -f "$SLITHY_TMP/slithy-loadwallet.$$" "$SLITHY_TMP/slithy-loadwallet-error.$$"
+
+  WALLET_NAME="$name"
+  save_config
+  echo "Selected wallet: $WALLET_NAME"
+}
+
+start_mining() {
+  local address="${1:-}"
+  local threads="${2:-1}"
+
+  if [[ -z "$address" ]]; then
+    if [[ -n "$WALLET_NAME" ]]; then
+      address="$(call_wallet_cli getnewaddress | tail -n 1)"
+    else
+      read -r -p "Mining address: " address
+    fi
+  fi
+
+  if [[ -z "$address" ]]; then
+    echo "Mining address was empty."
+    return 1
+  fi
+
+  call_cli startcpumining "$address" "$threads"
+  echo
+  echo "Mining started."
+  echo "Run 'slithy watch-mining' to watch it work."
+  echo "Run 'slithy stop-mining' to stop."
+}
+
+stop_mining() {
+  call_cli stopcpumining
+}
+
+node_service_status() {
+  service_tool status --no-pager --full || true
+}
+
+start_node_service() {
+  service_tool start
+}
+
+stop_node_service() {
+  service_tool stop
+}
+
+show_logs() {
+  if [[ -r "$LOG_FILE" ]]; then
+    tail -n 80 "$LOG_FILE"
+    return
+  fi
+
+  if sudo test -r "$LOG_FILE"; then
+    sudo tail -n 80 "$LOG_FILE"
+    return
+  fi
+
+  echo "Log file not readable: $LOG_FILE"
+}
+
+check_updates() {
+  local helper="$BIN_DIR/slithy-update.sh"
+  [[ -x "$helper" ]] || { echo "Install the verified Slithy updater first."; return 1; }
+  "$helper" check --install-dir "$(dirname "$BIN_DIR")" --service "$SERVICE_NAME"
+}
+
+install_update() {
+  local helper="$BIN_DIR/slithy-update.sh"
+  [[ -x "$helper" ]] || { echo "Install the verified Slithy updater first."; return 1; }
+  if [[ "$EUID" -eq 0 ]]; then
+    "$helper" install --service "$SERVICE_NAME" --install-dir "$(dirname "$BIN_DIR")"
+  else
+    sudo "$helper" install --service "$SERVICE_NAME" --install-dir "$(dirname "$BIN_DIR")"
+  fi
+  rm -f -- "$UPDATE_CACHE_FILE"
+}
+
+update_notice() {
+  local now cache_time cache_age output
+  now="$(date +%s)"
+  cache_time=0
+
+  if [[ -f "$UPDATE_CACHE_FILE" ]]; then
+    cache_time="$(head -n 1 "$UPDATE_CACHE_FILE" 2>/dev/null || echo 0)"
+    cache_age=$((now - cache_time))
+    if [[ "$cache_age" -lt "$UPDATE_CACHE_SECONDS" ]]; then
+      tail -n +2 "$UPDATE_CACHE_FILE" 2>/dev/null || true
+      return
+    fi
+  fi
+
+  output="$(check_updates 2>&1 || true)"
+  if printf '%s\n' "$output" | grep -q "Update available:"; then
+    printf '%s\n' "$output" | grep "Update available:" | head -n 1 | sed 's/^/Update: /'
+  elif printf '%s\n' "$output" | grep -q "Slithy is up to date."; then
+    echo "Update: Slithy is up to date."
+  else
+    echo "Update: unable to check right now."
+  fi | tee "$SLITHY_TMP/slithy-update-notice.$$" >/dev/null
+
+  {
+    echo "$now"
+    cat "$SLITHY_TMP/slithy-update-notice.$$"
+  } > "$UPDATE_CACHE_FILE"
+  rm -f "$SLITHY_TMP/slithy-update-notice.$$"
+  tail -n +2 "$UPDATE_CACHE_FILE" 2>/dev/null || true
+}
+
+literacy_fund_notice() {
+  local now cache_time cache_age output tmp_json
+  now="$(date +%s)"
+  cache_time=0
+
+  if [[ -f "$TREASURY_CACHE_FILE" ]]; then
+    cache_time="$(head -n 1 "$TREASURY_CACHE_FILE" 2>/dev/null || echo 0)"
+    cache_age=$((now - cache_time))
+    if [[ "$cache_age" -lt "$TREASURY_CACHE_SECONDS" ]]; then
+      tail -n +2 "$TREASURY_CACHE_FILE" 2>/dev/null || true
+      return
+    fi
+  fi
+
+  tmp_json="$(mktemp)"
+  if curl --max-time 10 -fsSL "$TREASURY_STATUS_URL" -o "$tmp_json"; then
+    output="$(python3 - "$tmp_json" <<'PY'
+import json
+import sys
+from decimal import Decimal, InvalidOperation
+
+try:
+    with open(sys.argv[1], "r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    raw = data.get("currentBalance") or data.get("accruedRewards") or "0"
+    value = Decimal(str(raw))
+    print(f"Literacy fund: {value:,.2f} SLTHY")
+except (OSError, json.JSONDecodeError, InvalidOperation):
+    print("Literacy fund: unavailable")
+PY
+)"
+  else
+    output="Literacy fund: unavailable"
+  fi
+  rm -f "$tmp_json"
+
+  {
+    echo "$now"
+    echo "$output"
+  } > "$TREASURY_CACHE_FILE"
+  echo "$output"
+}
+
+settings() {
+  echo "Current settings"
+  echo
+  echo "Binary folder: ${BIN_DIR:-not found}"
+  echo "Chain: $CHAIN"
+  echo "RPC: $RPC_CONNECT:$RPC_PORT"
+  echo "Wallet: ${WALLET_NAME:-none selected}"
+  echo "Service: $SERVICE_NAME"
+  echo "Log file: $LOG_FILE"
+  echo "Wallet folder: $WALLET_DIR"
+  echo "System config: $SYSTEM_CONFIG_FILE"
+  echo "Config file: $CONFIG_FILE"
+  echo "Support: support@slithy.io"
+}
+
+report_bug() {
+  local report_file="$(create_report_file)"
+  {
+    echo "Slithy Tove bug report"
+    echo
+    echo "Please describe what broke:"
+    echo
+    echo "What were you doing?"
+    echo
+    echo "What did you expect?"
+    echo
+    echo "What happened instead?"
+    echo
+    echo "Diagnostics"
+    echo "==========="
+    date -Is
+    echo "Linux menu: ${APP_NAME:-Slithy Tove}"
+    echo "Binary folder: ${BIN_DIR:-not found}"
+    echo "Chain: $CHAIN"
+    echo "RPC: $RPC_CONNECT:$RPC_PORT"
+    echo "Wallet: ${WALLET_NAME:-none selected}"
+    echo "Service: $SERVICE_NAME"
+    echo "Wallet folder: $WALLET_DIR"
+    echo
+    echo "Version"
+    show_version 2>&1 || true
+    echo
+    echo "Node status"
+    call_cli getblockchaininfo 2>&1 || true
+    echo
+    echo "Mining"
+    call_cli getmininginfo 2>&1 || true
+  } > "$report_file"
+
+  echo "Bug report draft written to:"
+  echo "  $report_file"
+  echo
+  echo "Send it to support@slithy.io."
+  echo "Do not send recovery words, wallet passwords, or private keys."
+}
+
+menu() {
+  while true; do
+    logo
+    echo "Binary folder: ${BIN_DIR:-not found}"
+    echo "Chain: $CHAIN"
+    echo "Node: $RPC_CONNECT:$RPC_PORT"
+    echo "Wallet: ${WALLET_NAME:-none selected}"
+    literacy_fund_notice
+    update_notice
+    echo
+    echo "1. Wallet"
+    echo "2. Mining"
+    echo "3. Node"
+    echo "4. Updates"
+    echo "5. Settings"
+    echo "6. Report bug"
+    echo "0. Exit"
+    echo
+    read -r -p "Choose: " choice
+    echo
+
+    case "$choice" in
+      1) wallet_menu ;;
+      2) mining_menu ;;
+      3) node_menu ;;
+      4) updates_menu ;;
+      5) settings_menu ;;
+      6) report_bug; pause ;;
+      0) exit 0 ;;
+      *) echo "Unknown choice."; pause ;;
+    esac
+  done
+}
+
+wallet_menu() {
+  while true; do
+    logo
+    echo "Wallet: ${WALLET_NAME:-none selected}"
+    echo
+    echo "1. Balance"
+    echo "2. Receive address"
+    echo "3. Send $COIN_TICKER"
+    echo "4. Create wallet"
+    echo "5. Open wallet"
+    echo "6. Restore recovery words"
+    echo "0. Back"
+    echo
+    read -r -p "Choose: " choice
+    echo
+
+    case "$choice" in
+      1) show_balance; pause ;;
+      2) new_address; pause ;;
+      3) send_coins; pause ;;
+      4) create_wallet; pause ;;
+      5) use_wallet; pause ;;
+      6) restore_words_wallet; pause ;;
+      0) return ;;
+      *) echo "Unknown choice."; pause ;;
+    esac
+  done
+}
+
+mining_menu() {
+  while true; do
+    logo
+    echo "Wallet: ${WALLET_NAME:-none selected}"
+    echo
+    echo "1. Mining status"
+    echo "2. Start mining"
+    echo "3. Stop mining"
+    echo "4. Watch mining"
+    echo "0. Back"
+    echo
+    read -r -p "Choose: " choice
+    echo
+
+    case "$choice" in
+      1) show_mining; pause ;;
+      2)
+        read -r -p "Threads [1]: " threads
+        threads="${threads:-1}"
+        start_mining "" "$threads"
+        pause
+        ;;
+      3) stop_mining; pause ;;
+      4) watch_mining ;;
+      0) return ;;
+      *) echo "Unknown choice."; pause ;;
+    esac
+  done
+}
+
+node_menu() {
+  while true; do
+    logo
+    echo "Node: $RPC_CONNECT:$RPC_PORT"
+    echo
+    echo "1. Node status"
+    echo "2. Peers"
+    echo "3. Service status"
+    echo "4. Recent log"
+    echo "5. Start node"
+    echo "6. Stop node"
+    echo "0. Back"
+    echo
+    read -r -p "Choose: " choice
+    echo
+
+    case "$choice" in
+      1) show_status; pause ;;
+      2) show_peers; pause ;;
+      3) node_service_status; pause ;;
+      4) show_logs; pause ;;
+      5) start_node_service; pause ;;
+      6) stop_node_service; pause ;;
+      0) return ;;
+      *) echo "Unknown choice."; pause ;;
+    esac
+  done
+}
+
+updates_menu() {
+  while true; do
+    logo
+    update_notice
+    echo
+    echo "1. Check updates"
+    echo "2. Install update"
+    echo "3. Version"
+    echo "0. Back"
+    echo
+    read -r -p "Choose: " choice
+    echo
+
+    case "$choice" in
+      1) check_updates; pause ;;
+      2) install_update; pause ;;
+      3) show_version; pause ;;
+      0) return ;;
+      *) echo "Unknown choice."; pause ;;
+    esac
+  done
+}
+
+settings_menu() {
+  while true; do
+    logo
+    echo "1. Settings"
+    echo "2. Doctor check"
+    echo "3. Archive old wallets"
+    echo "4. Reset local testnet rehearsal data"
+    echo "0. Back"
+    echo
+    read -r -p "Choose: " choice
+    echo
+
+    case "$choice" in
+      1) settings; pause ;;
+      2) show_doctor; pause ;;
+      3) archive_old_wallets; pause ;;
+      4) reset_testnet_rehearsal; pause ;;
+      0) return ;;
+      *) echo "Unknown choice."; pause ;;
+    esac
+  done
+}
+
+usage() {
+  cat <<USAGE
+Slithy Tove Linux menu
+
+Usage:
+  slithy
+  slithy status
+  slithy peers
+  slithy mining
+  slithy balance
+  slithy address
+  slithy send ADDRESS AMOUNT
+  slithy create-wallet NAME
+  slithy restore-words NAME
+  slithy use-wallet NAME
+  slithy archive-old-wallets
+  slithy reset-testnet-rehearsal
+  slithy start-mining [ADDRESS] [THREADS]
+  slithy watch-mining
+  slithy stop-mining
+  slithy updates
+  slithy install-update
+  slithy version
+  slithy report-bug
+  slithy doctor
+  slithy logs
+  slithy service-status
+  slithy start-node
+  slithy stop-node
+  slithy settings
+  slithy terms
+  slithy wallet-files
+
+Environment:
+  SLITHY_BIN_DIR       path with slithyd and slithy-cli
+  SLITHY_CHAIN         testnet, main, regtest, or signet
+  SLITHY_RPC_CONNECT   default 127.0.0.1
+  SLITHY_RPC_PORT      default 53426
+  SLITHY_RPC_USER      default slithy
+  SLITHY_RPC_PASSWORD  read from /etc/slithy/beta-20260909/menu.conf after install
+  SLITHY_WALLET        selected wallet name
+  SLITHY_USE_SUDO      auto, 1, or 0
+  SLITHY_SERVICE_NAME  default slithy-node
+  SLITHY_LOG_FILE      default /var/log/slithy/slithyd.log
+  SLITHY_WALLET_DIR    default /var/lib/slithy/beta-20260909/wallets
+  SLITHY_SYSTEM_CONFIG_FILE default /etc/slithy/beta-20260909/menu.conf
+USAGE
+}
+
+load_config
+
+command="${1:-menu}"
+shift || true
+
+# The terms travel with the signed package. Do not fetch legal text at startup.
+TERMS_FILE="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/slithy-terms.txt"
+TERMS_STATE_DIR="${SLITHY_TERMS_STATE_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/slithy}"
+TERMS_RECORD="$TERMS_STATE_DIR/terms-acceptance.json"
+
+show_wallet_files() {
+  printf 'Wallet files: %s\nSettings: %s\n' "$WALLET_DIR" "$CONFIG_DIR"
+  echo 'Declining does not delete these files. Stop the node before copying wallet files.'
+  echo 'Existing backups remain wherever you saved them.'
+}
+
+show_terms() {
+  if [[ ! -r "$TERMS_FILE" ]]; then
+    echo 'The bundled terms are missing. Reinstall a complete signed Slithy package.' >&2
+    return 1
+  fi
+  cat -- "$TERMS_FILE"
+}
+
+terms_record() {
+  python3 - "$1" "$TERMS_FILE" "$TERMS_RECORD" <<'PY'
+import datetime, hashlib, json, os, pathlib, sys, tempfile
+action, terms_path, record_path = sys.argv[1:]
+try:
+    digest = hashlib.sha256(pathlib.Path(terms_path).read_bytes()).hexdigest()
+    record = pathlib.Path(record_path)
+    if action == 'check':
+        value = json.loads(record.read_text())
+        stamp = datetime.datetime.fromisoformat(value['acceptedUtc'])
+        sys.exit(0 if value['version'] == '1.0' and value['sha256'] == digest and stamp.tzinfo else 1)
+    record.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd, temporary = tempfile.mkstemp(prefix='.terms-', dir=record.parent)
+    try:
+        with os.fdopen(fd, 'w') as output:
+            json.dump({'version': '1.0', 'sha256': digest,
+                       'acceptedUtc': datetime.datetime.now(datetime.timezone.utc).isoformat()}, output)
+        os.replace(temporary, record)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+except (OSError, ValueError, KeyError, TypeError, AttributeError):
+    sys.exit(1)
+PY
+}
+
+require_terms() {
+  if terms_record check; then return 0; fi
+  if [[ ! -t 0 || ! -t 1 ]]; then
+    echo 'Agreement needed. Run slithy in a terminal to read and accept the beta terms.' >&2
+    echo 'Stop commands and slithy wallet-files remain available without agreement.' >&2
+    return 1
+  fi
+  show_terms || return 1
+  echo
+  echo 'Mining uses electricity and computer resources. Rewards are not guaranteed.'
+  echo 'Test coins have no market value and will reset before launch.'
+  echo 'Enter AGREE to accept the terms above, FILES to locate your wallets, or anything else to decline.'
+  local answer
+  while read -r -p 'Your choice: ' answer; do
+    case "$answer" in
+      AGREE)
+        if terms_record save; then return 0; fi
+        echo 'Your agreement could not be saved. No action was started.' >&2
+        return 1 ;;
+      FILES) show_wallet_files ;;
+      *) echo 'Declined. Your wallet files have not been changed.'; show_wallet_files; return 1 ;;
+    esac
+  done
+  return 1
+}
+
+# Reading status, stopping work and locating existing files do not require agreement.
+case "$command" in
+  terms) show_terms; exit ;;
+  wallet-files) show_wallet_files; exit ;;
+  help|-h|--help|version|status|peers|mining|balance|stop-mining|stop-node|service-status|logs|doctor|report-bug|bug-report|updates) ;;
+  *) require_terms || exit 1 ;;
+esac
+
+case "$command" in
+  menu) menu ;;
+  status) show_status ;;
+  peers) show_peers ;;
+  mining) show_mining ;;
+  balance) show_balance ;;
+  address) new_address ;;
+  send) send_coins "${1:-}" "${2:-}" ;;
+  create-wallet) create_wallet "${1:-}" ;;
+  restore-words) restore_words_wallet "${1:-}" ;;
+  use-wallet) use_wallet "${1:-}" ;;
+  archive-old-wallets) archive_old_wallets ;;
+  reset-testnet-rehearsal) reset_testnet_rehearsal ;;
+  start-mining) start_mining "${1:-}" "${2:-1}" ;;
+  watch-mining) watch_mining ;;
+  stop-mining) stop_mining ;;
+  updates|check-updates) check_updates ;;
+  install-update|update|upgrade) install_update ;;
+  version) show_version ;;
+  report-bug|bug-report) report_bug ;;
+  doctor) show_doctor ;;
+  logs) show_logs ;;
+  service-status) node_service_status ;;
+  start-node) start_node_service ;;
+  stop-node) stop_node_service ;;
+  settings) settings ;;
+  help|-h|--help) usage ;;
+  *) usage; exit 1 ;;
+esac

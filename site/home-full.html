@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Slithy Tove is a transparent proof-of-work cryptocurrency built to support children's literacy and reading.">
+  <title>Slithy Tove | Help kids read</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/treasury.js" defer></script>
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a class="active" aria-current="page" href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> Test network</span>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Slithy Tove</p>
+        <h1>Mining that helps <br><em>kids read.</em></h1>
+        <p class="lede">Use your computer's CPU to mine Slithy. Ten percent of each new block reward goes to a public fund for children's literacy. The test fund's balance is shown below.</p>
+        <div class="testnet-warning">
+          <strong>Beta testing is open.</strong> Try the wallet and miner, and let me know what needs work. Test SLTHY has no market value and won't carry over to the live network.
+        </div>
+        <div class="hero-actions">
+          <a class="button" href="/downloads.html">Get the test wallet</a>
+          <span class="ticker">SLTHY <small>Slithy Tove</small></span>
+        </div>
+      </div>
+
+      <div class="orbit" aria-hidden="true">
+        <div class="orbit-ring ring-one"></div>
+        <div class="orbit-ring ring-two"></div>
+        <div class="orbit-core">
+          <svg viewBox="0 0 160 160">
+            <path d="M119 39C86 13 36 35 39 77c3 35 48 48 68 21 17-23-7-49-32-38-17 7-16 30 1 37 11 5 24-2 24-14"/>
+            <path d="M43 112 26 132m32-14-9 27m57-32 24 20m-38-13 10 27"/>
+          </svg>
+        </div>
+        <span class="spark spark-a">&#10022;</span>
+        <span class="spark spark-b">&middot;</span>
+        <span class="spark spark-c">&#10022;</span>
+      </div>
+    </section>
+
+    <section class="treasury" id="treasury" aria-labelledby="treasury-title">
+      <div class="treasury-copy">
+        <p class="eyebrow">Literacy treasury</p>
+        <h2 id="treasury-title">See the reading fund.</h2>
+        <p>This is the test fund, so its coins will reset before launch. For the live fund, the plan is to publish each payment with a record of the reading project it paid for.</p>
+        <p class="treasury-note"><a href="/treasury.html">Who controls the treasury?</a></p>
+      </div>
+      <div class="treasury-card">
+        <span>Literacy treasury</span>
+        <strong data-treasury-amount>Loading treasury status...</strong>
+        <dl>
+          <div><dt>Chain height</dt><dd data-treasury-height>Not available</dd></div>
+          <div><dt>Available now</dt><dd data-treasury-unlocked>Not available</dd></div>
+          <div><dt>Last updated</dt><dd data-treasury-updated>Not available</dd></div>
+          <div><dt>Treasury address</dt><dd class="treasury-address" data-treasury-address>Not available</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="mission" id="mission" aria-labelledby="mission-title">
+      <div class="mission-panel">
+        <div class="mission-copy">
+          <p class="eyebrow">The mission</p>
+          <h2 id="mission-title">Bring the magic of reading to more kids.</h2>
+          <p>I want Slithy's share of mining rewards to help pay for books and reading programs. Community voting on the fund's spending is planned for later. The voting rules and software still need to be built.</p>
+        </div>
+        <svg class="book-mark" viewBox="0 0 220 180" aria-hidden="true">
+          <path class="book-page" d="M32 51c26-16 55-14 78 2v94c-23-16-52-18-78-2z"/>
+          <path class="book-page" d="M110 53c23-16 52-18 78-2v94c-26-16-55-14-78 2z"/>
+          <path d="M110 53v94"/>
+          <path d="M47 72c16-7 31-6 46 2M47 95c16-7 31-6 46 2M47 118c16-7 31-6 46 2"/>
+          <path d="M127 74c15-8 31-9 46-2M127 97c15-8 31-9 46-2M127 120c15-8 31-9 46-2"/>
+          <path class="book-spark" d="M40 27l5 9 9 5-9 5-5 9-5-9-9-5 9-5z"/>
+          <path class="book-spark small" d="M177 22l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"/>
+          <path class="book-tail" d="M79 150c18 18 43 17 61-1 10-10 5-23-8-22-10 1-14 12-7 18 6 5 15 1 16-6"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="progress" id="progress" aria-labelledby="progress-title">
+      <div class="section-intro compact">
+        <p class="eyebrow">Try Slithy</p>
+        <h2 id="progress-title">Test the wallet and miner.</h2>
+        <p>The wallet and miner are available for Windows and Linux. If something gets stuck or doesn't make sense, <a href="/bug-report.html">send a report</a>. Thank you for helping test and develop Slithy.</p>
+      </div>
+
+      <div class="spec-grid" aria-label="Initial Slithy Tove technical parameters">
+        <article>
+          <span>The code</span>
+          <strong>Bitcoin Core v31.0 fork</strong>
+          <p>A transparent UTXO chain with yespower proof of work.</p>
+        </article>
+        <article>
+          <span>Block rewards</span>
+          <strong>No premine</strong>
+          <p>The network targets one block every two minutes. The starting reward is 10 SLTHY.</p>
+        </article>
+        <article>
+          <span>The split</span>
+          <strong>90% miner / 10% literacy</strong>
+          <p>Of that starting reward, 9 SLTHY goes to the miner and 1 to the fund. The miner also receives transaction fees.</p>
+        </article>
+        <article>
+          <span>On your computer</span>
+          <strong>CPU mining</strong>
+          <p>You do the mining on your own computer. The official servers check and relay blocks.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-links" aria-labelledby="pages-title">
+      <div>
+        <p class="eyebrow">Read a little more</p>
+        <h2 id="pages-title">New to mining?</h2>
+      </div>
+      <div class="link-grid">
+        <a href="/guide.html"><span>User guide</span><small>Start with how a wallet works, then try mining your first block.</small></a>
+        <a href="/whitepaper.html"><span>White paper</span><small>The network rules and the reasons behind them.</small></a>
+        <a href="/about.html"><span>About Slithy</span><small>Where the name came from and what I want to build.</small></a>
+        <a href="/community.html"><span>Join the conversation</span><small>Ask a question or tell me how testing went.</small></a>
+      </div>
+    </section>
+
+    <section class="manifesto">
+      <p class="quote-mark" aria-hidden="true">&ldquo;</p>
+      <blockquote>I want this to help<br>put books in kids' hands.</blockquote>
+      <p class="manifesto-note">The fund's spending records should show what was bought, who received it and how much it cost.</p>
+    </section>
+
+    <section class="roadmap" aria-labelledby="roadmap-title">
+      <div>
+        <p class="eyebrow">Where things stand</p>
+        <h2 id="roadmap-title">Before the<br>November launch</h2>
+      </div>
+      <ol>
+        <li class="done"><span>01</span><div><strong>Wallet and miner</strong><small>Windows and Linux test downloads are available</small></div></li>
+        <li class="active"><span>02</span><div><strong>Public beta testing</strong><small>Try the apps and report problems</small></div></li>
+        <li><span>03</span><div><strong>Check the launch build</strong><small>Finish testing and publish the software before mining opens</small></div></li>
+        <li><span>04</span><div><strong>Live network</strong><small>Target: November 1, 2026. A fresh chain with no premine</small></div></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

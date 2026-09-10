@@ -1,0 +1,29 @@
+{
+  "network": "slithy-testnet",
+  "node": "borogove",
+  "region": "east-coast",
+  "chain": "test",
+  "height": 63,
+  "chainHeight": 63,
+  "headers": 63,
+  "bestBlockHash": "00001bc7a83a18832828a7558e60b42aff85c95857fc09a44f0f966a3625349f",
+  "difficulty": 6.921842492530786E-06,
+  "initialBlockDownload": false,
+  "peerCount": 2,
+  "version": "Satoshi:31.0.0",
+  "p2pPort": 53424,
+  "rpcPublic": false,
+  "mining": {
+    "active": false,
+    "threads": 0,
+    "speed": 0,
+    "algorithm": "yespower"
+  },
+  "updatedAt": "2026-08-20T01:41:36Z",
+  "treasuryAddress": "tslithy1quwm9s9qq9k03vdlus547p2x69uqvh50v3wffcu",
+  "accruedRewards": "63.00000000",
+  "currentBalance": "63.00000000",
+  "unlockedBalance": "0.00000000",
+  "immatureBalance": "63.00000000",
+  "totalSpent": "0.00000000"
+}

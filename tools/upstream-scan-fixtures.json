@@ -1,0 +1,164 @@
+{
+  "core/src/net.cpp": {
+    "sha256": "4e87fcd83bbf09d4b053a72055cb5a78704a3fb027a61f88669805b4d7b0bf97",
+    "findings": [
+      [
+        "generic-api-key",
+        112
+      ]
+    ]
+  },
+  "core/src/test/data/bip341_wallet_vectors.json": {
+    "sha256": "403e19fb81dd1f31e745699216308f61fb403774b2aafa87b631b8f7c042d37f",
+    "findings": [
+      [
+        "generic-api-key",
+        278
+      ],
+      [
+        "generic-api-key",
+        285
+      ],
+      [
+        "generic-api-key",
+        304
+      ],
+      [
+        "generic-api-key",
+        311
+      ],
+      [
+        "generic-api-key",
+        325
+      ],
+      [
+        "generic-api-key",
+        332
+      ],
+      [
+        "generic-api-key",
+        352
+      ],
+      [
+        "generic-api-key",
+        359
+      ],
+      [
+        "generic-api-key",
+        379
+      ],
+      [
+        "generic-api-key",
+        386
+      ],
+      [
+        "generic-api-key",
+        405
+      ],
+      [
+        "generic-api-key",
+        412
+      ],
+      [
+        "generic-api-key",
+        426
+      ],
+      [
+        "generic-api-key",
+        433
+      ]
+    ]
+  },
+  "core/src/test/key_tests.cpp": {
+    "sha256": "3d3fdb78a67f386ef5faeb9892da09e222a8c1bb7cb7a5930bc8eaaa22947825",
+    "findings": [
+      [
+        "generic-api-key",
+        27
+      ],
+      [
+        "generic-api-key",
+        28
+      ],
+      [
+        "generic-api-key",
+        29
+      ],
+      [
+        "generic-api-key",
+        30
+      ]
+    ]
+  },
+  "core/src/test/util_tests.cpp": {
+    "sha256": "7dcc31af27791801c915a8ab4ac9ac052bace098cbeaf6954ec405cfcd0ba01d",
+    "findings": [
+      [
+        "generic-api-key",
+        1509
+      ]
+    ]
+  },
+  "core/test/functional/feature_taproot.py": {
+    "sha256": "7f909394c458afa50b6657cf172e7a0300ec1e34a809988eb24646d5c66c4a70",
+    "findings": [
+      [
+        "coinbase-access-token",
+        1665
+      ]
+    ]
+  },
+  "core/test/functional/rpc_generate.py": {
+    "sha256": "07f6ec1022b6d536711d332aeae25ac3d00ca764067ea3ff617e630e7cfef147",
+    "findings": [
+      [
+        "generic-api-key",
+        53
+      ],
+      [
+        "generic-api-key",
+        61
+      ]
+    ]
+  },
+  "core/test/functional/rpc_scanblocks.py": {
+    "sha256": "89e97b0ca7908c447882bce2fc67a9263ec8d13370db891c65cb1ffafbbba4ed",
+    "findings": [
+      [
+        "generic-api-key",
+        36
+      ]
+    ]
+  },
+  "core/test/functional/rpc_signmessagewithprivkey.py": {
+    "sha256": "56e6f567ff363e884b27c03baee123deb9600ee2f62825317257a3e133fdd30b",
+    "findings": [
+      [
+        "generic-api-key",
+        32
+      ]
+    ]
+  },
+  "core/test/functional/rpc_users.py": {
+    "sha256": "ba8df74d5adc9738385815da5b54eb0df9e38c476389befe24c0d9ad59deeb77",
+    "findings": [
+      [
+        "generic-api-key",
+        43
+      ],
+      [
+        "generic-api-key",
+        52
+      ]
+    ]
+  },
+  "core/test/functional/wallet_hd.py": {
+    "sha256": "8c47f502a079a0f673a5cfe7a770c18fe08fa232329734e1b503ec2ade8d6d64",
+    "findings": [
+      [
+        "generic-api-key",
+        40
+      ]
+    ]
+  }
+}

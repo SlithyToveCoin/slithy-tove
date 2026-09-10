@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Slithy Tove test-network block explorer.">
+  <title>Slithy Tove | Explorer</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/explorer.js" defer></script>
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a class="active" aria-current="page" href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> Test network</span>
+  </header>
+
+  <main id="main" class="page">
+    <section class="page-hero explorer-intro">
+      <p class="eyebrow">Block explorer</p>
+      <h1>Recent test blocks</h1>
+      <p class="lede">Borogove, the East Coast node, provides the records below. You can check recent blocks and see how each block subsidy is split between its miner and the literacy fund.</p>
+      <div class="testnet-warning">
+        <strong>Test-network data.</strong> These blocks are for beta testing. Test coins do not carry over to the live chain.
+      </div>
+    </section>
+
+    <section class="explorer-summary" aria-label="Chain summary">
+      <article>
+        <span>Block height</span>
+        <strong data-explorer-height>Loading</strong>
+      </article>
+      <article>
+        <span>Borogove's peers</span>
+        <strong data-explorer-peers>Loading</strong>
+      </article>
+      <article>
+        <span>Mining on Borogove</span>
+        <strong data-explorer-mining>Loading</strong>
+      </article>
+      <article>
+        <span>Updated</span>
+        <strong data-explorer-updated>Loading</strong>
+      </article>
+    </section>
+
+    <section class="notice explorer-tip">
+      <p class="eyebrow">Latest block</p>
+      <h2>Latest block hash</h2>
+      <p class="hash-line" data-explorer-best>Loading best block hash...</p>
+    </section>
+
+    <section class="explorer-table-wrap" aria-labelledby="recent-blocks-title">
+      <div class="section-intro compact">
+        <div>
+          <p class="eyebrow">Recent blocks</p>
+          <h2 id="recent-blocks-title">Blocks reported by Borogove</h2>
+        </div>
+        <p>This page checks for a fresh snapshot every minute. Miner and treasury amounts are subsidy estimates; transaction fees are not included. The peer count and mining status above describe Borogove, so they do not count everyone mining on the network.</p>
+      </div>
+
+      <div class="explorer-table-scroll">
+        <table class="explorer-table">
+          <thead>
+            <tr>
+              <th>Height</th>
+              <th>Time</th>
+              <th>Hash</th>
+              <th>Tx</th>
+              <th>Miner subsidy (est.)</th>
+              <th>Treasury subsidy (est.)</th>
+              <th>Difficulty</th>
+            </tr>
+          </thead>
+          <tbody data-explorer-blocks>
+            <tr><td colspan="7">Loading recent blocks...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

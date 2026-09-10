@@ -1,0 +1,6 @@
+* text=auto eol=lf
+core/** text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+site/install/linux/slithy text eol=lf
+site/install/linux/slithy-node text eol=lf

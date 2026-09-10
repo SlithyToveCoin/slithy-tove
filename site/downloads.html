@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Download Slithy Tove test-network wallet and Linux tools.">
+  <title>Slithy Tove | Test downloads</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta active" aria-current="page" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> Test network</span>
+  </header>
+
+  <main id="main" class="page">
+    <section class="page-hero">
+      <p class="eyebrow">Test downloads</p>
+      <h1>Download Slithy Tove</h1>
+      <p class="lede">Choose the Windows installer or Linux download below. Both let you create a test wallet and mine with your computer's CPU. Test coins will reset before the live launch.</p>
+      <div class="testnet-warning page-warning">
+        <strong>These downloads use the test network.</strong> Test SLTHY has no market value. Wallets and the chain will reset before the live network launches.
+      </div>
+    </section>
+
+    <section class="download-grid" aria-label="Slithy Tove test downloads">
+      <article class="download-card primary-download">
+        <p class="eyebrow">Windows</p>
+        <h2>Slithy Tove wallet and miner</h2>
+        <p>Create a wallet and start mining from the same app. It runs a node on your computer and checks for software updates when you open it.</p>
+        <a class="button" href="/downloads/windows/Slithy-Tove-Setup-0.1.41.exe">Download Windows installer</a>
+        <p class="download-meta">Version 0.1.41. The installer and Slithy programs are signed by CS Idea Labs LLC. Windows may still show a SmartScreen warning for a new download. Updates also require a verified Slithy release signature.<br>SHA256: <code>1BEE39FF9E7D98D1D8EEFE3B4A6ACC2063A98B9D58F1AB3F368B33B84EA4F566</code></p>
+      </article>
+
+      <article class="download-card">
+        <p class="eyebrow">Linux</p>
+        <h2>Linux menu tool</h2>
+        <p>The install script downloads the software and checks the release signature and file hash. After installation, use the terminal menu to open your wallet or watch your miner run.</p>
+        <a class="button" href="/install/linux/slithy-install.sh">Download Linux install script</a>
+        <p class="download-meta">Installs Linux version 0.1.48-testnet. On 0.1.47? Open Updates in the menu and choose Install update. For an older beta installation, read the migration steps below first.<br>Install script SHA256: <code>0E14142211A40CF9ED8E7D3B433F4FBFD41CB6B45EFAF9087142984218E27D4D</code></p>
+      </article>
+
+      <article class="download-card">
+        <p class="eyebrow">Linux package</p>
+        <h2>Full Linux x64 package</h2>
+        <p>Download the archive if you prefer to install by hand or want to inspect the files before installing. The install script above downloads this same package.</p>
+        <a class="button secondary-button" href="/updates/linux-x64/packages/slithy-linux-x64-0.1.48-testnet.tar.gz">Download Linux package</a>
+        <p class="download-meta">SHA256: <code>446E7636000E8C8117C7810C315EE2D3AE283301D4552DF4C24B9E6179D04168</code><br><a href="/updates/linux-x64/beta-20260909/stable.json">View Linux update manifest</a></p>
+      </article>
+
+      <article class="download-card">
+        <p class="eyebrow">Support</p>
+        <h2>Report a problem</h2>
+        <p>Tell me what you tried and what happened. Include your Slithy version so I can check the same build. Never send wallet passwords, recovery words, or private keys.</p>
+        <a class="button secondary-button" href="/bug-report.html">Report a bug</a>
+        <p class="download-meta">Thank you for helping test and develop Slithy.</p>
+      </article>
+    </section>
+
+    <section class="notice" id="before-testing">
+      <h2>Before you test</h2>
+      <p>Read the <a href="/terms.html">Terms of Use and Beta Testing</a>. Mining uses electricity and computer resources, and rewards are not guaranteed. Test coins have no market value. Wallets and the test chain will reset before launch.</p>
+    </section>
+
+    <section class="notice" id="beta-migration">
+      <h2>Moving to the refreshed beta</h2>
+      <p>The test chain restarted on September 9, 2026. Old test coins do not carry over. Your previous wallet files stay on your computer. The live launch is still planned for November 1, and test balances will reset again before that launch.</p>
+      <p><strong>Windows:</strong> use Check for updates in the app. If version 0.1.35 closes without installing, or version 0.1.37 offers the same update again, exit Slithy through the notification-area menu and run the installer above once. It replaces the app without deleting your wallet files. Create a new beta wallet if prompted. A wallet created with the replacement-beta build, such as version 0.1.36, can still be used.</p>
+      <p><strong>Linux:</strong> this chain change needs a separate installation. The old update feed does not silently replace your existing network. Download the new install script above. For a standard installation using the <code>slithy-node</code> service, stop the old service before installing:</p>
+      <pre style="overflow-x:auto;padding:1rem"><code>sudo systemctl stop slithy-node
+sudo systemctl show slithy-node -p MainPID -p ControlPID</code></pre>
+      <p>Both process IDs must be 0 before continuing. Save a copy of your existing configuration and service file in a private folder. Leave old chain and wallet folders in place. Then run:</p>
+      <pre style="overflow-x:auto;padding:1rem"><code>sudo systemctl disable slithy-node
+sudo bash ./slithy-install.sh --install-dir /opt/slithy-beta-20260909 --service slithy-beta-20260909
+sudo systemctl start slithy-beta-20260909
+slithy</code></pre>
+      <p>Run each command separately and stop if it reports an error. Log out and back in if the menu cannot read its settings. The new menu asks you to create a beta wallet. Updates within this beta then use its own signed feed.</p>
+      <p>These commands are for a standard user installation, not an official node or a custom service. If your paths or service name differ, ask in <a href="/community.html">the community</a> before changing them. Do not delete your wallet folders to fix a connection problem.</p>
+      <p>If migration fails, stop the replacement service before restoring the old launcher links and service configuration. The old beta files remain available. That chain cannot mine with the refreshed public beta.</p>
+      <p>Thank you for helping test Slithy and finding problems before launch.</p>
+    </section>
+
+    <section class="notice">
+      <h2>First time using a wallet?</h2>
+      <p>The <a href="/guide.html">user guide</a> explains the basics and what to expect when you start mining. If you already know your way around, the <a href="/beta-testing.html">testing notes</a> have specific things to try.</p>
+      <p>You can also download the <a href="/downloads/SHA256SUMS.txt">SHA256 checksum file</a> to check your downloads.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

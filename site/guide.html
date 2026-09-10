@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10231f">
+  <meta name="author" content="CS Idea Labs LLC">
+  <meta name="description" content="Learn how Slithy Tove works, set up your wallet, and use your computer's CPU to mine on the public test network.">
+  <title>User Guide | Slithy Tove</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
+  <script src="/site.js?v=20260907-site-copy" defer></script>
+</head>
+<body>
+  <div class="launch-banner" role="status">
+    <strong>Live network target: November 1, 2026.</strong>
+    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+  </div>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Slithy Tove home">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>Menu</button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a class="active" aria-current="page" href="/guide.html">Guide</a>
+      <a href="/explorer.html">Explorer</a>
+      <a href="/treasury.html">Treasury</a>
+      <a href="/about.html">About</a>
+      <a href="/community.html">Community</a>
+      <a class="nav-cta" href="/downloads.html">Get Slithy</a>
+    </nav>
+    <span class="status"><i></i> User guide</span>
+  </header>
+
+  <main id="main" class="page whitepaper-page">
+    <section class="page-hero whitepaper-hero">
+      <p class="eyebrow">User guide</p>
+      <h1>Getting started with Slithy</h1>
+      <p class="lede">This guide explains how your wallet works and where mining rewards come from. It also walks you through trying Slithy on Windows or Linux.</p>
+      <p class="paper-meta">Public test-network guide</p>
+    </section>
+
+    <section class="paper-summary">
+      <article>
+        <span>Wallet</span>
+        <strong>Your keys control your coins</strong>
+        <p>Your password protects your wallet file. Write down your recovery words so you can restore access if you lose that file.</p>
+      </article>
+      <article>
+        <span>Mining</span>
+        <strong>Your CPU tries to find blocks</strong>
+        <p>Your computer tests hashes until it finds one that meets the network's target. Other nodes check each block it finds.</p>
+      </article>
+      <article>
+        <span>Public beta</span>
+        <strong>This chain will reset</strong>
+        <p>Test SLTHY has no market value and will not carry over to the live network.</p>
+      </article>
+    </section>
+
+    <article class="paper-body">
+      <section>
+        <h2>What is cryptocurrency?</h2>
+        <p>A cryptocurrency uses a shared record of transactions called a blockchain. Computers running the node software each have a copy. They check incoming transactions against the same rules before accepting them into blocks.</p>
+        <p>That record lets you check where coins went. You can run a node yourself and verify the chain, including the rewards paid to miners and the literacy fund.</p>
+      </section>
+
+      <section>
+        <h2>What is Slithy Tove?</h2>
+        <p>Slithy Tove uses CPU mining to build a public fund for children's literacy. Ten percent of each new block's subsidy goes to that fund. The <a href="/treasury.html">treasury page</a> explains who controls it today and the plans for community voting.</p>
+        <p>You can try the Windows app or the Linux terminal tool during the public beta. Both use the test network.</p>
+      </section>
+
+      <section>
+        <h2>What is a wallet?</h2>
+        <p>Your coins are recorded on the chain. Your wallet holds the private keys that let you spend them, and it reads the chain to show your balance.</p>
+        <p>A password protects the wallet file on your computer. Recovery words let you restore access if you lose the file. Write those words down somewhere safe before you need them.</p>
+        <p>Anyone with your recovery words or private keys can spend your coins. Never share them, your wallet password, or seed files. Support will not ask for them.</p>
+      </section>
+
+      <section>
+        <h2>What is an address?</h2>
+        <p>Your address tells another wallet where to send SLTHY. You can share it to receive coins without giving anyone access to spend them.</p>
+        <p>Slithy transactions are public. Someone who knows your address can look up its activity, so think about where you post it.</p>
+      </section>
+
+      <section>
+        <h2>What is mining?</h2>
+        <p>Your computer puts together a possible next block using the latest accepted block and pending transactions. It changes a number inside that block and calculates a hash, then tries again. Most attempts fail.</p>
+        <p>To succeed, the hash must be below the network's current target. Your miner sends a successful block to its peers, who check it before accepting it. This repeated work is why mining uses your CPU.</p>
+        <p>A faster CPU can make more attempts. It still cannot promise you a reward in a set amount of time. Difficulty and other miners affect how often your computer finds a block.</p>
+      </section>
+
+      <section>
+        <h2>When another miner gets there first</h2>
+        <p>Your local node receives the new block from its peers and checks it. If it extends the accepted chain, your miner begins work on the next block.</p>
+        <p>There is no partial answer to save. Each hash is a separate attempt, so ten minutes of mining does not mean you are closer to a reward than you were at the start.</p>
+      </section>
+
+      <section>
+        <h2>How Slithy splits the block reward</h2>
+        <p>The subsidy is the new SLTHY created with a block. Ninety percent goes to the miner and ten percent goes to the literacy treasury. Nodes reject blocks that skip the required treasury payment.</p>
+        <p>When you send a transaction, your wallet includes a fee. The miner who includes that transaction receives the fee in addition to their share of the subsidy.</p>
+        <p>A new mining reward needs confirmations before you can spend it. During that wait, the wallet shows it as an immature or locked balance. Those coins count toward your total even though they are not ready to send.</p>
+      </section>
+
+      <section>
+        <h2>What do public nodes do?</h2>
+        <p>Nodes check blocks and transactions, then pass valid ones to other nodes. The official Slithy nodes give your computer places to connect when it joins the network. Mining runs on the computers of people who choose to participate.</p>
+        <p>A peer count measures connections between nodes. It does not tell you how many people are mining. Your wallet app runs a node too, so it can appear as a peer on several servers.</p>
+      </section>
+
+      <section>
+        <h2>What does the Windows app do?</h2>
+        <p>The Windows app starts a local node and connects it to public peers. That node downloads and checks the chain so your wallet can show its balance.</p>
+        <p>Click Start mining to use your computer's CPU. Rewards go to your wallet address unless you choose another address in the mining settings.</p>
+        <p>Allow time for the first chain download, and check the disk space shown in the app. Mining also uses electricity and can make your computer run warmer. Start with a lower power setting if you need it for other work.</p>
+      </section>
+
+      <section>
+        <h2>What does the Linux tool do?</h2>
+        <p>The Linux tool puts wallet and mining controls in a terminal menu. You can watch mining as it runs, send SLTHY from your wallet, and check for updates there.</p>
+        <p>The <a href="/downloads.html">install script</a> downloads the Linux package for you. Before installing it, the script checks the signed release information and compares the download's SHA256 hash with the published hash.</p>
+      </section>
+
+      <section>
+        <h2>What resets before launch?</h2>
+        <p>The public test chain, balances, wallets, and treasury records will reset before the live network starts. Test SLTHY has no market value. Do not buy or sell it.</p>
+        <p>Testing now gives people time to find problems with the software before anyone depends on the live chain.</p>
+      </section>
+
+      <section>
+        <h2>Try it yourself</h2>
+        <p><a href="/downloads.html">Download Slithy</a> and create a test wallet. Record its recovery words, then try mining. Once you have a balance, stop mining and reopen the app to check that it is still there.</p>
+        <p>The <a href="/beta-testing.html">testing notes</a> have more things to try, including wallet recovery and sending coins. Please report confusing buttons or messages too.</p>
+      </section>
+
+      <section>
+        <h2>What to report</h2>
+        <p>Tell me which version you used and what you were doing when the problem appeared. The <a href="/bug-report.html">bug report form</a> has space for the details that help me repeat it.</p>
+        <p>Check screenshots and logs for private information before sending them. Thank you for spending time with Slithy and helping improve it.</p>
+      </section>
+    </article>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M32.7 10.7C23.6 3.6 9.9 9.6 10.7 21.2c.8 9.6 13.2 13.2 18.7 5.8 4.7-6.3-1.9-13.5-8.8-10.4-4.7 1.9-4.4 8.3.3 10.2 3 1.4 6.6-.6 6.6-3.9"/><path d="M11.8 30.8 7.2 36.3m8.8-3.8-2.5 7.4m15.7-8.8 6.6 5.5m-10.5-3.6 2.8 7.4"/></svg>
+      <span>Slithy Tove</span>
+    </a>
+    <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
+    <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
+  </footer>
+</body>
+</html>

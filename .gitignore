@@ -1,0 +1,90 @@
+installer/azure-signing-metadata.json
+installer/output/
+installer/tools/
+review/release/installer-staging/
+
+# Build output
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.log
+*.tmp
+*.cache
+
+# Release packages and generated installers
+review/release/packages/
+review/release/publish/
+review/release/web-update-feed/
+review/release/linux/
+review/release/linux-*-build/
+review/beta-testing/packages/
+review/beta-testing/publish/
+review/gui-preview/
+review/serious-testing/*.zip
+review/serious-testing/*.zip.sha256
+review/serious-testing/slithy-tove-desktop-*/
+review/
+site/updates/windows/packages/
+site/updates/linux-x64/packages/
+site/downloads/windows/*.exe
+
+# Private project material
+critical-backups/
+.ssh/
+*.pem
+*.key
+*.p12
+*.pfx
+*.ppk
+*.kdbx
+
+# Wallets, node data, and chain databases
+wallet.dat
+*.wallet
+*.sqlite
+*.sqlite3
+*.db
+*.ldb
+*.sst
+*.dat
+*.bak
+blocks/
+chainstate/
+indexes/
+wallets/
+node-data/
+daemon-backups/
+
+# Local machine folders
+.vs/
+.idea/
+.vscode/
+Desktop.ini
+Thumbs.db
+
+# Temporary and copied work areas
+.tmp/
+tmp/
+temp/
+slithy-linux-wallet-test/
+archive/
+review/project-backups/
+review/website-launch-handoff/slithy-site-launch-*/
+vm/
+
+# Source release staging and local builds
+/publication/
+/build/
+__pycache__/
+*.pyc
+
+# Upstream source fixtures are source, even when their names resemble node data.
+!core/
+!core/**
+/core/build*/
+/core/depends/work/
+/core/depends/built/
+/core/depends/sources/
+/core/depends/x86_64*/

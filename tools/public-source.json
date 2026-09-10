@@ -1,0 +1,17 @@
+{
+  "files": [
+    ".gitignore", ".gitattributes", "README.md", "LICENSE", "NOTICE", "SECURITY.md", "CONTRIBUTING.md",
+    "docs/BUILDING.md", "docs/SOURCE-PROVENANCE.md", "docs/ARTWORK.md",
+    "docs/TERMS-ACCEPTANCE.md",
+    "installer/SlithyTove.iss", "installer/build-installer.ps1", "installer/prepare-signing-tools.ps1",
+    "installer/azure-signing-metadata.sample.json", "installer/BUILD-INSTALLER.md", "installer/README.md",
+    "tools/build-core.sh", "tools/build-linux-release-tarball.sh",
+    "tools/verify_update_manifest.py", "tools/verify-update-manifest.ps1",
+    "tools/export-public-source.ps1", "tools/public-source.json", "tools/scan-source.py", "tools/upstream-scan-fixtures.json"
+  ],
+  "directories": ["core", "Desktop/Slithy Tove", "shared", "licenses", "tests", "services", "tools/SlithySeedTool", "installer/assets", "site", ".github"],
+  "excludedDirectories": ["site/internal", "site/scripts", "site/updates/windows/packages", "site/updates/linux-x64/packages", "site/downloads/windows"],
+  "excludedFiles": ["site/update-treasury-status.ps1"],
+  "excludedDirectoryNames": [".git", ".vs", "bin", "obj", "__pycache__", "build", "work", "built", "sources"],
+  "excludedExtensions": [".pyc", ".log", ".tmp", ".bak", ".user", ".suo", ".exe", ".dll", ".zip", ".gz", ".pem", ".pfx", ".ppk", ".wallet"]
+}
