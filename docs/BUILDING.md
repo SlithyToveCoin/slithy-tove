@@ -90,5 +90,12 @@ Unsigned contributor builds must not be advertised as signed official releases.
 Use isolated regtest for native integration checks. The harness accepts an
 explicit binary directory; inspect its `--help` before running it. Some test
 drivers require Linux namespaces or Windows and cannot run on the other OS.
-The inherited Bitcoin test suite may contain Bitcoin-specific expectations;
-report any failures rather than changing consensus to satisfy an unrelated test.
+The full inherited native suite is not green yet. The September 10, 2026 run
+found Bitcoin-specific expectations, including the fixed Bitcoin block hash in
+`TestChain100Setup` and Bitcoin network/address vectors. Other failures still
+need triage. Do not change Slithy's consensus rules to make those fixtures pass.
+
+The GitHub workflow runs Slithy's proof-of-work and isolated integration checks,
+along with the app, terms and publication checks. That is a defined regression
+set, not a claim that every inherited Bitcoin test passes. Run the full `ctest`
+command above when working on native test compatibility and report its result.
