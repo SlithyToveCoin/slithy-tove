@@ -169,7 +169,11 @@ BOOST_FIXTURE_TEST_CASE(chainstatemanager_rebalance_caches, TestChain100Setup)
     BOOST_CHECK_CLOSE(double(c2.m_coinsdb_cache_size_bytes), max_cache * 0.95, 1);
 }
 
-BOOST_FIXTURE_TEST_CASE(chainstatemanager_ibd_exit_after_loading_blocks, ChainTestingSetup)
+struct IBDWorkTestingSetup : ChainTestingSetup {
+    IBDWorkTestingSetup() : ChainTestingSetup{ChainType::MAIN, {.extra_args = {"-minimumchainwork=1"}}} {}
+};
+
+BOOST_FIXTURE_TEST_CASE(chainstatemanager_ibd_exit_after_loading_blocks, IBDWorkTestingSetup)
 {
     CBlockIndex tip;
     ChainstateManager& chainman{*Assert(m_node.chainman)};
@@ -235,7 +239,7 @@ struct SnapshotTestSetup : TestChain100Setup {
         }
 
         size_t initial_size;
-        size_t initial_total_coins{100};
+        size_t initial_total_coins{200};
 
         // Make some initial assertions about the contents of the chainstate.
         {
@@ -245,9 +249,10 @@ struct SnapshotTestSetup : TestChain100Setup {
             size_t total_coins{0};
 
             for (CTransactionRef& txn : m_coinbase_txns) {
-                COutPoint op{txn->GetHash(), 0};
-                BOOST_CHECK(ibd_coinscache.HaveCoin(op));
-                total_coins++;
+                for (uint32_t n = 0; n < 2; ++n) {
+                    BOOST_CHECK(ibd_coinscache.HaveCoin(COutPoint{txn->GetHash(), n}));
+                    total_coins++;
+                }
             }
 
             BOOST_CHECK_EQUAL(total_coins, initial_total_coins);
@@ -264,8 +269,8 @@ struct SnapshotTestSetup : TestChain100Setup {
         // be found.
         constexpr int snapshot_height = 110;
         mineBlocks(10);
-        initial_size += 10;
-        initial_total_coins += 10;
+        initial_size += 20;
+        initial_total_coins += 20;
 
         // Should not load malleated snapshots
         BOOST_REQUIRE(!CreateAndActivateUTXOSnapshot(
@@ -350,9 +355,10 @@ struct SnapshotTestSetup : TestChain100Setup {
                 size_t total_coins{0};
 
                 for (CTransactionRef& txn : m_coinbase_txns) {
-                    COutPoint op{txn->GetHash(), 0};
-                    BOOST_CHECK(coinscache.HaveCoin(op));
-                    total_coins++;
+                    for (uint32_t n = 0; n < 2; ++n) {
+                        BOOST_CHECK(coinscache.HaveCoin(COutPoint{txn->GetHash(), n}));
+                        total_coins++;
+                    }
                 }
 
                 BOOST_CHECK_EQUAL(initial_size , coinscache.GetCacheSize());
@@ -364,8 +370,8 @@ struct SnapshotTestSetup : TestChain100Setup {
         }
 
         // Mine some new blocks on top of the activated snapshot chainstate.
-        constexpr size_t new_coins{100};
-        mineBlocks(new_coins);  // Defined in TestChain100Setup.
+        constexpr size_t new_coins{200};
+        mineBlocks(new_coins / 2);  // Each block has a miner and treasury output.
 
         {
             LOCK(::cs_main);
@@ -379,11 +385,13 @@ struct SnapshotTestSetup : TestChain100Setup {
                 bool is_background = chainstate.get() != &chainman.ActiveChainstate();
 
                 for (CTransactionRef& txn : m_coinbase_txns) {
-                    COutPoint op{txn->GetHash(), 0};
-                    if (coinscache.HaveCoin(op)) {
-                        (is_background ? coins_in_background : coins_in_active)++;
-                    } else if (is_background) {
-                        coins_missing_from_background++;
+                    for (uint32_t n = 0; n < 2; ++n) {
+                        COutPoint op{txn->GetHash(), n};
+                        if (coinscache.HaveCoin(op)) {
+                            (is_background ? coins_in_background : coins_in_active)++;
+                        } else if (is_background) {
+                            coins_missing_from_background++;
+                        }
                     }
                 }
             }

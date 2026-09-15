@@ -75,17 +75,25 @@ std::shared_ptr<CBlock> MinerTestingSetup::Block(const uint256& prev_hash)
     pblock->hashPrevBlock = prev_hash;
     pblock->nTime = ++time;
 
-    // Make the coinbase transaction with two outputs:
-    // One zero-value one that has a unique pubkey to make sure that blocks at the same height can have a different hash
-    // Another one that has the coinbase reward in a P2WSH with OP_TRUE as witness program to make it easy to spend
+    // Move the miner's reward to a spendable test output. Leave the template's
+    // treasury output intact, and retain the unique zero-value output at index 0.
     CMutableTransaction txCoinbase(*pblock->vtx[0]);
-    txCoinbase.vout.resize(2);
+    const int prev_height{WITH_LOCK(::cs_main, return m_node.chainman->m_blockman.LookupBlockIndex(prev_hash)->nHeight)};
+    const auto& consensus = Params().GetConsensus();
+    const auto subsidy = GetBlockSubsidy(prev_height + 1, consensus);
+    const auto treasury = subsidy * consensus.treasury_percent / 100;
+    const CScript treasury_script{consensus.treasury_script_pub_key.begin(), consensus.treasury_script_pub_key.end()};
+    // A fork can cross a halving at a different height from the active tip.
+    txCoinbase.vout[0].nValue = subsidy - treasury;
+    for (auto& output : txCoinbase.vout) {
+        if (output.scriptPubKey == treasury_script) output.nValue = treasury;
+    }
+    txCoinbase.vout.insert(txCoinbase.vout.begin() + 1, CTxOut{});
     txCoinbase.vout[1].scriptPubKey = P2WSH_OP_TRUE;
     txCoinbase.vout[1].nValue = txCoinbase.vout[0].nValue;
     txCoinbase.vout[0].nValue = 0;
     txCoinbase.vin[0].scriptWitness.SetNull();
     // Always pad with OP_0 as dummy extraNonce (also avoids bad-cb-length error for block <=16)
-    const int prev_height{WITH_LOCK(::cs_main, return m_node.chainman->m_blockman.LookupBlockIndex(prev_hash)->nHeight)};
     txCoinbase.vin[0].scriptSig = CScript{} << prev_height + 1 << OP_0;
     txCoinbase.nLockTime = static_cast<uint32_t>(prev_height);
     pblock->vtx[0] = MakeTransactionRef(std::move(txCoinbase));

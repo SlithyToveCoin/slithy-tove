@@ -5,6 +5,7 @@
 #include <test/data/bip341_wallet_vectors.json.h>
 
 #include <addresstype.h>
+#include <bech32.h>
 #include <key.h>
 #include <key_io.h>
 #include <script/script.h>
@@ -448,7 +449,7 @@ BOOST_AUTO_TEST_CASE(script_standard_taproot_builder)
     BOOST_CHECK(builder.IsValid() && builder.IsComplete());
     builder.Finalize(key_inner);
     BOOST_CHECK(builder.IsValid() && builder.IsComplete());
-    BOOST_CHECK_EQUAL(EncodeDestination(builder.GetOutput()), "bc1pj6gaw944fy0xpmzzu45ugqde4rz7mqj5kj0tg8kmr5f0pjq8vnaqgynnge");
+    BOOST_CHECK_EQUAL(EncodeDestination(builder.GetOutput()), "slithy1pj6gaw944fy0xpmzzu45ugqde4rz7mqj5kj0tg8kmr5f0pjq8vnaqvcyyp2");
 }
 
 BOOST_AUTO_TEST_CASE(bip341_spk_test_vectors)
@@ -479,7 +480,12 @@ BOOST_AUTO_TEST_CASE(bip341_spk_test_vectors)
         parse_tree(vec["given"]["scriptTree"], 0);
         spktest.Finalize(XOnlyPubKey(ParseHex(vec["given"]["internalPubkey"].get_str())));
         BOOST_CHECK_EQUAL(HexStr(GetScriptForDestination(spktest.GetOutput())), vec["expected"]["scriptPubKey"].get_str());
-        BOOST_CHECK_EQUAL(EncodeDestination(spktest.GetOutput()), vec["expected"]["bip350Address"].get_str());
+        // Keep the published Taproot payload and checksum variant, changing
+        // the address prefix to the network exercised by this test.
+        const auto expected_address = bech32::Decode(vec["expected"]["bip350Address"].get_str());
+        BOOST_REQUIRE(expected_address.encoding == bech32::Encoding::BECH32M);
+        BOOST_CHECK_EQUAL(EncodeDestination(spktest.GetOutput()),
+                          bech32::Encode(expected_address.encoding, Params().Bech32HRP(), expected_address.data));
         auto spend_data = spktest.GetSpendData();
         BOOST_CHECK_EQUAL(vec["intermediary"]["merkleRoot"].isNull(), spend_data.merkle_root.IsNull());
         if (!spend_data.merkle_root.IsNull()) {

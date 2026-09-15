@@ -90,15 +90,17 @@ Unsigned contributor builds must not be advertised as signed official releases.
 Use isolated regtest for native integration checks. The harness accepts an
 explicit binary directory; inspect its `--help` before running it. Some test
 drivers require Linux namespaces or Windows and cannot run on the other OS.
-The full inherited native suite is not green yet. The September 10, 2026 run
-found Bitcoin-specific expectations, including the fixed Bitcoin block hash in
-`TestChain100Setup` and Bitcoin network/address vectors. Other failures still
-need triage. Do not change Slithy's consensus rules to make those fixtures pass.
-The 15,000-header chainwork stress test exceeded a ten-minute review limit.
+The September 15, 2026 native CTest run passed 153 tests with no failures.
+`script_assets_tests` was skipped because its optional external dataset was not
+installed. Earlier failures came from inherited Bitcoin assumptions and exposed
+some Slithy defects. The fixes and updated fixtures are included in this source.
+The isolated mining tests also passed, including treasury rejection, competing
+miners, restart handling and a higher-work chain replacing the current chain.
+These results do not cover every functional or fuzz test. Read
+[network test coverage](NETWORK-TEST-COVERAGE.md) for the remaining limits.
 Keep build output and test logs in your checkout's ignored `build/` directory,
 not in `/tmp`, which your system can clear when it restarts.
 
-The GitHub workflow runs Slithy's proof-of-work and isolated integration checks,
-along with the app, terms and publication checks. That is a defined regression
-set, not a claim that every inherited Bitcoin test passes. Run the full `ctest`
-command above when working on native test compatibility and report its result.
+The GitHub workflow runs the native CTest suite and isolated integration checks,
+along with the app, terms and publication checks. A passing run does not replace
+a security review. Record skipped tests as well as failures when you report a run.

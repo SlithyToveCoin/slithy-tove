@@ -53,7 +53,8 @@ with tempfile.TemporaryDirectory(prefix='slithy-source-scan-') as temporary:
         else:
             data = (root / name).read_bytes()
         exact = [finding['RuleID'], finding['StartLine']]
-        if not allowed or hashlib.sha256(data).hexdigest() != allowed['sha256'] or exact not in allowed['findings']:
+        hashes = {allowed['sha256'], *allowed.get('reviewed_sha256', [])} if allowed else set()
+        if not allowed or hashlib.sha256(data).hexdigest() not in hashes or exact not in allowed['findings']:
             failures.append((name, finding['StartLine'], finding['RuleID']))
     for name, line, rule in failures:
         print(f'REVIEW {name}:{line} ({rule}); matched value withheld')

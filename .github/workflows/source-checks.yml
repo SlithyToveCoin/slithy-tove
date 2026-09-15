@@ -49,7 +49,7 @@ jobs:
       - name: Slithy native and shell checks
         if: matrix.target == 'linux'
         run: |
-          ctest --test-dir build/native/linux --output-on-failure -R '^pow_tests$'
+          ctest --test-dir build/native/linux --output-on-failure --timeout 600 -j2
           python3 -m unittest discover -s tests/security -p 'test_*.py'
           python3 tests/terms/linux-terms-test.py
           mkdir -p build/integration

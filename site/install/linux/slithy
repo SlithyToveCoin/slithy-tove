@@ -332,6 +332,7 @@ print(value)
 ' "$path"
 }
 
+# Show spendable coins separately from rewards that still need confirmations.
 wallet_balance_line() {
   if [[ -z "$WALLET_NAME" ]]; then
     echo "Wallet: none selected"
@@ -349,6 +350,7 @@ wallet_balance_line() {
   fi
 }
 
+# Refresh the terminal until you leave this screen. Leaving does not stop mining.
 watch_mining() {
   local last_blocks=""
   local last_spendable=""
@@ -434,7 +436,7 @@ LOGO
 
     echo
     echo "Press Ctrl+C to leave this screen. This does not send a mining stop request."
-    echo "Run 'slithy stop-mining' or use menu option 5 to stop mining."
+    echo "Run 'slithy stop-mining' or choose Stop mining in the Mining menu."
 
     last_blocks="$blocks"
     last_spendable="$spendable"
@@ -643,6 +645,7 @@ restore_words_wallet() {
   echo "The node will rescan from the start of this test chain."
 }
 
+# Import the addresses derived from your recovery words into the new wallet.
 create_wallet_from_seed_json() {
   local name="$1"
   local passphrase="$2"
@@ -934,6 +937,7 @@ update_notice() {
   tail -n +2 "$UPDATE_CACHE_FILE" 2>/dev/null || true
 }
 
+# Read the public fund total for the menu. This does not open the treasury wallet.
 literacy_fund_notice() {
   local now cache_time cache_age output tmp_json
   now="$(date +%s)"

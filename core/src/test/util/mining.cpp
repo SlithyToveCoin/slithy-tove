@@ -50,6 +50,13 @@ std::vector<std::shared_ptr<CBlock>> CreateBlockChain(size_t total_height, const
         coinbase_tx.vout.resize(1);
         coinbase_tx.vout[0].scriptPubKey = P2WSH_OP_TRUE;
         coinbase_tx.vout[0].nValue = GetBlockSubsidy(height + 1, params.GetConsensus());
+        // Pay the fund in synthetic blocks too, so these fixtures obey Slithy's rules.
+        const auto& consensus = params.GetConsensus();
+        if (!consensus.treasury_script_pub_key.empty()) {
+            const CAmount treasury = coinbase_tx.vout[0].nValue * consensus.treasury_percent / 100;
+            coinbase_tx.vout[0].nValue -= treasury;
+            coinbase_tx.vout.emplace_back(treasury, CScript{consensus.treasury_script_pub_key.begin(), consensus.treasury_script_pub_key.end()});
+        }
         // Always include OP_0 as a dummy extraNonce.
         coinbase_tx.vin[0].scriptSig = CScript() << (height + 1) << OP_0;
         block.vtx = {MakeTransactionRef(std::move(coinbase_tx))};

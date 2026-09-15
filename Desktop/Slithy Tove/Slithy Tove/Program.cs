@@ -9,7 +9,7 @@
 
 namespace Slithy_Tove
 {
-    // Runs tests and updates and then launches the GUI.
+    // Handle test and update commands, or open the app for a normal launch.
     internal static class Program
     {
         [STAThread]
@@ -222,4 +222,3 @@ namespace Slithy_Tove
         }
     }
 }
-

@@ -252,6 +252,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
 {
     // Read tests from test/data/tx_invalid.json
     UniValue tests = read_json(json_tests::tx_invalid);
+    unsigned int amount_vectors = 0;
 
     for (unsigned int idx = 0; idx < tests.size(); idx++) {
         const UniValue& test = tests[idx];
@@ -295,7 +296,21 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
 
             std::string transaction = test[1].get_str();
             DataStream stream(ParseHex(transaction));
-            CTransaction tx(deserialize, TX_WITH_WITNESS, stream);
+            CMutableTransaction decoded(deserialize, TX_WITH_WITNESS, stream);
+            if (test[2].get_str() == "BADTX") {
+                // Move Bitcoin's two amount-boundary fixtures to Slithy's limit.
+                // Their serialized reference data stays unchanged.
+                bool adjusted = false;
+                for (auto& output : decoded.vout) {
+                    const CAmount bitcoin_limit = CAmount{21000000} * COIN;
+                    if (output.nValue == bitcoin_limit || output.nValue == bitcoin_limit + 1) {
+                        output.nValue += MAX_MONEY - bitcoin_limit;
+                        adjusted = true;
+                    }
+                }
+                if (adjusted) ++amount_vectors;
+            }
+            CTransaction tx(decoded);
 
             TxValidationState state;
             if (!CheckTransaction(tx, state) || state.IsInvalid()) {
@@ -337,6 +352,7 @@ BOOST_AUTO_TEST_CASE(tx_invalid)
             }
         }
     }
+    BOOST_CHECK_EQUAL(amount_vectors, 2U);
 }
 
 BOOST_AUTO_TEST_CASE(tx_no_inputs)

@@ -136,7 +136,7 @@
         }
     ],
     [
-        "bc1qvyq0cc6rahyvsazfdje0twl7ez82ndmuac2lhv",
+        "slithy1qvyq0cc6rahyvsazfdje0twl7ez82ndmuwrwnaw",
         "00146100fc6343edc8c874496cb2f5bbfec88ea9b77c",
         {
             "chain": "main",
@@ -145,7 +145,7 @@
         }
     ],
     [
-        "bc1qyucykdlhp62tezs0hagqury402qwhk589q80tqs5myh3rxq34nwqhkdhv7",
+        "slithy1qyucykdlhp62tezs0hagqury402qwhk589q80tqs5myh3rxq34nwqn26q9d",
         "002027304b37f70e94bc8a0fbf500e0c957a80ebda87280ef58214d92f119811acdc",
         {
             "chain": "main",
@@ -154,7 +154,7 @@
         }
     ],
     [
-        "bc1p83n3au0rjylefxq2nc2xh2y4jzz4pm6zxj4mw5pagdjjr2a9f36s6jjnnu",
+        "slithy1p83n3au0rjylefxq2nc2xh2y4jzz4pm6zxj4mw5pagdjjr2a9f36s7w9y60",
         "51203c671ef1e3913f94980a9e146ba895908550ef4234abb7503d436521aba54c75",
         {
             "chain": "main",
@@ -163,7 +163,7 @@
         }
     ],
     [
-        "bc1z2rksukkjr8",
+        "slithy1z2rksgpzh5q",
         "520250ed",
         {
             "chain": "main",
@@ -244,7 +244,7 @@
         }
     ],
     [
-        "bcrt1qdavt4j2sd7dlhqsavtnfxvzppw6k7qy97tmnu9",
+        "rslithy1qdavt4j2sd7dlhqsavtnfxvzppw6k7qy9whgsfh",
         "00146f58bac9506f9bfb821d62e69330410bb56f0085",
         {
             "chain": "regtest",
@@ -253,7 +253,7 @@
         }
     ],
     [
-        "bcrt1qan8gntac7z7me2ejt4hpru42ad2f759fmy0m3ejvs98656znv7eqga4uhv",
+        "rslithy1qan8gntac7z7me2ejt4hpru42ad2f759fmy0m3ejvs98656znv7eqxw7p8j",
         "0020ecce89afb8f0bdbcab325d6e11f2aaeb549f50a9d91fb8e64c814faa685367b2",
         {
             "chain": "regtest",
@@ -262,7 +262,7 @@
         }
     ],
     [
-        "bcrt1pfwxjqvtt4tcxrtdluukfmy2dv7xd2qzdfy6kajv5nwn4yam3wxkq3553uh",
+        "rslithy1pfwxjqvtt4tcxrtdluukfmy2dv7xd2qzdfy6kajv5nwn4yam3wxkql8lvvf",
         "51204b8d20316baaf061adbfe72c9d914d678cd5004d49356ec9949ba752777171ac",
         {
             "chain": "regtest",
@@ -271,7 +271,7 @@
         }
     ],
     [
-        "bcrt1sx6p8njlx7h9mc2agz4yg82dzne23050ncq72cneeecez2pst8mahn8xecsf8g6hzx94420",
+        "rslithy1sx6p8njlx7h9mc2agz4yg82dzne23050ncq72cneeecez2pst8mahn8xecsf8g6hz8zdj5u",
         "6028368279cbe6f5cbbc2ba8154883a9a29e5517d1f3c03cac4f39ce3225060b3efb799cd9c412746ae2",
         {
             "chain": "regtest",
@@ -416,7 +416,7 @@
         }
     ],
     [
-        "bc1qhxt04s5xnpy0kxw4x99n5hpdf5pmtzpqs52es2",
+        "slithy1qhxt04s5xnpy0kxw4x99n5hpdf5pmtzpqr0w46g",
         "0014b996fac2869848fb19d5314b3a5c2d4d03b58820",
         {
             "chain": "main",
@@ -425,7 +425,7 @@
         }
     ],
     [
-        "bc1qgc9ljrvdf2e0zg9rmmq86xklqwfys7r6wptjlacdgrcdc7sa6ggqu4rrxf",
+        "slithy1qgc9ljrvdf2e0zg9rmmq86xklqwfys7r6wptjlacdgrcdc7sa6ggqcf5506",
         "0020460bf90d8d4ab2f120a3dec07d1adf039248787a70572ff70d40f0dc7a1dd210",
         {
             "chain": "main",
@@ -434,7 +434,7 @@
         }
     ],
     [
-        "bc1pve739yap4uxjvfk0jrey69078u0gasm2nwvv483ec6zkzulgw9xqu4w9fd",
+        "slithy1pve739yap4uxjvfk0jrey69078u0gasm2nwvv483ec6zkzulgw9xqcfejq7",
         "5120667d1293a1af0d2626cf90f24d15fe3f1e8ec36a9b98ca9e39c6856173e8714c",
         {
             "chain": "main",
@@ -443,7 +443,7 @@
         }
     ],
     [
-        "bc1zmjtqxkzs89",
+        "slithy1zmjtqjpk4sz",
         "5202dc96",
         {
             "chain": "main",
@@ -524,7 +524,7 @@
         }
     ],
     [
-        "bcrt1q65nhlm4hf2ptg3t264al57p7wjxj2c3s6kyt83",
+        "rslithy1q65nhlm4hf2ptg3t264al57p7wjxj2c3s22hgjr",
         "0014d5277feeb74a82b4456ad57bfa783e748d256230",
         {
             "chain": "regtest",
@@ -533,7 +533,7 @@
         }
     ],
     [
-        "bcrt1qawvc90lpytw3z3k9etdx54l0exq5f5sqfzu5e45kjnl6slwayeeqx2dyac",
+        "rslithy1qawvc90lpytw3z3k9etdx54l0exq5f5sqfzu5e45kjnl6slwayeeqgexedx",
         "0020eb9982bfe122dd1146c5cada6a57efc98144d20048b94cd69694ffa87ddd2672",
         {
             "chain": "regtest",
@@ -542,7 +542,7 @@
         }
     ],
     [
-        "bcrt1p39a4s4vdcw9kqa8w2t0rp7aj8kfxyw7mce5sk5d70x6wnnmpvt7skf2kxy",
+        "rslithy1p39a4s4vdcw9kqa8w2t0rp7aj8kfxyw7mce5sk5d70x6wnnmpvt7sc6ptk6",
         "5120897b58558dc38b6074ee52de30fbb23d92623bdbc6690b51be79b4e9cf6162fd",
         {
             "chain": "regtest",
@@ -551,7 +551,7 @@
         }
     ],
     [
-        "bcrt1s489d9fhmyel0vzfqsrmew4x7r80asuqesm5hgqacy35daflcyufh3j8cgdtflvt99ph05m",
+        "rslithy1s489d9fhmyel0vzfqsrmew4x7r80asuqesm5hgqacy35daflcyufh3j8cgdtflvt9yx0g2g",
         "6028a9cad2a6fb267ef6092080f79754de19dfd8701986e97403b82468dea7f8271378c8f843569fb165",
         {
             "chain": "regtest",

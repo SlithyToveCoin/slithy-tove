@@ -7,6 +7,7 @@
 
 #include <blockfilter.h>
 #include <core_io.h>
+#include <hash.h>
 #include <primitives/block.h>
 #include <serialize.h>
 #include <streams.h>
@@ -149,7 +150,8 @@ BOOST_AUTO_TEST_CASE(blockfilters_json_test)
 
         unsigned int pos = 0;
         /*int block_height =*/ test[pos++].getInt<int>();
-        BOOST_CHECK(uint256::FromHex(test[pos++].get_str()));
+        const auto vector_hash = uint256::FromHex(test[pos++].get_str());
+        BOOST_REQUIRE(vector_hash);
 
         CBlock block;
         BOOST_REQUIRE(DecodeHexBlk(block, test[pos++].get_str()));
@@ -168,11 +170,35 @@ BOOST_AUTO_TEST_CASE(blockfilters_json_test)
         std::vector<unsigned char> filter_basic = ParseHex(test[pos++].get_str());
         uint256 filter_header_basic{*Assert(uint256::FromHex(test[pos++].get_str()))};
 
-        BlockFilter computed_filter_basic(BlockFilterType::BASIC, block, block_undo);
-        BOOST_CHECK(computed_filter_basic.GetFilter().GetEncoded() == filter_basic);
+        // The published BIP158 vectors key their filters with Bitcoin block IDs.
+        // Check those bytes, then check Slithy's block filter against the same
+        // script set with its yespower block ID.
+        GCSFilter::ElementSet elements;
+        for (const auto& tx : block.vtx) {
+            for (const auto& output : tx->vout) {
+                const auto& script = output.scriptPubKey;
+                if (!script.empty() && script.front() != OP_RETURN) elements.emplace(script.begin(), script.end());
+            }
+        }
+        for (const auto& undo : block_undo.vtxundo) {
+            for (const auto& coin : undo.vprevout) {
+                const auto& script = coin.out.scriptPubKey;
+                if (!script.empty()) elements.emplace(script.begin(), script.end());
+            }
+        }
+        const auto make_filter = [&](const uint256& hash) {
+            return GCSFilter({hash.GetUint64(0), hash.GetUint64(1),
+                              BASIC_FILTER_P, BASIC_FILTER_M}, elements);
+        };
+        const auto vector_filter = make_filter(*vector_hash);
+        BOOST_CHECK(vector_filter.GetEncoded() == filter_basic);
+        BOOST_CHECK(Hash(Hash(vector_filter.GetEncoded()), prev_filter_header_basic) == filter_header_basic);
 
-        uint256 computed_header_basic = computed_filter_basic.ComputeHeader(prev_filter_header_basic);
-        BOOST_CHECK(computed_header_basic == filter_header_basic);
+        BlockFilter computed_filter_basic(BlockFilterType::BASIC, block, block_undo);
+        const auto slithy_filter = make_filter(block.GetHash());
+        BOOST_CHECK(computed_filter_basic.GetEncodedFilter() == slithy_filter.GetEncoded());
+        BOOST_CHECK(computed_filter_basic.ComputeHeader(prev_filter_header_basic) ==
+                    Hash(Hash(slithy_filter.GetEncoded()), prev_filter_header_basic));
     }
 }
 

@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Slithy_Tove;
 
-// Keeps old test wallets out of the normal wallet list after recovery words are added.
+// Move old test wallets out of the wallet list after adding recovery words.
 internal static class WalletCompatibilityTools
 {
     public const string SeedMarkerFileName = ".slithy-seed-wallet.json";

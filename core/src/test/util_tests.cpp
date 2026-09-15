@@ -1516,7 +1516,7 @@ BOOST_AUTO_TEST_CASE(message_sign)
     const std::string message = "Trust no one";
 
     const std::string expected_signature =
-        "IPojfrX2dfPnH26UegfbGQQLrdK844DlHq5157/P6h57WyuS/Qsl+h/WSVGDF4MUi4rWSswW38oimDYfNNUBUOk=";
+        "H0VqBzCy7M5ybHExn1gHmlN0V0HoBW2FHqCeFCBkyCFUZ8Vu00IDp8N88l8V4FlBXpkL/ckLZKFKuOovLGPFnh8=";
 
     CKey privkey;
     std::string generated_signature;
@@ -1580,14 +1580,20 @@ BOOST_AUTO_TEST_CASE(message_verify)
             "15CRxFdyRpGZLW9w8HnHvVduizdL5jKNbs",
             "IPojfrX2dfPnH26UegfbGQQLrdK844DlHq5157/P6h57WyuS/Qsl+h/WSVGDF4MUi4rWSswW38oimDYfNNUBUOk=",
             "Trust no one"),
-        MessageVerificationResult::OK);
+        MessageVerificationResult::ERR_NOT_SIGNED);
 
     BOOST_CHECK_EQUAL(
         MessageVerify(
             "11canuhp9X2NocwCq7xNrQYTmUgZAnLK3",
             "IIcaIENoYW5jZWxsb3Igb24gYnJpbmsgb2Ygc2Vjb25kIGJhaWxvdXQgZm9yIGJhbmtzIAaHRtbCeDZINyavx14=",
             "Trust me"),
-        MessageVerificationResult::OK);
+        MessageVerificationResult::ERR_NOT_SIGNED);
+
+    // Bitcoin signatures above must not authenticate a Slithy message.
+    BOOST_CHECK_EQUAL(MessageVerify(
+        "15CRxFdyRpGZLW9w8HnHvVduizdL5jKNbs",
+        "H0VqBzCy7M5ybHExn1gHmlN0V0HoBW2FHqCeFCBkyCFUZ8Vu00IDp8N88l8V4FlBXpkL/ckLZKFKuOovLGPFnh8=",
+        "Trust no one"), MessageVerificationResult::OK);
 }
 
 BOOST_AUTO_TEST_CASE(message_hash)

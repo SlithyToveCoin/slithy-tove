@@ -153,7 +153,8 @@ BOOST_FIXTURE_TEST_CASE(stale_tip_peer_management, OutboundTest)
 
     const auto time_init{GetTime<std::chrono::seconds>()};
     SetMockTime(time_init);
-    const auto time_later{time_init + 3 * std::chrono::seconds{m_node.chainman->GetConsensus().nPowTargetSpacing} + 1s};
+    // Pass both the stale-tip threshold and the ten-minute check timer.
+    const auto time_later{time_init + std::max(600s, 3 * std::chrono::seconds{m_node.chainman->GetConsensus().nPowTargetSpacing}) + 1s};
     connman->Init(options);
     std::vector<CNode *> vNodes;
 

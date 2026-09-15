@@ -3,6 +3,8 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <common/system.h>
+#include <chainparams.h>
+#include <chainparamsbase.h>
 #include <interfaces/mining.h>
 #include <node/miner.h>
 #include <util/time.h>
@@ -17,17 +19,26 @@ using interfaces::Mining;
 using node::BlockAssembler;
 using node::BlockWaitOptions;
 
-namespace testnet4_miner_tests {
+namespace testnet_miner_tests {
 
-struct Testnet4MinerTestingSetup : public Testnet4Setup {
+struct TestnetMinerTestingSetup : public TestingSetup {
+    TestnetMinerTestingSetup() : TestingSetup{ChainType::TESTNET} {}
     std::unique_ptr<Mining> MakeMining()
     {
         return interfaces::MakeMining(m_node, /*wait_loaded=*/false);
     }
 };
-} // namespace testnet4_miner_tests
+} // namespace testnet_miner_tests
 
-BOOST_FIXTURE_TEST_SUITE(testnet4_miner_tests, Testnet4MinerTestingSetup)
+BOOST_FIXTURE_TEST_SUITE(testnet_miner_tests, TestnetMinerTestingSetup)
+
+BOOST_AUTO_TEST_CASE(UnsupportedTestnet4)
+{
+    BOOST_CHECK_EXCEPTION(SelectBaseParams(ChainType::TESTNET4), std::runtime_error,
+        [](const std::runtime_error& error) {
+            return std::string{error.what()}.find("Use -testnet or -chain=test") != std::string::npos;
+        });
+}
 
 BOOST_AUTO_TEST_CASE(MiningInterface)
 {
@@ -38,7 +49,7 @@ BOOST_AUTO_TEST_CASE(MiningInterface)
     options.include_dummy_extranonce = true;
     std::unique_ptr<BlockTemplate> block_template;
 
-    // Set node time a few minutes past the testnet4 genesis block
+    // Set node time a few minutes past the Slithy beta genesis block.
     const int64_t genesis_time{WITH_LOCK(cs_main, return m_node.chainman->ActiveChain().Tip()->GetBlockTime())};
     SetMockTime(genesis_time + 3 * 60);
 
@@ -54,23 +65,44 @@ BOOST_AUTO_TEST_CASE(MiningInterface)
     auto should_be_nullptr = block_template->waitNext(wait_options);
     BOOST_REQUIRE(should_be_nullptr == nullptr);
 
-    // This remains the case when exactly 20 minutes have gone by
+    // At the minimum-difficulty boundary the current template is still valid.
+    const auto difficulty_delay = 2 * Params().GetConsensus().nPowTargetSpacing;
     {
         LOCK(cs_main);
-        SetMockTime(m_node.chainman->ActiveChain().Tip()->GetBlockTime() + 20 * 60);
+        SetMockTime(m_node.chainman->ActiveChain().Tip()->GetBlockTime() + difficulty_delay);
     }
     should_be_nullptr = block_template->waitNext(wait_options);
     BOOST_REQUIRE(should_be_nullptr == nullptr);
 
-    // One second later the difficulty drops and it returns a new template
-    // Note that we can't test the actual difficulty change, because the
-    // difficulty is already at 1.
+    // Slithy's beta does not lower difficulty because a block is late.
     {
         LOCK(cs_main);
-        SetMockTime(m_node.chainman->ActiveChain().Tip()->GetBlockTime() + 20 * 60 + 1);
+        SetMockTime(m_node.chainman->ActiveChain().Tip()->GetBlockTime() + difficulty_delay + 1);
     }
     block_template = block_template->waitNext(wait_options);
+    BOOST_CHECK(!Params().GetConsensus().fPowAllowMinDifficultyBlocks);
+    BOOST_CHECK(block_template == nullptr);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(regtest_difficulty_refresh_tests, RegTestingSetup)
+
+BOOST_AUTO_TEST_CASE(MinimumDifficultyDelay)
+{
+    auto mining = interfaces::MakeMining(m_node, false);
+    BlockAssembler::Options options;
+    options.include_dummy_extranonce = true;
+    const auto tip_time = WITH_LOCK(cs_main, return m_node.chainman->ActiveChain().Tip()->GetBlockTime());
+    const auto delay = 2 * Params().GetConsensus().nPowTargetSpacing;
+    BOOST_REQUIRE(Params().GetConsensus().fPowAllowMinDifficultyBlocks);
+    SetMockTime(tip_time + delay);
+    auto block_template = mining->createNewBlock(options, false);
     BOOST_REQUIRE(block_template);
+    const BlockWaitOptions wait{.timeout = MillisecondsDouble{0}, .fee_threshold = 1};
+    BOOST_CHECK(block_template->waitNext(wait) == nullptr);
+    SetMockTime(tip_time + delay + 1);
+    BOOST_CHECK(block_template->waitNext(wait) != nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

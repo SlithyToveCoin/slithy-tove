@@ -92,6 +92,7 @@
   },
   "core/src/test/util_tests.cpp": {
     "sha256": "7dcc31af27791801c915a8ab4ac9ac052bace098cbeaf6954ec405cfcd0ba01d",
+    "reviewed_sha256": ["3f88f7cf5b0aa1740db7a2541331103ae489a3a6666925f01c6ef08be9d68255"],
     "findings": [
       [
         "generic-api-key",

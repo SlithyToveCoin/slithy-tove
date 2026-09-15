@@ -283,6 +283,9 @@ ChainTestingSetup::ChainTestingSetup(const ChainType chainType, TestOpts opts)
             chainman_opts.script_execution_cache_bytes = 0;
             chainman_opts.signature_cache_bytes = 0;
         }
+        if (m_node.args->IsArgSet("-minimumchainwork")) {
+            chainman_opts.minimum_chain_work = UintToArith256(uint256::FromUserHex(m_node.args->GetArg("-minimumchainwork", "")).value());
+        }
         const BlockManager::Options blockman_opts{
             .chainparams = chainman_opts.chainparams,
             .blocks_dir = m_args.GetBlocksDirPath(),
@@ -389,9 +392,11 @@ TestChain100Setup::TestChain100Setup(
 
     {
         LOCK(::cs_main);
+        // Fixed key, timestamps and nonce search give this Slithy regtest tip.
+        assert(m_node.chainman->ActiveChain().Height() == COINBASE_MATURITY);
         assert(
             m_node.chainman->ActiveChain().Tip()->GetBlockHash().ToString() ==
-            "0c8c5f79505775a0f6aed6aca2350718ceb9c6f2c878667864d5c7a6d8ffa2a6");
+            "14f03011813670c0f0f117bae8ee2a37cfb5b37bf772377cadb19f3e9cb692a4");
     }
 }
 

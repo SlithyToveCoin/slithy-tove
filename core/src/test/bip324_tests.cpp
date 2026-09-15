@@ -21,6 +21,8 @@
 
 namespace {
 
+constexpr MessageStartChars BITCOIN_VECTOR_MAGIC{0xf9, 0xbe, 0xb4, 0xd9};
+
 struct BIP324Test : BasicTestingSetup {
 void TestBIP324PacketVector(
     uint32_t in_idx,
@@ -60,7 +62,7 @@ void TestBIP324PacketVector(
     BIP324Cipher cipher(key, ellswift_ours);
     BOOST_CHECK(!cipher);
     BOOST_CHECK(cipher.GetOurPubKey() == ellswift_ours);
-    cipher.Initialize(ellswift_theirs, in_initiating);
+    cipher.InitializeForNetwork(ellswift_theirs, in_initiating, BITCOIN_VECTOR_MAGIC);
     BOOST_CHECK(cipher);
 
     // Compare session variables.
@@ -107,7 +109,7 @@ void TestBIP324PacketVector(
         BIP324Cipher dec_cipher(key, ellswift_ours);
         BOOST_CHECK(!dec_cipher);
         BOOST_CHECK(dec_cipher.GetOurPubKey() == ellswift_ours);
-        dec_cipher.Initialize(ellswift_theirs, (error == 1) ^ in_initiating, /*self_decrypt=*/true);
+        dec_cipher.InitializeForNetwork(ellswift_theirs, (error == 1) ^ in_initiating, BITCOIN_VECTOR_MAGIC, /*self_decrypt=*/true);
         BOOST_CHECK(dec_cipher);
 
         // Compare session variables.
@@ -163,10 +165,38 @@ void TestBIP324PacketVector(
 
 BOOST_FIXTURE_TEST_SUITE(bip324_tests, BIP324Test)
 
+BOOST_AUTO_TEST_CASE(slithy_network_key_separation)
+{
+    CKey ours, theirs;
+    ours.MakeNewKey(true);
+    theirs.MakeNewKey(true);
+    const std::array<std::byte, 32> entropy{};
+    const auto our_pub = ours.EllSwiftCreate(entropy);
+    const auto their_pub = theirs.EllSwiftCreate(entropy);
+
+    for (const auto network : {ChainType::MAIN, ChainType::TESTNET, ChainType::REGTEST}) {
+        SelectParams(network);
+        BIP324Cipher sender(ours, our_pub), receiver(theirs, their_pub), bitcoin(ours, our_pub);
+        sender.Initialize(their_pub, true);
+        receiver.Initialize(our_pub, false);
+        bitcoin.InitializeForNetwork(their_pub, true, BITCOIN_VECTOR_MAGIC);
+        BOOST_CHECK(std::ranges::equal(sender.GetSessionID(), receiver.GetSessionID()));
+        BOOST_CHECK(!std::ranges::equal(sender.GetSessionID(), bitcoin.GetSessionID()));
+
+        const std::array<std::byte, 3> message{std::byte{1}, std::byte{2}, std::byte{3}};
+        std::vector<std::byte> encrypted(message.size() + BIP324Cipher::EXPANSION);
+        sender.Encrypt(message, {}, false, encrypted);
+        BOOST_REQUIRE_EQUAL(receiver.DecryptLength(std::span{encrypted}.first(BIP324Cipher::LENGTH_LEN)), message.size());
+        std::array<std::byte, 3> decoded{};
+        bool ignore{true};
+        BOOST_CHECK(receiver.Decrypt(std::span{encrypted}.subspan(BIP324Cipher::LENGTH_LEN), {}, ignore, decoded));
+        BOOST_CHECK(!ignore);
+        BOOST_CHECK(decoded == message);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(packet_test_vectors) {
-    // BIP324 key derivation uses network magic in the HKDF process. We use mainnet params here
-    // as that is what the test vectors are written for.
-    SelectParams(ChainType::MAIN);
+    // These published vectors use Bitcoin's magic bytes, not Slithy's.
 
     // The test vectors are converted using the following Python code in the BIP bip-0324/ directory:
     //

@@ -66,8 +66,8 @@ internal sealed class NodeRpcClient : IDisposable
         string chain = ReadString(blockchain, "chain");
         bool synchronized = !ReadBoolean(blockchain, "initialblockdownload") &&
                             ReadInt64(blockchain, "blocks") >= ReadInt64(blockchain, "headers");
-        // An aged genesis can trigger Core's tip-age heuristic before the first block exists.
-        // Bootstrap this specific beta when every connected peer also reports height zero.
+        // Core can call the chain out of date before its first block is mined.
+        // Allow this beta to start when every connected peer also reports block zero.
         if (chain == "test" && ReadInt64(blockchain, "blocks") == 0 &&
             ReadInt64(blockchain, "headers") == 0 && ReadString(blockchain, "bestblockhash") == BetaGenesisHash)
         {
@@ -209,7 +209,7 @@ internal sealed class NodeRpcClient : IDisposable
                 "Check that your app and the nodes use the same beta network. A reset candidate cannot mine with nodes still running the previous beta.";
         // These counters track blocks known through this connection. They can
         // stay behind when this computer mines and sends the new blocks.
-        // GetInfoAsync checks our chain sync before this guard runs.
+        // GetInfoAsync checks local chain sync before this guard runs.
         if (peers.HighestKnownPeerHeight <= localHeight)
             return null;
         return $"Your node is at block {localHeight:N0}. A connected peer has announced block {peers.HighestKnownPeerHeight:N0}. " +
@@ -408,4 +408,3 @@ internal sealed class NodeRpcClient : IDisposable
 
     public void Dispose() => _httpClient.Dispose();
 }
-

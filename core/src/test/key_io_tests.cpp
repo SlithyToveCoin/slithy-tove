@@ -20,6 +20,33 @@
 
 BOOST_FIXTURE_TEST_SUITE(key_io_tests, BasicTestingSetup)
 
+BOOST_AUTO_TEST_CASE(slithy_witness_networks)
+{
+    for (const auto chain : {ChainType::MAIN, ChainType::TESTNET, ChainType::REGTEST}) {
+        SelectParams(chain);
+        for (const auto script_hex : {"00140000000000000000000000000000000000000000",
+                                      "51200000000000000000000000000000000000000000000000000000000000000000"}) {
+            const auto bytes = ParseHex(script_hex);
+            const CScript script(bytes.begin(), bytes.end());
+            CTxDestination destination;
+            BOOST_REQUIRE(ExtractDestination(script, destination));
+            const auto address = EncodeDestination(destination);
+            BOOST_CHECK(address.starts_with(Params().Bech32HRP() + "1"));
+            BOOST_CHECK(GetScriptForDestination(DecodeDestination(address)) == script);
+
+            auto damaged = address;
+            damaged.back() = damaged.back() == 'q' ? 'p' : 'q';
+            BOOST_CHECK(!IsValidDestination(DecodeDestination(damaged)));
+            for (const auto other : {ChainType::MAIN, ChainType::TESTNET, ChainType::REGTEST}) {
+                if (other == chain) continue;
+                SelectParams(other);
+                BOOST_CHECK(!IsValidDestination(DecodeDestination(address)));
+            }
+            SelectParams(chain);
+        }
+    }
+}
+
 // Goal: check that parsed keys match test payload
 BOOST_AUTO_TEST_CASE(key_io_valid_parse)
 {
@@ -39,7 +66,10 @@ BOOST_AUTO_TEST_CASE(key_io_valid_parse)
         const std::vector<std::byte> exp_payload{ParseHex<std::byte>(test[1].get_str())};
         const UniValue &metadata = test[2].get_obj();
         bool isPrivkey = metadata.find_value("isPrivkey").get_bool();
-        SelectParams(ChainTypeFromString(metadata.find_value("chain").get_str()).value());
+        const auto chain = ChainTypeFromString(metadata.find_value("chain").get_str()).value();
+        // Legacy Testnet4 vectors use the same address encoding as signet.
+        // Exercise those vectors without enabling the unsupported node mode.
+        SelectParams(chain == ChainType::TESTNET4 ? ChainType::SIGNET : chain);
         bool try_case_flip = metadata.find_value("tryCaseFlip").isNull() ? false : metadata.find_value("tryCaseFlip").get_bool();
         if (isPrivkey) {
             bool isCompressed = metadata.find_value("isCompressed").get_bool();
@@ -98,7 +128,8 @@ BOOST_AUTO_TEST_CASE(key_io_valid_gen)
         std::vector<unsigned char> exp_payload = ParseHex(test[1].get_str());
         const UniValue &metadata = test[2].get_obj();
         bool isPrivkey = metadata.find_value("isPrivkey").get_bool();
-        SelectParams(ChainTypeFromString(metadata.find_value("chain").get_str()).value());
+        const auto chain = ChainTypeFromString(metadata.find_value("chain").get_str()).value();
+        SelectParams(chain == ChainType::TESTNET4 ? ChainType::SIGNET : chain);
         if (isPrivkey) {
             bool isCompressed = metadata.find_value("isCompressed").get_bool();
             CKey key;

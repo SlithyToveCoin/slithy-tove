@@ -16,6 +16,8 @@ BOOST_AUTO_TEST_CASE(MoneyRangeTest)
     BOOST_CHECK_EQUAL(MoneyRange(CAmount(-1)), false);
     BOOST_CHECK_EQUAL(MoneyRange(CAmount(0)), true);
     BOOST_CHECK_EQUAL(MoneyRange(CAmount(1)), true);
+    BOOST_CHECK_EQUAL(MAX_MONEY, CAmount{21024000} * COIN);
+    BOOST_CHECK(MoneyRange(CAmount{21000000} * COIN + 1));
     BOOST_CHECK_EQUAL(MoneyRange(MAX_MONEY), true);
     BOOST_CHECK_EQUAL(MoneyRange(MAX_MONEY + CAmount(1)), false);
 }

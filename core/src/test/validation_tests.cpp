@@ -24,7 +24,7 @@ BOOST_FIXTURE_TEST_SUITE(validation_tests, TestingSetup)
 static void TestBlockSubsidyHalvings(const Consensus::Params& consensusParams)
 {
     int maxHalvings = 64;
-    CAmount nInitialSubsidy = 50 * COIN;
+    CAmount nInitialSubsidy = 10 * COIN;
 
     CAmount nPreviousSubsidy = nInitialSubsidy * 2; // for height == 0
     BOOST_CHECK_EQUAL(nPreviousSubsidy, nInitialSubsidy * 2);
@@ -57,13 +57,19 @@ BOOST_AUTO_TEST_CASE(subsidy_limit_test)
 {
     const auto chainParams = CreateChainParams(*m_node.args, ChainType::MAIN);
     CAmount nSum = 0;
-    for (int nHeight = 0; nHeight < 14000000; nHeight += 1000) {
+    const int interval = chainParams->GetConsensus().nSubsidyHalvingInterval;
+    // Sum each complete reward era exactly, including the final satoshi eras.
+    for (int nHeight = 0; nHeight < 64 * interval; nHeight += interval) {
         CAmount nSubsidy = GetBlockSubsidy(nHeight, chainParams->GetConsensus());
-        BOOST_CHECK(nSubsidy <= 50 * COIN);
-        nSum += nSubsidy * 1000;
+        BOOST_CHECK(nSubsidy <= 10 * COIN);
+        nSum += nSubsidy * interval;
         BOOST_CHECK(MoneyRange(nSum));
     }
-    BOOST_CHECK_EQUAL(nSum, CAmount{2099999997690000});
+    BOOST_CHECK_EQUAL(nSum, CAmount{2102399986334400});
+    // Genesis has no spendable reward. Issuance starts at height one.
+    const CAmount issued_subsidy = nSum - GetBlockSubsidy(0, chainParams->GetConsensus());
+    BOOST_CHECK_EQUAL(issued_subsidy, CAmount{2102398986334400});
+    BOOST_CHECK(MoneyRange(issued_subsidy));
 }
 
 BOOST_AUTO_TEST_CASE(signet_parse_tests)
@@ -142,11 +148,11 @@ BOOST_AUTO_TEST_CASE(test_assumeutxo)
     }
 
     const auto out110 = *params->AssumeutxoForHeight(110);
-    BOOST_CHECK_EQUAL(out110.hash_serialized.ToString(), "b952555c8ab81fec46f3d4253b7af256d766ceb39fb7752b9d18cdf4a0141327");
+    BOOST_CHECK_EQUAL(out110.hash_serialized.ToString(), "be07020cda8d02abfe1b8797607895add73bd21a495f8653c3ce6ffd54ea6eea");
     BOOST_CHECK_EQUAL(out110.m_chain_tx_count, 111U);
 
-    const auto out110_2 = *params->AssumeutxoForBlockhash(uint256{"6affe030b7965ab538f820a56ef56c8149b7dc1d1c144af57113be080db7c397"});
-    BOOST_CHECK_EQUAL(out110_2.hash_serialized.ToString(), "b952555c8ab81fec46f3d4253b7af256d766ceb39fb7752b9d18cdf4a0141327");
+    const auto out110_2 = *params->AssumeutxoForBlockhash(uint256{"0c36ac30f6499a26779c9769b1a3910c94dce6b02983bc780ef92aec4a5d11f5"});
+    BOOST_CHECK_EQUAL(out110_2.hash_serialized.ToString(), "be07020cda8d02abfe1b8797607895add73bd21a495f8653c3ce6ffd54ea6eea");
     BOOST_CHECK_EQUAL(out110_2.m_chain_tx_count, 111U);
 }
 

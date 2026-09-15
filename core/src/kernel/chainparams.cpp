@@ -616,9 +616,9 @@ public:
         m_assumeutxo_data = {
             {   // For use by unit tests
                 .height = 110,
-                .hash_serialized = AssumeutxoHash{uint256{"b952555c8ab81fec46f3d4253b7af256d766ceb39fb7752b9d18cdf4a0141327"}},
+                .hash_serialized = AssumeutxoHash{uint256{"be07020cda8d02abfe1b8797607895add73bd21a495f8653c3ce6ffd54ea6eea"}},
                 .m_chain_tx_count = 111,
-                .blockhash = uint256{"6affe030b7965ab538f820a56ef56c8149b7dc1d1c144af57113be080db7c397"},
+                .blockhash = uint256{"0c36ac30f6499a26779c9769b1a3910c94dce6b02983bc780ef92aec4a5d11f5"},
             },
             {
                 // For use by fuzz target src/test/fuzz/utxo_snapshot.cpp

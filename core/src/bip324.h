@@ -12,6 +12,7 @@
 #include <crypto/chacha20.h>
 #include <crypto/chacha20poly1305.h>
 #include <key.h>
+#include <kernel/messagestartchars.h>
 #include <pubkey.h>
 #include <span.h>
 
@@ -60,6 +61,10 @@ public:
      * and decryption can be tested without knowing the other side's private key.
      */
     void Initialize(const EllSwiftPubKey& their_pubkey, bool initiator, bool self_decrypt = false) noexcept;
+
+    // Use a fixed network identifier for protocol vectors, independent of Params().
+    void InitializeForNetwork(const EllSwiftPubKey& their_pubkey, bool initiator,
+                              const MessageStartChars& message_start, bool self_decrypt = false) noexcept;
 
     /** Determine whether this cipher is fully initialized. */
     explicit operator bool() const noexcept { return m_send_l_cipher.has_value(); }

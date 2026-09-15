@@ -14,8 +14,9 @@ Start with [the build guide](docs/BUILDING.md). It covers the native tools,
 Windows app, Linux package and isolated tests. You do not need access to the
 official servers or an Azure signing account to build the software.
 
-The full inherited native test suite is not passing yet. See the build guide's
-testing limits before treating a successful build as a completed security review.
+The September 15 native test run passed 153 tests. One optional test needs an
+external dataset and was skipped. See the build guide's testing limits before
+treating a successful build as a completed security review.
 
 The Windows app runs a local node and mines on your computer. Official public
 nodes relay and verify blocks; they do not mine on behalf of app users.

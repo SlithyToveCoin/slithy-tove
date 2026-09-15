@@ -42,14 +42,16 @@ using State = HeadersSyncState::State;
         }                                                                                                \
     } while (false)
 
-constexpr size_t TARGET_BLOCKS{15'000};
+// Cross a full 2,000-header batch and exercise 25 commitments without making
+// the unit suite mine 30,000 yespower headers. The network limits are unchanged.
+constexpr size_t TARGET_BLOCKS{2'500};
 constexpr arith_uint256 CHAIN_WORK{TARGET_BLOCKS * 2};
 
 // Subtract MAX_HEADERS_RESULTS (2000 headers/message) + an arbitrary smaller
 // value (123) so our redownload buffer is well below the number of blocks
 // required to reach the CHAIN_WORK threshold, to behave similarly to mainnet.
 constexpr size_t REDOWNLOAD_BUFFER_SIZE{TARGET_BLOCKS - (MAX_HEADERS_RESULTS + 123)};
-constexpr size_t COMMITMENT_PERIOD{600}; // Somewhat close to mainnet.
+constexpr size_t COMMITMENT_PERIOD{100};
 
 struct HeadersGeneratorSetup : public RegTestingSetup {
     const CBlock& genesis{Params().GenesisBlock()};

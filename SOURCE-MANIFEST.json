@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "c90b508476a4170f328c7923957408c96ea40b6d05cb579bde2f4c0d102346f4"
+    "sha256": "d40773c01815fa0a039ab975215ca081cf3c3a1b0519122108ada266d73bbdec"
   },
   {
     "path": ".gitignore",
@@ -2345,11 +2345,11 @@
   },
   {
     "path": "core/src/bip324.cpp",
-    "sha256": "58aaf7d2a2ab98679bbb1e1d4c40d0c3e4021822fd1f628099c1a178e4494685"
+    "sha256": "1ea9ed1f18c9d82c748fc7eb174be0199b737db53fddf0bf6f7a7190ca30ff08"
   },
   {
     "path": "core/src/bip324.h",
-    "sha256": "dc88d341819b49857298d9c20ac1f00a12e755345fbc48e0c3471b0b9cf2b8e2"
+    "sha256": "327544a3895fd67492c85522ca30229e794e6636141edba6e49dd084bfb0513d"
   },
   {
     "path": "core/src/bitcoin-chainstate.cpp",
@@ -2437,7 +2437,7 @@
   },
   {
     "path": "core/src/chainparamsbase.cpp",
-    "sha256": "9170955f0446cf157ee096bdb5c501c9a67fc39d7b5bd91da2baddc4ef0c4e35"
+    "sha256": "d460fdb55b5500b02f2b62cccbce72b55dc5815aa2b2995f1ccfdfc57f04c8fc"
   },
   {
     "path": "core/src/chainparamsbase.h",
@@ -2613,7 +2613,7 @@
   },
   {
     "path": "core/src/consensus/amount.h",
-    "sha256": "624a30c64528ce9873a1e440039cd261db81deecf14ed3003c171f7c2039ca50"
+    "sha256": "03ec40516ffbd3f7ff594129693b3067e4fa61cb76b828b0850ce09119b0889a"
   },
   {
     "path": "core/src/consensus/consensus.h",
@@ -3693,7 +3693,7 @@
   },
   {
     "path": "core/src/kernel/chainparams.cpp",
-    "sha256": "46d9f68d0220eb377f1caa2a6c1f62fb8f0b8554537656cc3a7dbe81c7f51d5e"
+    "sha256": "0b50e16e7f82039548a7c2d1c40efbe6ba251b34c1acaddbf3b408c539dab7c7"
   },
   {
     "path": "core/src/kernel/chainparams.h",
@@ -4905,7 +4905,7 @@
   },
   {
     "path": "core/src/node/miner.cpp",
-    "sha256": "b625525136e342b1d5d6864f91c8d33e0d9323bbcf53d87862997e2a0a7bc739"
+    "sha256": "d7572c428b05d2fd047f0579a0b7eeca6202df112439b4f42cec7f067209def6"
   },
   {
     "path": "core/src/node/miner.h",
@@ -7681,7 +7681,7 @@
   },
   {
     "path": "core/src/test/amount_tests.cpp",
-    "sha256": "89c58ac50deadf663898ca2c1063379e2f7250e91e444d409b84fb21641a1751"
+    "sha256": "3a1108a18427eb22d1f8e3ea226a7e64d751a1d976a25eb5bbb59bc234f41033"
   },
   {
     "path": "core/src/test/argsman_tests.cpp",
@@ -7717,7 +7717,7 @@
   },
   {
     "path": "core/src/test/bip324_tests.cpp",
-    "sha256": "1773fa553f209445e823f0b5f8614f238177b19638799e1c11f108dc785e30ff"
+    "sha256": "c8b03aeee9ff6ccfaab01e360e7f8b803ca5cb194e647e4df26ac27e9886b6e2"
   },
   {
     "path": "core/src/test/bip328_tests.cpp",
@@ -7737,7 +7737,7 @@
   },
   {
     "path": "core/src/test/blockfilter_tests.cpp",
-    "sha256": "1c33eed7f787fc7e57483340ebc1b6f8cd013fbadacf09df477ac4c9047692e1"
+    "sha256": "50741c080372e666eea72a4a5721920431d3fba937b92c7b94a3d6080ef2643c"
   },
   {
     "path": "core/src/test/blockmanager_tests.cpp",
@@ -7829,7 +7829,7 @@
   },
   {
     "path": "core/src/test/data/key_io_valid.json",
-    "sha256": "90bd1d35d12763e0d00c5400b2c9fe551e532a821e1e466c20cad3aced70a7fe"
+    "sha256": "f221a0da5c2539c49fa34cfd82feb7c72633414854b6094b5f46f6bd71278985"
   },
   {
     "path": "core/src/test/data/README.md",
@@ -7857,11 +7857,11 @@
   },
   {
     "path": "core/src/test/denialofservice_tests.cpp",
-    "sha256": "a767212c9a90686da673c81ce3a25cef4278ddea906dd479a64139ebc709993c"
+    "sha256": "a244c217b0da7f96f8f3bafaddc7aa97ffa9ec581718c0e792474af8dc5fb04f"
   },
   {
     "path": "core/src/test/descriptor_tests.cpp",
-    "sha256": "f5324a7ee441971c59eb1f693e1dd6db15494c4ca4130188997812432c31ccc5"
+    "sha256": "5d0a4f7fdeb8a794ea7b0a80c9ed8ceffd3d5a03b59c06705fc4ba449ea1cc21"
   },
   {
     "path": "core/src/test/disconnected_transactions.cpp",
@@ -8489,7 +8489,7 @@
   },
   {
     "path": "core/src/test/headers_sync_chainwork_tests.cpp",
-    "sha256": "a89651be5aa24c5e52d64bdb17ca6ddaf2d775ba5248941490ea0d3bf55a0eca"
+    "sha256": "026a173741fc756b0d697bb3cae12934fa8eef2f15457dbc030ac8f2158b969a"
   },
   {
     "path": "core/src/test/httpserver_tests.cpp",
@@ -8517,7 +8517,7 @@
   },
   {
     "path": "core/src/test/key_io_tests.cpp",
-    "sha256": "13cd1e18d207f3aa83bd09bc9d0e975c761454550937de994129aa388f56abe1"
+    "sha256": "4afdd945c7774cc044e98c554eb0a0844e0286f8d9392ea943abd42866185ac4"
   },
   {
     "path": "core/src/test/key_tests.cpp",
@@ -8545,11 +8545,11 @@
   },
   {
     "path": "core/src/test/miner_tests.cpp",
-    "sha256": "8a464a68fb426b69d24057738044cdf2ee7d570a437eba6993eecab9187a0e69"
+    "sha256": "4d825ece0d64b0d91481123266fc3f5ed4723e11911fb3928108ba90e6e5760d"
   },
   {
     "path": "core/src/test/miniminer_tests.cpp",
-    "sha256": "25e3d1909de27bbc0f5ea804565dd747f169cf42ea53124fd1ff35e56aed3873"
+    "sha256": "056237b00ef9accc10f42ec70766974ced3a3a255dd940032a8f3e4015767fca"
   },
   {
     "path": "core/src/test/miniscript_tests.cpp",
@@ -8569,7 +8569,7 @@
   },
   {
     "path": "core/src/test/net_peer_connection_tests.cpp",
-    "sha256": "08af82dc91d54c841c2fa3ea57f966801017b1839abbdc1e6f4c082870845ea6"
+    "sha256": "199d687f774d0f629c88008dc4f8d96f6e3fbc39a88ad57d1f49b1ad0c988965"
   },
   {
     "path": "core/src/test/net_peer_eviction_tests.cpp",
@@ -8657,7 +8657,7 @@
   },
   {
     "path": "core/src/test/rpc_tests.cpp",
-    "sha256": "62c467637a5043bd2ef3e7eff063738ed4cdb534bac80011f5340152d088f727"
+    "sha256": "66a8a7b22dfb39c4293af2cc98aa37e5481c94e778a6231c3fe231f742694351"
   },
   {
     "path": "core/src/test/sanity_tests.cpp",
@@ -8685,7 +8685,7 @@
   },
   {
     "path": "core/src/test/script_standard_tests.cpp",
-    "sha256": "4f715477a8b42bcf5d21ee81cf617f1b7ab509b425c849db1a38470e4689250f"
+    "sha256": "0d9fb2b1db10d74b0530fc8cf4498e6442411d519fd8340db46edbe68ba06b76"
   },
   {
     "path": "core/src/test/script_tests.cpp",
@@ -8749,7 +8749,7 @@
   },
   {
     "path": "core/src/test/testnet4_miner_tests.cpp",
-    "sha256": "c8acf4f66db466374e1f2cb37fdefa9a59ee80582950eb4a3c37dd8cba84440f"
+    "sha256": "8babf7c17dd2d2040ce720c53566276220809165f6c8b6e2d33d6ccd3c47a876"
   },
   {
     "path": "core/src/test/threadpool_tests.cpp",
@@ -8765,7 +8765,7 @@
   },
   {
     "path": "core/src/test/transaction_tests.cpp",
-    "sha256": "c680ab3028c26e44c5d46150c4b8c25668049ca948873defb63a264665eb8b16"
+    "sha256": "32eb25a6d5c250aa535115c1be0c9a71e055de32d5e013d2f274ae60b6927a8e"
   },
   {
     "path": "core/src/test/translation_tests.cpp",
@@ -8773,7 +8773,7 @@
   },
   {
     "path": "core/src/test/txdownload_tests.cpp",
-    "sha256": "a798d6a710ffe618cf9c59567309b91805a76beacd5b1ab6c8a1ffb80bd39a39"
+    "sha256": "49d016ecdd463ed26df98f7c42e56a790d533760608078651cd7e252c133044c"
   },
   {
     "path": "core/src/test/txgraph_tests.cpp",
@@ -8785,11 +8785,11 @@
   },
   {
     "path": "core/src/test/txospenderindex_tests.cpp",
-    "sha256": "e400731b246790795dba8e197cfcdf710ae779aa64160684026762cec63517e1"
+    "sha256": "f7d496204a57f64802aab9e0251404f38283d6b71f53a736f021384b3ecdb66f"
   },
   {
     "path": "core/src/test/txpackage_tests.cpp",
-    "sha256": "6841261e730bf1927c2f9d47dc240a4258c4bec2022c8ccc38e84b51efd3e809"
+    "sha256": "9695496ae8a489b042abd748be8ca4cc9ece63982bbf433abf06f89714c10fcf"
   },
   {
     "path": "core/src/test/txreconciliation_tests.cpp",
@@ -8825,7 +8825,7 @@
   },
   {
     "path": "core/src/test/util_tests.cpp",
-    "sha256": "7dcc31af27791801c915a8ab4ac9ac052bace098cbeaf6954ec405cfcd0ba01d"
+    "sha256": "3f88f7cf5b0aa1740db7a2541331103ae489a3a6666925f01c6ef08be9d68255"
   },
   {
     "path": "core/src/test/util_threadnames_tests.cpp",
@@ -8893,7 +8893,7 @@
   },
   {
     "path": "core/src/test/util/mining.cpp",
-    "sha256": "5951e4d4337ee74b417878eadd2d02aff6ee1b7d20b5ea6a4728d0570bac863b"
+    "sha256": "a610a6af3ed5fdb58ffc0296a4efc2a197948967ce7d0e2d72832acc4662eae9"
   },
   {
     "path": "core/src/test/util/mining.h",
@@ -8933,7 +8933,7 @@
   },
   {
     "path": "core/src/test/util/setup_common.cpp",
-    "sha256": "a884eb720d379077b1934952d39430bf40ffcef05ec037a8cd06879409027122"
+    "sha256": "4a831790c59a19c83be83de0124ea8bcef470b6b3b9f2b748ff17377d0dceab5"
   },
   {
     "path": "core/src/test/util/setup_common.h",
@@ -8981,7 +8981,7 @@
   },
   {
     "path": "core/src/test/validation_block_tests.cpp",
-    "sha256": "01a87f9ce6037878705dd076c30d83f80b3c3cf9dc830fd84c902ff10ae4cdf4"
+    "sha256": "dbf967c4def5f4d21e1974330aaf2a89164d0fee59faa5b672190da09f68a027"
   },
   {
     "path": "core/src/test/validation_chainstate_tests.cpp",
@@ -8989,7 +8989,7 @@
   },
   {
     "path": "core/src/test/validation_chainstatemanager_tests.cpp",
-    "sha256": "60b1239f0bbac3975bb4e024ace530cbf65819b8bf16ac13f6a8263e158447c5"
+    "sha256": "b3bc5012cc02da5897d504997ffb5e91038a500eb874c1c021608aebb0aa82b5"
   },
   {
     "path": "core/src/test/validation_flush_tests.cpp",
@@ -8997,7 +8997,7 @@
   },
   {
     "path": "core/src/test/validation_tests.cpp",
-    "sha256": "93255a29263b8979f55e0ca424e055e0f38a280d2fb1921fc3f1fd8d0ae93047"
+    "sha256": "50af2a383e23f0da5c8f75211037ea304c799afe79672fc68a0cef0aa32bd982"
   },
   {
     "path": "core/src/test/validationinterface_tests.cpp",
@@ -9933,7 +9933,7 @@
   },
   {
     "path": "core/src/wallet/test/spend_tests.cpp",
-    "sha256": "07e63b79c0d47461134ae6ab93a3af4533fd48498a25adb910296be635f68753"
+    "sha256": "ed108562f7152ee852fa476133214b66c022c5e533b5ca93cba026dced50e922"
   },
   {
     "path": "core/src/wallet/test/util.cpp",
@@ -9961,7 +9961,7 @@
   },
   {
     "path": "core/src/wallet/test/wallet_tests.cpp",
-    "sha256": "7e6b31bfb58519b2b5a7590b8f24c7b72929bccf904cb696467eb40db741550f"
+    "sha256": "c7c30020537a0a7a58b2e093dd4fbf4992ce53b6dfb6c8a2f699203cff3a6704"
   },
   {
     "path": "core/src/wallet/test/wallet_transaction_tests.cpp",
@@ -11264,6 +11264,10 @@
     "sha256": "fbeb2a01fdae651877262c4902d237dd28d56f0e35b0fc137d3dd97854b18b08"
   },
   {
+    "path": "core/test/functional/test_framework/slithy_key_vectors.py",
+    "sha256": "3e95d349e8b020a246c9dcb3824bd181b496add44585900d1bfca75aaf29a8a9"
+  },
+  {
     "path": "core/test/functional/test_framework/socks5.py",
     "sha256": "ff952df05e8ccbe4df2cc475ca7276fc5935a9c8b6603b096d9647a601024b8f"
   },
@@ -11785,11 +11789,11 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/NodeRpcClient.cs",
-    "sha256": "f96adf33ffff20bd34ed4054157efa26bdf10b8f51bd51fd12d9fe97175cf22e"
+    "sha256": "99d9904caf4fe503a4a1b69531bd5bb06fddff3bc30fa7a3274a0030ed75699b"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Program.cs",
-    "sha256": "23fc045cd82aaad36890fb9838dd5cab869864e87e996bfd3c9fde3f0e919451"
+    "sha256": "11a6d83763f6b8360195cdf3a7b2149e4722d83f92e8d415dac44f2581f929c5"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/PublicNodeRpcSelfTest.cs",
@@ -11921,7 +11925,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletCompatibilityTools.cs",
-    "sha256": "99e960e261321db11b6a8d09d54626172c4d3d732edbe684f4d1d6abcf37905b"
+    "sha256": "69dfcc185ed7389991ea9d1ae9cf1a67ebd703ce58e5ee55a215bf863e2285d2"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletManageDialog.cs",
@@ -11945,11 +11949,19 @@
   },
   {
     "path": "docs/BUILDING.md",
-    "sha256": "cc92e54060880c05be66fb27728162a8a2331f0c0a9b8ff09ac42cfb89f8f612"
+    "sha256": "19f22d38850e0a0c0cd1141ded2f8536b9cf1545c05351db242756f584e37ed5"
+  },
+  {
+    "path": "docs/NETWORK-TEST-COVERAGE.md",
+    "sha256": "5101b9d17497995838a8f0372b598f84bef032d90e5882dc7d456826676bb4b1"
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
     "sha256": "e21d1e6cd47ce11bef52f069266856e4c66a04a23d2af6ea2f7e2e750459d21e"
+  },
+  {
+    "path": "docs/SUPPLY-SCHEDULE.md",
+    "sha256": "28c3bca698b2fc6d40cd85fe5f7e3fe5810d54b03cbf7330fc3d783f6e9ea748"
   },
   {
     "path": "docs/TERMS-ACCEPTANCE.md",
@@ -12037,7 +12049,7 @@
   },
   {
     "path": "README.md",
-    "sha256": "94b69c8d65ce902cd96524770823741277492adc9b7ccd6f066e5fd3bd401bf6"
+    "sha256": "a710f416230e10febac8a4ac5423ac639d5516cdb8b72ab730da3e6ca1e91833"
   },
   {
     "path": "SECURITY.md",
@@ -12133,7 +12145,7 @@
   },
   {
     "path": "site/install/linux/slithy",
-    "sha256": "75879e59f8c8f5bd5d66dcefc01f8fcf42d85a26f58e81b585ef75d3ce246fe5"
+    "sha256": "05ce69520660ab94908ca3ff6d2a2481c4fee687251178faebd84b77f880d2cf"
   },
   {
     "path": "site/install/linux/slithy-common.sh",
@@ -12205,7 +12217,7 @@
   },
   {
     "path": "site/whitepaper.html",
-    "sha256": "75943d16598174858acb6b6c4a14e4d313b7d4d70e5f79ad3ed5d2adaece6287"
+    "sha256": "a85743bc9f27faaf0487b4c2bf75857b1475261750ba06bfced2370883a18fff"
   },
   {
     "path": "tests/security/beta-reset-integration.py",
@@ -12305,7 +12317,7 @@
   },
   {
     "path": "tools/scan-source.py",
-    "sha256": "76c0ce109a2dd0446ea74f09f04ca0ae3529d833ef62c2a00518872d8d949fc6"
+    "sha256": "df31dd9fc93ec963f577188097922b3a52b4096da5f36ac4b604f0eff0fe5fa2"
   },
   {
     "path": "tools/SlithySeedTool/Program.cs",
@@ -12317,7 +12329,7 @@
   },
   {
     "path": "tools/upstream-scan-fixtures.json",
-    "sha256": "900bbbde88b80a0dca53755b5b322b6180876c6101acf7f329c4c33c480ecd4a"
+    "sha256": "b5f036952ba7a1f76e767646c23d914ca12ddb15356faa157fb894f6b20dbb14"
   },
   {
     "path": "tools/verify_update_manifest.py",
