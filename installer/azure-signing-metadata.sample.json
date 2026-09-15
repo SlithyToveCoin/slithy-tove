@@ -1,6 +1,6 @@
 {
   "Endpoint": "https://eus.codesigning.azure.net",
-  "CodeSigningAccountName": "SlithyTove",
+  "CodeSigningAccountName": "REPLACE_WITH_SIGNING_ACCOUNT_NAME",
   "CertificateProfileName": "REPLACE_WITH_CERTIFICATE_PROFILE_NAME",
   "CorrelationId": "slithy-tove-local-build"
 }

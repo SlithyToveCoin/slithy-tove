@@ -22,20 +22,20 @@ Build the native Windows tools first using docs/BUILDING.md. From the project ro
 .\installer\build-installer.ps1
 ```
 
-## Signed build
+## For release maintainers
 
-Finish the Azure Artifact Signing organization validation and certificate profile for **CS Idea Labs LLC** first.
+You do not need Azure to install Slithy or build an unsigned installer. This section is for maintainers preparing a signed release.
 
-Then copy:
+Signing requires a validated Azure Artifact Signing account, an active certificate profile and permission to use it. Prepare the tools and a local configuration file:
 
 ```powershell
 .\installer\prepare-signing-tools.ps1
 Copy-Item .\installer\azure-signing-metadata.sample.json .\installer\azure-signing-metadata.json
 ```
 
-Edit the new file with the real endpoint, signing account name, and certificate profile name.
+Replace the placeholders in the new file with your signing account and certificate profile. Set the endpoint to your account's region. The sample endpoint is for East US; it is not a credential.
 
-Then run:
+Authenticate with Azure CLI using an account that has signing permission, then run:
 
 ```powershell
 .\installer\build-installer.ps1 -Sign
@@ -43,7 +43,7 @@ Then run:
 
 The script signs app files first, then signs the Inno installer and signed uninstaller through Azure Artifact Signing.
 
-Do not commit `installer\azure-signing-metadata.json`.
+Do not commit `installer\azure-signing-metadata.json`, authentication tokens or private keys. The public sample does not grant access to the official signing account. Contributor builds must use their own signing identity.
 
 ## Tooling
 

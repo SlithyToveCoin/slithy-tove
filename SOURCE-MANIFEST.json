@@ -11977,11 +11977,11 @@
   },
   {
     "path": "installer/azure-signing-metadata.sample.json",
-    "sha256": "9fc84e3077bb8c60988801d42fe3c4a2c46eb4b2d2722076c202cdbd2a72ed1d"
+    "sha256": "036423156051e89a4a1b04fe2de1d1a4e1f9441b5ba96bf0db90bd299500017e"
   },
   {
     "path": "installer/BUILD-INSTALLER.md",
-    "sha256": "1c103ea8bf231ffa2707a1e69bb867a3ef95bc58cf325d04039ecdf15c1a6314"
+    "sha256": "0af17af941bdd4cf15ca4efba0639a6a6224e4ab0520518dcb6e2b50e276098d"
   },
   {
     "path": "installer/build-installer.ps1",
@@ -11993,7 +11993,7 @@
   },
   {
     "path": "installer/README.md",
-    "sha256": "e97ce46a7b116e3767cdeca215ba3ef1952dc2e5622af414fc7b0e25bb09480d"
+    "sha256": "7b78dea9715f3053f93bd05c30ae73f219d61113febb09f3f128b94b04db9806"
   },
   {
     "path": "installer/SlithyTove.iss",
