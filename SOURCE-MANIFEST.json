@@ -12153,7 +12153,7 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "e2a0067f86f11125b561516d1b926a16bb4ada4358b90a20ff611ba229e0f99e"
+    "sha256": "d6101476ddcbecb1ea33e0857b121086b26e8f625e5a5ed840bb67a4c2197286"
   },
   {
     "path": "site/explorer.js",
@@ -12173,7 +12173,7 @@
   },
   {
     "path": "site/index.html",
-    "sha256": "a69439d1043dde4452ec3cc65f9c1d3e6f76af83a3262b743ff78e4df5bd06e5"
+    "sha256": "915621e8505ad44cca593e321b269765f536d9f6fe24e4a248d0365258665127"
   },
   {
     "path": "site/install/linux/README.txt",
@@ -12206,6 +12206,14 @@
   {
     "path": "site/install/linux/slithy-update.sh",
     "sha256": "d8f9e2e7b645f31ecad3d6dfc1fcf9700f05a9b8b096bee36295714ee782c3cf"
+  },
+  {
+    "path": "site/node-status.css",
+    "sha256": "3b91f5c305284ef0ee746b83f801c9677e882dfc19f57ae2b69669e146c48371"
+  },
+  {
+    "path": "site/node-status.js",
+    "sha256": "f8b8eb8177277b495e359877d0c96baa948ae25ff2110f89ca24639139964dfb"
   },
   {
     "path": "site/nodes.html",

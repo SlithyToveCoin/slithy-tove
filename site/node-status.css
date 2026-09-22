@@ -1,0 +1,14 @@
+.official-node-status { margin: 3rem 0; padding: clamp(1.2rem, 3vw, 2.5rem); background: #e7eedf; border-radius: 20px; color: #203c30; }
+.official-node-status h2 { margin: 0 0 .5rem; }
+.official-node-status > p { max-width: 65ch; }
+.official-node-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.official-node-card { background: #fffdf6; border: 1px solid #cbd4c3; border-radius: 14px; padding: 1.25rem; min-width: 0; }
+.official-node-card h3 { margin: 0; font-size: 1.4rem; }
+.official-node-card p { margin: .4rem 0; }
+.node-status-badge { display: inline-flex; align-items: center; gap: .5rem; margin: .7rem 0; font-weight: 600; }
+.node-status-dot { width: .65rem; height: .65rem; border-radius: 50%; background: #74746a; flex-shrink: 0; }
+[data-state="online"] .node-status-dot { background: #247442; }
+[data-state="syncing"] .node-status-dot { background: #997016; }
+.node-status-detail, .node-status-time, .node-status-note { font-size: .9rem; line-height: 1.55; }
+.node-status-time { color: #52634f; }
+@media (max-width: 700px) { .official-node-grid { grid-template-columns: 1fr; } }

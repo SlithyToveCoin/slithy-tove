@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
   <script src="/treasury.js" defer></script>
   <script src="/site.js?v=20260907-site-copy" defer></script>
+  <link rel="stylesheet" href="/node-status.css?v=20260922">
+  <script src="/node-status.js?v=20260922" defer></script>
 </head>
 <body>
   <div class="launch-banner" role="status">
@@ -167,6 +169,36 @@
         <li><span>03</span><div><strong>Check the launch build</strong><small>Finish testing and publish the software before mining opens</small></div></li>
         <li><span>04</span><div><strong>Live network</strong><small>Target: November 1, 2026. A fresh chain with no premine</small></div></li>
       </ol>
+    </section>
+
+    <section class="official-node-status" aria-labelledby="official-nodes-title">
+      <h2 id="official-nodes-title">Official test nodes</h2>
+      <p>These servers check and share blocks. Mining happens on your computer.</p>
+      <div class="official-node-grid">
+        <article class="official-node-card" data-node-status="borogove" data-state="unknown">
+          <h3>Borogove</h3>
+          <p>East Coast, US</p>
+          <div class="node-status-badge" role="status"><span class="node-status-dot" aria-hidden="true"></span><span class="node-status-label">Checking status</span></div>
+          <p class="node-status-detail">Waiting for a fresh report.</p>
+          <p class="node-status-time"></p>
+        </article>
+        <article class="official-node-card" data-node-status="mome" data-state="unknown">
+          <h3>Mome</h3>
+          <p>West Coast, US</p>
+          <div class="node-status-badge" role="status"><span class="node-status-dot" aria-hidden="true"></span><span class="node-status-label">Checking status</span></div>
+          <p class="node-status-detail">Waiting for a fresh report.</p>
+          <p class="node-status-time"></p>
+        </article>
+        <article class="official-node-card" data-node-status="rath" data-state="unknown">
+          <h3>Rath</h3>
+          <p>Europe</p>
+          <div class="node-status-badge" role="status"><span class="node-status-dot" aria-hidden="true"></span><span class="node-status-label">Checking status</span></div>
+          <p class="node-status-detail">Waiting for a fresh report.</p>
+          <p class="node-status-time"></p>
+        </article>
+      </div>
+      <p class="node-status-note">Online means a verified node report is less than two minutes old. This page checks every minute. Peer connections include links between these servers and do not count individual users.</p>
+      <noscript><p>Enable JavaScript to load current node status.</p></noscript>
     </section>
   </main>
 
