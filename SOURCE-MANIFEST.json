@@ -12045,7 +12045,7 @@
   },
   {
     "path": "installer/new-installer-manifest.ps1",
-    "sha256": "d56aba52fe637467b51f07e5e64040614fee2c06477dc8070575755f3a5f35cc"
+    "sha256": "cfdfecc86819dfec0c5e926715f169fe3e35dcdbc948ef142e0a0c4ca897c076"
   },
   {
     "path": "installer/prepare-signing-tools.ps1",
@@ -12145,11 +12145,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "c91b260704e987bd6b3285b6720157d1315a685b2fb29cd2cae47d3c142ce9f3"
+    "sha256": "1b37a9ce3f9300ba03a175be7b7278c2a58cdb589b51ebe5a6a946dd03b5569a"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "0c686ee775577eda1faf36e7bfd65d25d24c8e9237cb673c9796353356975b1a"
+    "sha256": "152ac4a036cce0bf9d420ced23e5c40c3a1a37bbcf03a9f050898ad25784860e"
   },
   {
     "path": "site/explorer.html",
@@ -12248,8 +12248,12 @@
     "sha256": "77cbe52274d120e6d40465421ca7cfd3085c28aea48aa36e8bafce7b3d800991"
   },
   {
+    "path": "site/updates/windows/installer/stable.json",
+    "sha256": "03adb429b6f95c5a609c0154f61003f8496a48cb9133e352d793b3032c1d8745"
+  },
+  {
     "path": "site/updates/windows/stable.json",
-    "sha256": "b9b506436d57b5978aef55d995e2d85d73edd7cee8588decfc143e6a1b52527f"
+    "sha256": "03adb429b6f95c5a609c0154f61003f8496a48cb9133e352d793b3032c1d8745"
   },
   {
     "path": "site/whitepaper.html",
@@ -12261,7 +12265,7 @@
   },
   {
     "path": "tests/installer/Program.cs",
-    "sha256": "bd420a070cebd5848d92cfa87eb0976eaf7fa2bd782dfa238171a77d0a7a12d0"
+    "sha256": "7cc9fc084c9e5a58685936a2f4970f4f1d59555f43c8257f6af709e855e8d925"
   },
   {
     "path": "tests/security/Slithy.SecurityTests.csproj",
