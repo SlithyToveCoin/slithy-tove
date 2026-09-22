@@ -20,7 +20,8 @@ internal sealed record NodeInfo(
     bool Synchronized,
     string Version,
     long TransactionPoolSize,
-    long Target);
+    long Target,
+    long Headers = 0);
 
 internal sealed record ChainProgress(long Height, long Headers);
 
@@ -82,7 +83,8 @@ internal sealed class NodeRpcClient : IDisposable
             synchronized,
             ReadString(network, "subversion").Trim('/'),
             ReadInt64(mempool, "size"),
-            120);
+            120,
+            ReadInt64(blockchain, "headers"));
     }
 
     public Task StopDaemonAsync(Uri nodeUri) =>

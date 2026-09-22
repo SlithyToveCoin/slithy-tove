@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../installer/WebInstaller/SetupForm.cs" Link="SetupForm.cs" />
+    <Compile Include="../../installer/WebInstaller/SetupForm.Designer.cs" Link="SetupForm.Designer.cs" />
+    <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/UpdateService.cs" Link="UpdateService.cs" />
+    <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/ReleaseTrust.cs" Link="ReleaseTrust.cs" />
+    <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/ChainSyncDisplay.cs" Link="ChainSyncDisplay.cs" />
+    <EmbeddedResource Include="../../installer/assets/wizard-large.bmp" LogicalName="Slithy.InstallerArtwork" />
+  </ItemGroup>
+</Project>

@@ -88,3 +88,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet run --project tests/terms/TermsTests.csproj
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet build installer/WebInstaller/WebInstaller.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project tests/installer/InstallerTests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

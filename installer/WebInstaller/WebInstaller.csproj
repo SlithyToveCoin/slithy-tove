@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>Slithy-Tove-Web-Setup</AssemblyName>
+    <Version>1.0.0</Version>
+    <Company>CS Idea Labs LLC</Company>
+    <Product>Slithy Tove web installer</Product>
+    <ApplicationIcon>../../Desktop/Slithy Tove/Slithy Tove/Assets/slithy.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/UpdateService.cs" Link="UpdateService.cs" />
+    <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/ReleaseTrust.cs" Link="ReleaseTrust.cs" />
+    <EmbeddedResource Include="../assets/wizard-large.bmp" LogicalName="Slithy.InstallerArtwork" />
+    <Compile Update="SetupForm.cs"><SubType>Form</SubType></Compile>
+    <Compile Update="SetupForm.Designer.cs"><DependentUpon>SetupForm.cs</DependentUpon></Compile>
+  </ItemGroup>
+</Project>

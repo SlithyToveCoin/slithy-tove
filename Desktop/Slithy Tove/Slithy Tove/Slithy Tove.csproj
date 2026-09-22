@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <!-- Basic app identity and build settings for the Windows Forms project. -->
   <PropertyGroup>
@@ -10,7 +10,7 @@
     <Company>CS Idea Labs LLC</Company>
     <Copyright>Copyright © 2026 CS Idea Labs LLC</Copyright>
     <Description>Slithy Tove desktop wallet and node manager</Description>
-    <Version>0.1.41</Version>
+    <Version>0.1.42</Version>
     <!-- The app, updater and file properties must report the same release. -->
     <FileVersion>$(Version).0</FileVersion>
     <AssemblyVersion>$(Version).0</AssemblyVersion>

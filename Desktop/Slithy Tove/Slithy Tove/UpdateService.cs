@@ -33,12 +33,16 @@ internal sealed class UpdateService : IDisposable
     private const int MaxManifestBytes = 128 * 1024;
     private const long MaxPackageBytes = 512L * 1024 * 1024;
     private readonly string _updateDirectory;
-    private readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(15) };
+    private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
-    public UpdateService(string updateDirectory)
+    public UpdateService(string updateDirectory, bool allowRedirects = true)
     {
         _updateDirectory = updateDirectory;
+        _httpClient = new HttpClient(new HttpClientHandler { AllowAutoRedirect = allowRedirects })
+        {
+            Timeout = TimeSpan.FromSeconds(15)
+        };
     }
 
     public async Task<UpdateCheckResult> CheckAsync(
@@ -258,4 +262,3 @@ internal sealed class UpdateService : IDisposable
 
     private sealed record SignedUpdateEnvelope(string PayloadBase64, string SignatureBase64);
 }
-

@@ -96,6 +96,7 @@ public partial class Form1 : Form
         updateProgressTrackPanel.Resize += (_, _) => UpdateUpdateProgressFill(_operationProgressPercent);
 
         _operationProgressPanel.BringToFront();
+        mainTabControl.BringToFront();
     }
 
     private void InitializeActivityViews()
@@ -1841,6 +1842,7 @@ public partial class Form1 : Form
         if (busy)
         {
             _operationProgressPanel.BringToFront();
+            mainTabControl.BringToFront();
             _operationProgressPanel.Refresh();
             _operationProgressLabel.Refresh();
             _operationProgressTrack.Refresh();
@@ -2123,6 +2125,24 @@ public partial class Form1 : Form
         if (problem is not null) throw new InvalidOperationException(problem);
     }
 
+    private long _lastSyncHeight = -1;
+    private DateTimeOffset _lastSyncAdvance = DateTimeOffset.UtcNow;
+
+    private void ShowChainProgress(NodeInfo info)
+    {
+        if (info.Height != _lastSyncHeight)
+        {
+            _lastSyncHeight = info.Height;
+            _lastSyncAdvance = DateTimeOffset.UtcNow;
+        }
+        ChainSyncDisplay display = ChainSyncDisplay.From(info.Height, info.Headers, info.Synchronized,
+            DateTimeOffset.UtcNow - _lastSyncAdvance > TimeSpan.FromSeconds(60));
+        chainSyncPanel.Visible = display.Visible;
+        chainSyncProgressBar.Style = display.Waiting ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
+        chainSyncProgressBar.Value = display.Percent;
+        chainSyncLabel.Text = display.Text;
+    }
+
     private async Task<bool> RefreshNodeStatusAsync()
     {
         // Picks a healthy node, shows chain status, and refreshes treasury information.
@@ -2136,6 +2156,7 @@ public partial class Form1 : Form
         {
             NodeSelection selection = await GetHealthyNodeAsync();
             NodeInfo info = selection.Info;
+            ShowChainProgress(info);
             UpdateDiskSpaceDisplay();
             _consecutiveNodeRefreshFailures = 0;
             _lastSuccessfulNodeRefreshUtc = DateTimeOffset.UtcNow;
@@ -2198,6 +2219,7 @@ public partial class Form1 : Form
             if (shouldShowHardFailure)
             {
                 SetConnectionState("Local node is offline", StatusKind.Error);
+                chainSyncPanel.Visible = false;
                 statusMessageLabel.Text = IsCustomNodeMode()
                     ? "Slithy cannot reach the custom node. Check the address, port, and firewall, then try Refresh."
                     : "Slithy cannot reach the local node on this computer. Check free disk space, then try Refresh or restart Slithy.";
@@ -2805,4 +2827,3 @@ public partial class Form1 : Form
 
     private enum StatusKind { Neutral, Success, Error }
 }
-

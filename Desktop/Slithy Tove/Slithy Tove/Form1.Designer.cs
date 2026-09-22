@@ -100,6 +100,9 @@ partial class Form1
     private Label networkValueLabel;
     private Label syncCaptionLabel;
     private Label syncValueLabel;
+    private Panel chainSyncPanel;
+    private Label chainSyncLabel;
+    private ProgressBar chainSyncProgressBar;
     private Label versionCaptionLabel;
     private Label versionValueLabel;
     private Label poolCaptionLabel;
@@ -212,6 +215,9 @@ partial class Form1
         networkValueLabel = new Label();
         syncCaptionLabel = new Label();
         syncValueLabel = new Label();
+        chainSyncPanel = new Panel();
+        chainSyncLabel = new Label();
+        chainSyncProgressBar = new ProgressBar();
         versionCaptionLabel = new Label();
         versionValueLabel = new Label();
         poolCaptionLabel = new Label();
@@ -1894,6 +1900,25 @@ partial class Form1
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(247, 243, 235);
         ClientSize = new Size(1495, 1006);
+        // Chain progress has its own row so wallet work cannot overwrite it.
+        chainSyncPanel.Name = "chainSyncPanel";
+        chainSyncPanel.Dock = DockStyle.Bottom;
+        chainSyncPanel.Height = 96;
+        chainSyncPanel.Padding = new Padding(16, 6, 16, 8);
+        chainSyncPanel.BackColor = Color.FromArgb(239, 234, 222);
+        chainSyncPanel.Visible = false;
+        chainSyncLabel.Name = "chainSyncLabel";
+        chainSyncLabel.Dock = DockStyle.Fill;
+        chainSyncLabel.Font = new Font("Segoe UI", 10F);
+        chainSyncLabel.ForeColor = Color.FromArgb(42, 48, 41);
+        chainSyncLabel.Text = "Finding the latest blocks...";
+        chainSyncProgressBar.Name = "chainSyncProgressBar";
+        chainSyncProgressBar.Dock = DockStyle.Bottom;
+        chainSyncProgressBar.Height = 12;
+        chainSyncProgressBar.MarqueeAnimationSpeed = 30;
+        chainSyncPanel.Controls.Add(chainSyncLabel);
+        chainSyncPanel.Controls.Add(chainSyncProgressBar);
+        Controls.Add(chainSyncPanel);
         Controls.Add(_operationProgressPanel);
         Controls.Add(mainTabControl);
         Controls.Add(headerPanel);
@@ -1945,4 +1970,3 @@ partial class Form1
     }
 
 }
-
