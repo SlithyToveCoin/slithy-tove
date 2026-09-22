@@ -1,8 +1,8 @@
 # Slithy Tove supply schedule
 
 The initial subsidy stays at 10 SLTHY. It halves every 1,051,200 blocks.
-The September 15, 2026 decision retains that schedule and raises the amount
-validation limit from 21,000,000 to 21,024,000 SLTHY.
+The source uses an amount validation limit of 21,024,000 SLTHY so the full
+reward schedule fits within that limit.
 
 Summing all reward eras in whole base units gives 21,023,999.863344 SLTHY
 before excluding height zero. Genesis has no spendable reward, so the maximum
@@ -17,8 +17,7 @@ coin below that bound will be issued.
 
 ## Release status
 
-This change is in the source under review. It has not been deployed to the
-public beta. MAX_MONEY participates in consensus validation, so this is not a
-documentation-only change. Release all official nodes and bundled client nodes
-with matching rules after testing. Do not silently mix old and new limits.
+This change is in the source repository. It is not part of the September 10 beta
+downloads. MAX_MONEY affects consensus validation. Nodes running different limits
+can disagree about valid amounts, so adoption needs a coordinated software release.
 The block subsidy, halving interval and treasury percentage are unchanged.

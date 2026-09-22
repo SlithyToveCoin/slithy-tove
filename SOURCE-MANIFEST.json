@@ -11733,7 +11733,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/AppSettings.cs",
-    "sha256": "a07c850f6f2a4d237737a051af1fb5b85f0f4ca02affab799b1d4a2363abfaa0"
+    "sha256": "1eef4558dd9d6e50ff0b034a38abd11dc587a59e654d6bdd55c32ddc5e2d20ac"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png",
@@ -11957,15 +11957,15 @@
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
-    "sha256": "e21d1e6cd47ce11bef52f069266856e4c66a04a23d2af6ea2f7e2e750459d21e"
+    "sha256": "f520151808fb5cf13a2c38da972e1892cbd3d39c6dc19398a4132650352810c9"
   },
   {
     "path": "docs/SUPPLY-SCHEDULE.md",
-    "sha256": "28c3bca698b2fc6d40cd85fe5f7e3fe5810d54b03cbf7330fc3d783f6e9ea748"
+    "sha256": "40300c7a5aa4ade70d86478503d00d47e9ca8bd1ba4bfec67068f8238c7a1655"
   },
   {
     "path": "docs/TERMS-ACCEPTANCE.md",
-    "sha256": "a87eba80b69d28a28b162aabb8e84a8f584508b8a4fa49b2e5de0093c5b8e34b"
+    "sha256": "0184fb29e2dbb496b70cc9e80ae09e84ffb326212170885005060cc54503a1f0"
   },
   {
     "path": "installer/assets/wizard-large.bmp",
@@ -12049,7 +12049,7 @@
   },
   {
     "path": "README.md",
-    "sha256": "a710f416230e10febac8a4ac5423ac639d5516cdb8b72ab730da3e6ca1e91833"
+    "sha256": "af80fe3f2bac64a5cdbe3c0e2db2d2d55451d22643be34d733e766f1b3d7cce8"
   },
   {
     "path": "SECURITY.md",
@@ -12077,19 +12077,19 @@
   },
   {
     "path": "site/about.html",
-    "sha256": "798bd40a0399fcda4ce9e28cb174eece832cd7ef8276893b3ecd4e9795bc2e55"
+    "sha256": "808cc61204a302ec0ca2459834c8ee6d1f56145913dcc189376911660dde6777"
   },
   {
     "path": "site/beta-testing.html",
-    "sha256": "3ba7b43ddf168814e5b4836f2f55f988e71a1df823054d510df14ea7111075b7"
+    "sha256": "0a91b187bdd252bae804f7f83f189053ad31c4e8a0ef91c0110201429ba788ac"
   },
   {
     "path": "site/bug-report.html",
-    "sha256": "172845363e1c2b43fd08ddcf62f58a368bb84b0826f80bc81d69d78f8e2ba7bd"
+    "sha256": "abbdbf16ef1c6e8a1146516aa8f14aaead06bd19738280c3cc4b1c7fcb1da9dd"
   },
   {
     "path": "site/community.html",
-    "sha256": "22342dfbb86f9605a8d4dac521bac2a18093179865721d8276534585bc72c3f5"
+    "sha256": "10df1bb10ea78c6fe2aaae083adf2321305e451cbe81b2e17c7293a39fd21bab"
   },
   {
     "path": "site/data/explorer.json",
@@ -12109,7 +12109,7 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "0a87992e245ffc95d6d21eb655e8812f90a179d077ea7aa19714a06f6ccf9682"
+    "sha256": "c91b260704e987bd6b3285b6720157d1315a685b2fb29cd2cae47d3c142ce9f3"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12117,7 +12117,7 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "4c138f884ee19d0c343b94726f44c5d8c3857944ed124f70b22d3ad78bc5eb5e"
+    "sha256": "e2a0067f86f11125b561516d1b926a16bb4ada4358b90a20ff611ba229e0f99e"
   },
   {
     "path": "site/explorer.js",
@@ -12129,15 +12129,15 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "4bc161c8fd21beb3b1a1e9b3733bd67ba31f683c88c06fae4f96e33a0a994e8e"
+    "sha256": "d84bdaf4df725dc6ae6cc9f6bea6772b80c75505cc5bb4758ae9347d629261ee"
   },
   {
     "path": "site/home-full.html",
-    "sha256": "45ed2128bd3700328aed8d30d4bafb6e4891bb8da584ea2f12a48c030c62296d"
+    "sha256": "a69439d1043dde4452ec3cc65f9c1d3e6f76af83a3262b743ff78e4df5bd06e5"
   },
   {
     "path": "site/index.html",
-    "sha256": "45ed2128bd3700328aed8d30d4bafb6e4891bb8da584ea2f12a48c030c62296d"
+    "sha256": "a69439d1043dde4452ec3cc65f9c1d3e6f76af83a3262b743ff78e4df5bd06e5"
   },
   {
     "path": "site/install/linux/README.txt",
@@ -12173,11 +12173,11 @@
   },
   {
     "path": "site/nodes.html",
-    "sha256": "d88a6c6ffa57c5fb15aefe1f7111c63d061715335152e3bca6302773c4f2ca23"
+    "sha256": "a40767699cc26581f9037eb73b8ea09ecd042b8a798265d27a6056b4e3d18c9b"
   },
   {
     "path": "site/privacy.html",
-    "sha256": "5fb84a19953106ad612cfe6da4e427408ea4efe0e7e0da4cd206b1342c018b8c"
+    "sha256": "20b9ea1d67afd4059dec7105bb8062fc491bcfc667fe037b1f9545b92042af36"
   },
   {
     "path": "site/robots.txt",
@@ -12193,11 +12193,11 @@
   },
   {
     "path": "site/terms.html",
-    "sha256": "ed0d1092b3239559e3a336001deb33b9e5a2d09550fc5cdb21ea18701de4368a"
+    "sha256": "2305020c37fd4966293692980f48fa34897a7da62cbfdf1fb47155f57f5ac2c7"
   },
   {
     "path": "site/treasury.html",
-    "sha256": "bb95c340445e7d29df9265f4e96e941fd1f8baef51b58a1ac5561cb98cba5b7e"
+    "sha256": "0a8d797010faa1b58cd5cf02b4ed9616d282114e839f6f75241546d6018f879a"
   },
   {
     "path": "site/treasury.js",
@@ -12217,7 +12217,7 @@
   },
   {
     "path": "site/whitepaper.html",
-    "sha256": "a85743bc9f27faaf0487b4c2bf75857b1475261750ba06bfced2370883a18fff"
+    "sha256": "34d806e06fe32cd3808a3f1997fe8bf74910b64ab167890d89b3b33af422fa29"
   },
   {
     "path": "tests/security/beta-reset-integration.py",

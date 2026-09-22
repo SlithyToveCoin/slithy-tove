@@ -24,11 +24,6 @@ internal sealed class AppSettings
     public const string DefaultOfficialNodeAddress = BorogoveOfficialNodeAddress;
     public const string MomeOfficialNodeAddress = "";
     public const string RathOfficialNodeAddress = "";
-    public static string LegacyNode1OfficialNodeAddress => BuildLegacyHostedRpcAddress("node1.slithy.io", "beta");
-    public static string LegacyNode2OfficialNodeAddress => BuildLegacyHostedRpcAddress("node2.slithy.io", "beta");
-    public static string LegacyNode3OfficialNodeAddress => BuildLegacyHostedRpcAddress("node3.slithy.io", "beta");
-    public static string LegacyPreBetaNodeAddress => BuildLegacyHostedRpcAddress("node1.slithy.io", "test");
-    public static string LegacyLanNodeAddress => BuildLegacyHostedRpcAddress("192.168.2.75", "test");
     public const string DefaultUpdateManifestUrl = "https://slithy.io/updates/windows/stable.json";
     public const string DefaultTreasuryStatusUrl = "https://slithy.io/data/treasury-beta-20260909.json";
     public const string CurrentNetworkResetId = "beta-20260909";
@@ -80,9 +75,6 @@ internal sealed class AppSettings
     public static IReadOnlyList<string> ReservedOfficialNodeAddresses =>
     [
     ];
-
-    private static string BuildLegacyHostedRpcAddress(string host, string passwordSuffix) =>
-        "http://" + "slithy" + ":" + "slithy-" + passwordSuffix + "@" + host + ":53426";
 
     internal static string CleanHostedRpcSetting(string value)
     {
@@ -375,4 +367,3 @@ internal sealed class AppSettingsStore
         }
     }
 }
-

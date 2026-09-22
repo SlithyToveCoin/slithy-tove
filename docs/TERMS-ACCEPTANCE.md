@@ -1,6 +1,6 @@
 # First-run terms agreement
 
-Published September 10, 2026 in Windows 0.1.41 and Linux 0.1.48-testnet. The Windows installer and app binaries have valid, timestamped Azure signatures for CS Idea Labs LLC. Both update feeds have verified Slithy release signatures.
+The first-run agreement was added in Windows 0.1.41 and Linux 0.1.48-testnet on September 10, 2026. This document explains the prompt and its tests.
 
 The website terms are at https://slithy.io/terms.html. The apps carry a complete offline copy in `licenses/BETA-TERMS.txt`. Windows embeds it in the executable. The Linux release builder places it beside the menu as `slithy-terms.txt`; installation and update checks require that file.
 
@@ -26,8 +26,4 @@ Run `dotnet run --project tests/terms/TermsTests.csproj` on Windows. It uses a t
 
 Run `python3 tests/terms/linux-terms-test.py` on Linux. It uses pseudo-terminal input and fake node tools in a temporary directory. It tests noninteractive refusal, decline, acceptance persistence, file permissions, changed or missing terms, damaged records, save failure and stop commands.
 
-The release was published with packages first and matching update feeds afterward. HTTPS downloads were fetched again and checked against their signed manifests. The downloaded Windows installer passed Authenticode and timestamp verification. Previous versioned downloads and the legacy Linux feed remain available. This update does not reset the chain or replace wallets.
-
 The Windows agreement screen confirms successful UI startup to the updater before the user accepts. Without that confirmation, the updater's startup deadline could expire while someone reads the terms. This confirmation does not record consent or start the local node.
-
-For later releases, publish the complete archive before updating its feed. Do not publish an installer or updater that requires files its target archive does not contain.

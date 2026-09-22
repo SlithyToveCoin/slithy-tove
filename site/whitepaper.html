@@ -40,7 +40,7 @@
       <p class="eyebrow">Slithy Tove white paper</p>
       <h1>A proof-of-work network with a public reading fund.</h1>
       <p class="lede">Slithy uses CPU mining to fund children's literacy. Ten percent of each block subsidy goes to a treasury whose transactions you can inspect on the public chain.</p>
-      <p class="paper-meta">Version 1.3 &middot; Revised September 10, 2026 &middot; slithy.io</p>
+      <p class="paper-meta">Version 1.4 &middot; Revised September 22, 2026 &middot; slithy.io</p>
     </section>
 
     <section class="paper-summary" aria-label="White paper summary">
@@ -111,10 +111,10 @@
 
       <section>
         <h2>6. Treasury use</h2>
-        <p>The treasury is for children&rsquo;s books, reading materials and literacy programs, including costs directly tied to that work. The website should show the address and balance, with incoming payments, outgoing grants and a note explaining what each grant paid for.</p>
-        <p>At launch, CS Idea Labs LLC will control one encrypted offline wallet. Community control is a future goal. Before spending treasury funds, the project should record the literacy purpose and internal approval, then publish the transaction.</p>
+        <p>The treasury is for children&rsquo;s books, reading materials and literacy programs, including costs directly tied to that work. The treasury page shows its address and balance. Spending reports are planned for the live fund, with a note explaining what each grant paid for.</p>
+        <p>At launch, CS Idea Labs LLC will control one encrypted offline wallet. Community control is a future goal. The plan is to publish each payment with its recipient, amount and literacy purpose.</p>
         <p>Community voting on proposed donations is planned for later, after the network has regular activity and a community taking part in it. Eligible proposals must support the literacy mission. There is no binding voting system today. Before voting begins, the project must publish who can propose and vote, the required turnout and approval thresholds, and rules for conflicts of interest. It must also explain the review period, how approved payments get made, and how disputed results get resolved.</p>
-        <p>The website must never hold treasury spend keys. Its reports should come from public chain data or tools that can read the wallet without spending from it.</p>
+        <p>The website displays treasury records from the chain. It does not hold the keys needed to spend the fund.</p>
       </section>
 
       <section>
@@ -146,9 +146,9 @@
       <section>
         <h2>11. Roadmap</h2>
         <p>The live network target is November 1, 2026. The date can move if testing finds problems that need more time. Public beta testing covers the Windows wallet and local miner, Linux tools and signed updates. The test chain and balances will reset before the live launch.</p>
-        <p>Launch checks must confirm that the final Slithy Tove Treasury wallet can be restored from its backups, that the network rules require payment to its public script, and that every release agrees on the final genesis block. The public launch details described above must be available before mining begins.</p>
+        <p>Before launch, testing covers wallet recovery and the required treasury payment. The final releases must agree on the same starting block. Downloads and network details will be published before mining opens.</p>
         <p>After launch, work will continue on reliable node connections and signed releases for Windows and Linux. Treasury reporting should follow the public chain, with grant notes added as funds are spent on literacy work.</p>
-        <p>Some decisions remain open. The project has not settled whether rewards eventually end or continue with a small tail subsidy. Community voting rules and the move beyond one treasury wallet also need public discussion, along with mining performance and the conditions for a future foundation. Those decisions must be published before they become final policy. This roadmap makes no promise about price, adoption or exchange listings.</p>
+        <p>The current reward schedule halves until rounding brings the subsidy to zero. There is no continuing tail subsidy in the code. Community voting rules and the move beyond one treasury wallet also need public discussion, along with mining performance and the conditions for a future foundation. Those decisions must be published before they become final policy. This roadmap makes no promise about price, adoption or exchange listings.</p>
       </section>
 
       <section>
@@ -187,7 +187,7 @@
     </a>
     <p>Slithy Tove is open-source cryptocurrency software with a fund for children's literacy. CS Idea Labs LLC publishes the software and runs this site and the official servers. Questions? Write to <a href="mailto:support@slithy.io">support@slithy.io</a>.</p>
     <p>Nothing here is an offer or invitation to invest. No market value is promised for SLTHY.</p>
-    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a></div>
+    <div><a href="/whitepaper.html">White paper</a><a href="/guide.html">User guide</a><a href="/bug-report.html">Report a bug</a><a href="https://github.com/SlithyToveCoin/slithy-tove">Source code on GitHub</a></div>
     <p class="copyright">Copyright &copy; 2026 CS Idea Labs LLC. | <a href="/privacy.html">Privacy Policy</a> | <a href="/terms.html">Terms of Use</a></p>
   </footer>
 </body>
