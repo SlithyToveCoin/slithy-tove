@@ -1,7 +1,10 @@
 param(
     [string]$Version = "",
     [switch]$Sign,
-    [string]$Configuration = "Release"
+    [string]$Configuration = "Release",
+    [string]$SigningMetadataPath = "",
+    [string]$SignToolPath = "",
+    [string]$SigningLibraryPath = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,6 +15,7 @@ $staging = Join-Path $root "review\release\installer-staging\win-x64"
 $iss = Join-Path $PSScriptRoot "SlithyTove.iss"
 $output = Join-Path $PSScriptRoot "output"
 $metadata = Join-Path $PSScriptRoot "azure-signing-metadata.json"
+if ($SigningMetadataPath) { $metadata = (Resolve-Path -LiteralPath $SigningMetadataPath).Path }
 
 function Find-InnoCompiler {
     $candidates = @(
@@ -139,8 +143,8 @@ if ($Sign) {
         throw "Missing $metadata. Copy azure-signing-metadata.sample.json and fill in the certificate profile."
     }
 
-    $signTool = Find-SignTool
-    $dlib = Find-AzureDlib
+    $signTool = if ($SignToolPath) { (Resolve-Path -LiteralPath $SignToolPath).Path } else { Find-SignTool }
+    $dlib = if ($SigningLibraryPath) { (Resolve-Path -LiteralPath $SigningLibraryPath).Path } else { Find-AzureDlib }
 
     $ownedFileNames = @(
         "Slithy Tove.exe",

@@ -69,7 +69,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/LocalNodeManager.cs",
-    "sha256": "9338530bbbcccde70b497d6bc4159681fcd095ce1f743e5d5a54fdf451db2aa7"
+    "sha256": "f54e454e6b13fcf939a3d5e0a53e506c13965c32012d72974ac8354ff5559ede"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/MiningRpcSelfTest.cs",
@@ -11976,6 +11976,10 @@
     "sha256": "5101b9d17497995838a8f0372b598f84bef032d90e5882dc7d456826676bb4b1"
   },
   {
+    "path": "docs/RELEASE-0.1.42.md",
+    "sha256": "fbe0f70c69c30b51ae05de07f9c3508dc925b3f2267b8b2137b1238aac4cf040"
+  },
+  {
     "path": "docs/SOURCE-PROVENANCE.md",
     "sha256": "f520151808fb5cf13a2c38da972e1892cbd3d39c6dc19398a4132650352810c9"
   },
@@ -12033,7 +12037,7 @@
   },
   {
     "path": "installer/build-installer.ps1",
-    "sha256": "cb8ffd3853cf8289df05372ea0bdae058c85cb5c609229cb15b55a3ebd37d3b4"
+    "sha256": "be512d0c41b4c3b38383224fd78a1b307ce08457b68b63135a6f9ab8c65a9e2b"
   },
   {
     "path": "installer/build-web-installer.ps1",

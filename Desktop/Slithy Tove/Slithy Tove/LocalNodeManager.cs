@@ -46,6 +46,9 @@ internal sealed class LocalNodeManager
         List<string> nodeArguments =
         [
             "-testnet",
+            // Beta miners may be offline for days. An old tip alone is not an unfinished download.
+            // The node still checks headers, chain work and every block.
+            "-maxtipage=2147483647",
             $"-datadir={_paths.NodeDataDirectory}",
             $"-walletdir={_paths.WalletDirectory}",
             "-server=1",
@@ -170,4 +173,3 @@ internal sealed class LocalNodeManager
         }
     }
 }
-
