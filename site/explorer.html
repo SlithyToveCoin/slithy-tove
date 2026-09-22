@@ -9,7 +9,8 @@
   <title>Slithy Tove | Explorer</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
-  <script src="/explorer.js" defer></script>
+  <script src="/explorer.js?v=20260922-transactions" defer></script>
+  <link rel="stylesheet" href="/explorer-transactions.css?v=20260922">
   <script src="/site.js?v=20260907-site-copy" defer></script>
   <link rel="stylesheet" href="/node-status.css?v=20260922">
   <script src="/node-status.js?v=20260922" defer></script>
@@ -80,7 +81,7 @@
           <p class="eyebrow">Recent blocks</p>
           <h2 id="recent-blocks-title">Blocks reported by Borogove</h2>
         </div>
-        <p>This page checks for a fresh snapshot every minute. Miner and treasury amounts are subsidy estimates; transaction fees are not included. The peer count and mining status above describe Borogove, so they do not count everyone mining on the network.</p>
+        <p>This page checks every minute. Mining payout amounts include any transaction fees paid in the block. The peer count and mining status above describe Borogove, not everyone mining on the network.</p>
       </div>
 
       <div class="explorer-table-scroll">
@@ -91,8 +92,8 @@
               <th>Time</th>
               <th>Hash</th>
               <th>Tx</th>
-              <th>Miner subsidy (est.)</th>
-              <th>Treasury subsidy (est.)</th>
+              <th>Mining payout</th>
+              <th>Treasury output</th>
               <th>Difficulty</th>
             </tr>
           </thead>
@@ -101,6 +102,18 @@
           </tbody>
         </table>
       </div>
+    </section>
+
+    <section aria-labelledby="transactions-title">
+      <h2 id="transactions-title">Transaction IDs and addresses</h2>
+      <p data-explorer-notice role="status">Loading recent transactions...</p>
+      <p>Open a transaction to see its full ID, input references and output addresses. Outputs can include change returned to the paying wallet. An address does not identify a person.</p>
+      <label class="transaction-search">Find a transaction ID or address in this snapshot
+        <input type="search" data-transaction-search placeholder="Paste a transaction ID or address" autocomplete="off" spellcheck="false">
+      </label>
+      <p data-transaction-count></p>
+      <p>This snapshot covers the latest 25 blocks, with up to 8 transactions per block and 16 inputs and outputs per transaction. Large snapshots may show fewer details. Older transactions and full address history are not indexed here.</p>
+      <div data-explorer-transactions></div>
     </section>
 
     <section class="official-node-status" aria-labelledby="official-nodes-title">

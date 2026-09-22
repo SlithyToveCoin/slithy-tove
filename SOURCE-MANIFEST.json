@@ -12105,7 +12105,7 @@
   },
   {
     "path": "services/slithy-node-status-server.py",
-    "sha256": "58e86b86e08692b8d419b02e3e195682595fc7bc4d752f357a7c480506c2693a"
+    "sha256": "b05e3daf42c343f1197580ba78f45c12ca8e657db0f900505ed0d3be4809de31"
   },
   {
     "path": "shared/RecoveryWords.cs",
@@ -12152,12 +12152,16 @@
     "sha256": "152ac4a036cce0bf9d420ced23e5c40c3a1a37bbcf03a9f050898ad25784860e"
   },
   {
+    "path": "site/explorer-transactions.css",
+    "sha256": "620e0eb69cd0c8a2993302f67da8ac5e66929512a86f147c2ce5fa3a17e176fb"
+  },
+  {
     "path": "site/explorer.html",
-    "sha256": "d6101476ddcbecb1ea33e0857b121086b26e8f625e5a5ed840bb67a4c2197286"
+    "sha256": "3b04ef8bb77633aa8885401645d0333dd0b41f2de0849d782c76f469de6cbef6"
   },
   {
     "path": "site/explorer.js",
-    "sha256": "f15157a1ab5d77da91fbf31b000a30e1d183f86a27c666f3f8c99cb6fb283e1f"
+    "sha256": "aa3a242739d0a6add1d4449c8c133c20bbb8c960f8577c8e0005230dc58379ca"
   },
   {
     "path": "site/favicon.svg",
@@ -12317,7 +12321,7 @@
   },
   {
     "path": "tests/security/test_status_and_archives.py",
-    "sha256": "10b2ac8c0e15f8ffdd8fae97fcb9889be58d5f6c72330573ab5218f370ed0cea"
+    "sha256": "61e2c1a6dd295826b658105321570c9da78fb4a7211eec8ccdbb28eeb77b2159"
   },
   {
     "path": "tests/security/test_target_arithmetic.py",

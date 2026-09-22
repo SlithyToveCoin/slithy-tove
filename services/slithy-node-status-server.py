@@ -116,17 +116,41 @@ def advance_treasury_index(height):
     }
 
 
+def transaction_summary(tx):
+    # Addresses describe outputs, not the identity of the person paying.
+    inputs = []
+    for vin in tx.get("vin", [])[:16]:
+        if "coinbase" in vin:
+            inputs.append({"coinbase": True})
+        else:
+            previous = vin.get("prevout", {})
+            inputs.append({"txid": vin.get("txid"), "vout": vin.get("vout"),
+                           "address": previous.get("scriptPubKey", {}).get("address"),
+                           "value": f"{Decimal(str(previous['value'])):.8f}" if "value" in previous else None})
+    outputs = []
+    for out in tx.get("vout", [])[:16]:
+        script = out.get("scriptPubKey", {})
+        outputs.append({"n": out["n"], "address": script.get("address"),
+                        "type": script.get("type", "unknown"),
+                        "value": f"{Decimal(str(out['value'])):.8f}",
+                        "treasury": bool(TREASURY_SCRIPT and script.get("hex") == TREASURY_SCRIPT)})
+    return {"txid": tx["txid"], "coinbase": any("coinbase" in v for v in tx.get("vin", [])),
+            "inputs": inputs, "outputs": outputs,
+            "inputCount": len(tx.get("vin", [])), "outputCount": len(tx.get("vout", []))}
+
+
 def block_summary(block_height, chain_height):
     block_hash = cli("getblockhash", str(block_height))
-    block = cli_json("getblock", block_hash, "2")
+    # Verbosity 3 supplies previous outputs when undo data is available.
+    block = json.loads(cli("getblock", block_hash, "3"), parse_float=Decimal)
     txs = block.get("tx", [])
     confirmations = chain_height - block_height + 1
-    coinbase_value = 0.0
-    treasury_value = 0.0
+    coinbase_value = Decimal(0)
+    treasury_value = Decimal(0)
 
     if txs:
         for output in txs[0].get("vout", []):
-            value = float(output.get("value", 0))
+            value = Decimal(str(output.get("value", 0)))
             script = output.get("scriptPubKey", {}).get("hex", "")
             if TREASURY_SCRIPT and script == TREASURY_SCRIPT:
                 treasury_value += value
@@ -140,9 +164,10 @@ def block_summary(block_height, chain_height):
         "medianTime": int(block.get("mediantime", 0) or 0),
         "confirmations": confirmations,
         "transactionCount": len(txs),
+        "transactions": [transaction_summary(tx) for tx in txs[:8]],
         "size": int(block.get("size", 0) or 0),
         "weight": int(block.get("weight", 0) or 0),
-        "difficulty": block.get("difficulty", 0),
+        "difficulty": float(block.get("difficulty", 0)),
         "minerSubsidyEstimate": f"{coinbase_value:.8f}",
         "treasurySubsidyEstimate": f"{treasury_value:.8f}",
     }
@@ -168,6 +193,12 @@ def build_explorer():
     tip = chain.get("bestblockhash", "")
     if tip != _explorer_tip:
         recent_blocks = [block_summary(at, height) for at in range(height, first_height - 1, -1)]
+        # Bound the public snapshot. Counts still say when details were omitted.
+        while len(json.dumps(recent_blocks).encode("utf-8")) > 750000:
+            for block in reversed(recent_blocks):
+                if block["transactions"]:
+                    block["transactions"].pop()
+                    break
         if cli("getblockhash", str(height)) != tip:
             raise RuntimeError("Chain changed during explorer collection")
         _explorer_blocks = recent_blocks

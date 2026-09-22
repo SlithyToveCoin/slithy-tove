@@ -58,6 +58,33 @@ class TreasuryTests(unittest.TestCase):
         self.assertEqual(replies, [503, 200])
 
 
+class ExplorerTests(unittest.TestCase):
+    def test_coinbase_and_addresses(self):
+        status.TREASURY_SCRIPT = 'treasury-script'
+        tx = {'txid': 'a'*64, 'vin': [{'coinbase': '00'}], 'vout': [
+            {'n': 0, 'value': '9.00000001', 'scriptPubKey': {'address': 'miner', 'hex': 'miner-script'}},
+            {'n': 1, 'value': '1', 'scriptPubKey': {'address': 'fund', 'hex': 'treasury-script'}}]}
+        result = status.transaction_summary(tx)
+        self.assertTrue(result['coinbase'])
+        self.assertEqual(result['inputs'], [{'coinbase': True}])
+        self.assertEqual(result['outputs'][0]['value'], '9.00000001')
+        self.assertTrue(result['outputs'][1]['treasury'])
+
+    def test_previous_output_and_limits(self):
+        tx = {'txid': 'b'*64, 'vin': [{'txid': 'a'*64, 'vout': 0,
+              'prevout': {'value': '0.12345678', 'scriptPubKey': {'address': 'previous'}}}]*20,
+              'vout': [{'n': 0, 'value': 0, 'scriptPubKey': {'type': 'nulldata'}}]*20}
+        result = status.transaction_summary(tx)
+        self.assertFalse(result['coinbase'])
+        self.assertEqual(result['inputs'][0]['address'], 'previous')
+        self.assertEqual(result['inputCount'], 20)
+        self.assertEqual(len(result['inputs']), 16)
+        self.assertEqual(len(result['outputs']), 16)
+        self.assertIsNone(result['outputs'][0]['address'])
+        tx['vin'] = [{'txid': 'c'*64, 'vout': 1}]
+        self.assertIsNone(status.transaction_summary(tx)['inputs'][0]['address'])
+
+
 class ArchiveTests(unittest.TestCase):
     def run_archive(self, script, name, kind=tarfile.REGTYPE):
         source = (ROOT / "site/install/linux" / script).read_text()
