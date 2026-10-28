@@ -57,6 +57,12 @@ FixtureRpc replies = new();
 HttpClient http = new(replies);
 typeof(NodeRpcClient).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(transport, http);
 Uri endpoint = new("http://fixture:dummy@127.0.0.1:1");
+Check(await wallet.NeedsSpendingPasswordAsync(endpoint), "Expired signing access asks for password without clearing the wallet");
+WalletSnapshot lockedSnapshot = await wallet.GetSnapshotAsync(endpoint);
+Check(lockedSnapshot.Balance == 12 && lockedSnapshot.UnlockedBalance == 1,
+    "Balance remains readable after native spending access expires");
+replies.UnlockedUntil = DateTimeOffset.UtcNow.AddMinutes(5).ToUnixTimeSeconds();
+Check(!await wallet.NeedsSpendingPasswordAsync(endpoint), "Valid signing access can prepare a payment");
 WalletSnapshot snapshot = await wallet.GetSnapshotAsync(endpoint);
 Check(snapshot.Balance == 12 && snapshot.UnlockedBalance == 1, "untrusted receipts are not spendable");
 Check(snapshot.BlocksToUnlock == -1, "unknown maturity is not a fixed countdown");
@@ -89,6 +95,7 @@ sealed class FixtureRpc : HttpMessageHandler
     public int SendCalls { get; private set; }
     public int PreparedCount { get; private set; }
     public bool ReconciliationAvailable { get; set; } = true;
+    public long UnlockedUntil { get; set; }
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         using JsonDocument body = JsonDocument.Parse(await request.Content!.ReadAsStringAsync(cancellationToken));
@@ -105,6 +112,7 @@ sealed class FixtureRpc : HttpMessageHandler
         object result = method switch
         {
             "getnewaddress" => "fixture-address",
+            "getwalletinfo" => new { unlocked_until = UnlockedUntil },
             "getbalances" => new { mine = new { trusted = 1, untrusted_pending = 2, immature = 9 } },
             "createrawtransaction" => "fixture-unsigned",
             "fundrawtransaction" => new { hex = "fixture-funded", fee = 0.00001234m },

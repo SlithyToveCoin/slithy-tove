@@ -178,6 +178,14 @@ internal sealed class WalletRpcClient : IDisposable
         _walletEncrypted = true;
     }
 
+    public async Task<bool> NeedsSpendingPasswordAsync(Uri endpoint)
+    {
+        EnsureWalletOpen();
+        JsonElement info = await _rpc.CallAsync(endpoint, _walletName, "getwalletinfo", Array.Empty<object>());
+        return info.TryGetProperty("unlocked_until", out JsonElement until) &&
+               until.GetInt64() <= DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    }
+
     public async Task ChangePasswordAsync(Uri endpoint, string oldPassword, string newPassword)
     {
         EnsureWalletOpen();
@@ -590,4 +598,3 @@ internal sealed class WalletRpcClient : IDisposable
 
     public void Dispose() => _rpc.Dispose();
 }
-

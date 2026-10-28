@@ -57,6 +57,9 @@ internal sealed class AppSettings
     public DateTimeOffset? LastUpdateCheckUtc { get; set; }
     public bool LocalNodeModeClarified { get; set; }
     public int AutoLockMinutes { get; set; } = 10;
+    public bool AutoLockEnabled { get; set; } = true;
+    public bool ShouldAutoLock(DateTimeOffset lastActivity, DateTimeOffset now) =>
+        AutoLockEnabled && now - lastActivity >= TimeSpan.FromMinutes(Math.Clamp(AutoLockMinutes, 1, 120));
     public bool MineToCustomAddress { get; set; }
     public string CustomMiningAddress { get; set; } = "";
 

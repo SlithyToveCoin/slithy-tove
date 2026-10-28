@@ -22,7 +22,7 @@ The current downloads connect to a test network. Test SLTHY has no market value 
 
 The test chain and wallets will reset before the live launch. Further resets may be needed during beta. A reset can remove test balances and transaction history from the active network. Old wallet files may remain on your computer and may not work with a replacement network.
 
-November 1, 2026 is the target for the live launch. Testing may require that date to change.
+December 1, 2026 is the target for the live launch. Testing may require that date to change.
 
 3. Mining uses your computer
 
@@ -85,4 +85,3 @@ Revisions will be published here with an updated version and effective date. A c
 You can stop testing at any time. These terms do not authorize deleting your wallet files or taking your coins. For questions about the terms or beta, write to support@slithy.io.
 
 Thank you for helping test Slithy.
-

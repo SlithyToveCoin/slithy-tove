@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory)][version]$Version,
     [Parameter(Mandatory)][string]$PrivateKeyPath,
     [Parameter(Mandatory)][string]$SourceCommit,
-    [Parameter(Mandatory)][string]$Output
+    [Parameter(Mandatory)][string]$Output,
+    [string]$ReleaseNotes = 'Windows wallet and CPU miner for the Slithy beta network.'
 )
 $ErrorActionPreference = 'Stop'
 if ($Version -lt [version]'0.1.42') { throw 'The web installer requires release 0.1.42 or newer.' }
@@ -25,7 +26,7 @@ $payload = [ordered]@{
     version = $Version.ToString()
     packageUrl = "https://slithy.io/downloads/windows/Slithy-Tove-Setup-$Version.exe"
     sha256 = (Get-FileHash -LiteralPath $Installer -Algorithm SHA256).Hash.ToLowerInvariant()
-    releaseNotes = 'Windows wallet and CPU miner for the Slithy beta network.'
+    releaseNotes = $ReleaseNotes
     publishedAt = [DateTimeOffset]::UtcNow.ToString('o')
     platform = 'windows-x64'
     sourceCommit = $SourceCommit

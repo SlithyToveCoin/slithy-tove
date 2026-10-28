@@ -22,7 +22,7 @@ public partial class Form1 : Form
     private const bool RealCpuMinerAvailable = true;
     private const int BetaDifficultyRetargetBlocks = 30;
     private const long MinimumFreeBytesForMining = 2L * 1024L * 1024L * 1024L;
-    private readonly AppSettingsStore _settingsStore = new();
+    private readonly AppSettingsStore _settingsStore;
     private readonly NodeRpcClient _rpcClient = new();
     private readonly TreasuryStatusService _treasuryStatusService = new();
     private readonly UpdateService _updateService;
@@ -38,6 +38,7 @@ public partial class Form1 : Form
     private long _cachedBlockchainBytes;
     private bool _walletRefreshing;
     private bool _walletOpening;
+    private bool _walletBusy;
     private bool _walletDialogOpen;
     private bool _loadingSettingsIntoControls;
     private bool _checkingForUpdates;
@@ -63,8 +64,11 @@ public partial class Form1 : Form
         long FreeBytes,
         long TotalBytes);
 
-    public Form1()
+    public Form1() : this(new AppSettingsStore()) { }
+
+    internal Form1(AppSettingsStore settingsStore)
     {
+        _settingsStore = settingsStore;
         // Keep this startup order stable:
         // 1. Build the controls from the designer.
         // 2. Load icons, layout helpers, and styling.
@@ -264,8 +268,7 @@ public partial class Form1 : Form
         await RefreshNodeStatusAsync();
         if (_walletSnapshot is not null && !_walletOpening)
         {
-            if (DateTimeOffset.UtcNow - _activityFilter.LastActivityUtc >=
-                TimeSpan.FromMinutes(_settings.AutoLockMinutes))
+            if (!_walletDialogOpen && !_walletBusy && _settings.ShouldAutoLock(_activityFilter.LastActivityUtc, DateTimeOffset.UtcNow))
             {
                 await LockWalletAsync("Wallet locked after inactivity.");
                 return;
@@ -275,6 +278,10 @@ public partial class Form1 : Form
             {
                 await RefreshWalletAsync();
             }
+        }
+        else if (_miningStartedByApp && !_walletOpening)
+        {
+            await RefreshMiningStatusAsync();
         }
     }
 
@@ -676,6 +683,12 @@ public partial class Form1 : Form
                     "Check the address", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (await _walletRpcClient.NeedsSpendingPasswordAsync(WalletRpcUri))
+            {
+                using SpendingPasswordDialog passwordDialog = new();
+                if (passwordDialog.ShowDialog(this) != DialogResult.OK) return;
+                await _walletRpcClient.UnlockWalletAsync(WalletRpcUri, passwordDialog.Password, TimeSpan.FromMinutes(1));
+            }
             PreparedTransfer prepared = await _walletRpcClient.PrepareTransferAsync(
                 WalletRpcUri, dialog.DestinationAddress, amountAtomic);
             decimal fee = prepared.FeeAtomic / 100_000_000m;
@@ -758,11 +771,20 @@ public partial class Form1 : Form
                 "Wallet lock not confirmed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
-        ClearWallet();
+        ClearWallet(locked: true);
+    }
+
+    private void autoLockEnabled_CheckedChanged(object? sender, EventArgs e)
+    {
+        autoLockMinutesNumericUpDown.Enabled = autoLockLabel.Checked;
+        if (_loadingSettingsIntoControls || _settings is null) return;
+        _settings.AutoLockEnabled = autoLockLabel.Checked;
+        _settingsStore.Save(_settings);
     }
 
     private void autoLockMinutesNumericUpDown_ValueChanged(object? sender, EventArgs e)
     {
+        if (_loadingSettingsIntoControls || _settings is null) return;
         _settings.AutoLockMinutes = (int)autoLockMinutesNumericUpDown.Value;
         _settingsStore.Save(_settings);
     }
@@ -898,12 +920,14 @@ public partial class Form1 : Form
     private async void miningToggleButton_Click(object? sender, EventArgs e)
     {
         // Mining must happen on this computer. Public nodes verify and relay.
-        if (_walletSnapshot is null && !mineToAddressCheckBox.Checked)
+        bool stopRequested = _miningStartedByApp ||
+                             miningToggleButton.Text.StartsWith("Stop", StringComparison.OrdinalIgnoreCase);
+        if (!stopRequested && _walletSnapshot is null && !mineToAddressCheckBox.Checked)
         {
             walletButton.PerformClick();
             return;
         }
-        if (_networkLockedByUpdate)
+        if (_networkLockedByUpdate && !stopRequested)
         {
             MessageBox.Show(this,
                 "A required Slithy update must be installed before mining.",
@@ -912,16 +936,12 @@ public partial class Form1 : Form
                 MessageBoxIcon.Warning);
             return;
         }
-        bool stopRequested = false;
         try
         {
             _miningChangeInProgress = true;
             miningToggleButton.Enabled = false;
             Uri miningNode = BuildLocalNodeUri();
-            bool shouldStop = _miningStartedByApp ||
-                              miningToggleButton.Text.StartsWith("Stop", StringComparison.OrdinalIgnoreCase);
-            stopRequested = shouldStop;
-            if (shouldStop)
+            if (stopRequested)
             {
                 await _rpcClient.StopMiningAsync(miningNode);
                 _miningStartedByApp = false;
@@ -1714,7 +1734,7 @@ public partial class Form1 : Form
         string destination = mineToAddressCheckBox.Checked
             ? "another Slithy address"
             : _walletSnapshot is null
-                ? "this wallet after it opens"
+                ? active ? "the selected mining address" : "this wallet after it opens"
                 : "this wallet";
         string prefix = active ? "To " : "Ready. To ";
         string reward = _lastMiningRewardUtc.HasValue
@@ -1813,6 +1833,7 @@ public partial class Form1 : Form
 
     private void SetWalletBusy(bool busy, string? message = null, int progressPercent = -1)
     {
+        _walletBusy = busy;
         // Turns wallet controls off during long work so the user cannot start two operations at once.
         UseWaitCursor = busy;
         walletButton.Enabled = !busy;
@@ -1869,22 +1890,25 @@ public partial class Form1 : Form
         _operationProgressFill.Width = availableWidth * Math.Clamp(_operationProgressPercent, 0, 100) / 100;
     }
 
-    private void ClearWallet()
+    private void ClearWallet(bool locked = false)
     {
         // Clears wallet labels and buttons when no wallet is open.
         _walletSnapshot = null;
         _openWalletName = "";
         _lastWalletRefreshHeight = 0;
-        balanceValueLabel.Text = "0.0000 SLTHY";
-        availableBalanceLabel.Text = "Open a wallet to see your balance.";
-        walletNameLabel.Text = "No wallet open";
+        balanceValueLabel.Text = locked ? "Wallet locked" : "Open a wallet";
+        availableBalanceLabel.Text = locked
+            ? "Your coins are still there. Open the wallet to see your balance."
+            : "Open a wallet to see your balance.";
+        walletNameLabel.Text = locked ? "Wallet locked" : "No wallet open";
         walletAddressPreviewLabel.Text = "Your address will appear here.";
         walletButton.Text = "Open wallet";
         lockWalletButton.Enabled = false;
         sendButton.Enabled = false;
         receiveButton.Enabled = false;
         miningToggleButton.Enabled = CanMine();
-        _bookMiningAnimation.Mining = false;
+        _bookMiningAnimation.Mining = _miningStartedByApp;
+        if (_miningStartedByApp) miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         recentActivityListView.Items.Clear();
         _walletActivityListView.Items.Clear();
         _activityEmptyLabel.Visible = true;
@@ -2203,7 +2227,7 @@ public partial class Form1 : Form
                 treasuryStatusLabel.Text =
                     $"Literacy fund: {treasury.Accrued:N2} SLTHY est.";
             }
-            miningToggleButton.Enabled = info.Synchronized && CanMine();
+            miningToggleButton.Enabled = (_miningStartedByApp || info.Synchronized) && CanMine();
             return true;
         }
         catch (Exception ex)
@@ -2415,6 +2439,8 @@ public partial class Form1 : Form
             automaticUpdatesCheckBox.Enabled = InstallerUpdatesEnabled;
             minimizeToTrayOnCloseCheckBox.Checked = _settings.MinimizeToTrayOnClose;
             autoLockMinutesNumericUpDown.Value = Math.Clamp(_settings.AutoLockMinutes, 1, 120);
+            autoLockLabel.Checked = _settings.AutoLockEnabled;
+            autoLockMinutesNumericUpDown.Enabled = _settings.AutoLockEnabled;
             miningEffortComboBox.SelectedIndex = 1;
             mineToAddressCheckBox.Checked = _settings.MineToCustomAddress;
             miningAddressTextBox.Text = _settings.CustomMiningAddress;
@@ -2519,6 +2545,7 @@ public partial class Form1 : Form
 
     private bool CanMine()
     {
+        if (_miningStartedByApp && !_miningChangeInProgress) return true;
         if (_networkLockedByUpdate || _miningChangeInProgress || !IsMiningAvailable())
         {
             return false;

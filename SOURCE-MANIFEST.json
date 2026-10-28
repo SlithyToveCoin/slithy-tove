@@ -21,7 +21,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/AppSettings.cs",
-    "sha256": "1eef4558dd9d6e50ff0b034a38abd11dc587a59e654d6bdd55c32ddc5e2d20ac"
+    "sha256": "d120956a792c93edc63c6daaf5e730b0b5809e026a30d005f954838cc37291b1"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png",
@@ -57,11 +57,11 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.Designer.cs",
-    "sha256": "f74f5894d853122be0e74a163fa06db8bfb39bffb0cdeacea365277cb0637ba3"
+    "sha256": "8770eea4489c99e4acaece989cedb283759516c5b32639680fb1b8584a3ce582"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.cs",
-    "sha256": "400e1e71e921060fd22b8ae4bd68677f1e92380d310d43bb1e6764183ee03d5d"
+    "sha256": "2d8bc5f442744f6f8a1433b2874498e83c752135ef74de2cec90d14e956d6bb5"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.resx",
@@ -145,11 +145,15 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "b46cce390c6cd72a4058b82ba0697d901c140c56ec02de7ad1929aae061c13c4"
+    "sha256": "05d6716649050ec0d956eba0b6484e8b2bf84591c3d223899bfb790c1594a4e6"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
     "sha256": "f3ec443b450730248cc940d060ad3290b53362c4e9e5a61c3287ae149b691c5e"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/SpendingPasswordDialog.cs",
+    "sha256": "2a22af64d6b73b0185415bdb682da9675c228b2457b31d549778297538a43645"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/TermsAcceptanceStore.cs",
@@ -229,7 +233,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.cs",
-    "sha256": "f4e1a13be71298ec2984df4ebfb62ebdd76a19571b9454a2a58e110ebd0b5ce8"
+    "sha256": "582ac672c5940fad3b55319596334c40f8d0550453dc8473876f5c3966883636"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcTransportSelfTest.cs",
@@ -11980,6 +11984,10 @@
     "sha256": "fbe0f70c69c30b51ae05de07f9c3508dc925b3f2267b8b2137b1238aac4cf040"
   },
   {
+    "path": "docs/RELEASE-0.1.43.md",
+    "sha256": "aae7abe0918d0d56af1b1706530a595d2ed0506e9bac18de1f1df6bcaa1f5a9d"
+  },
+  {
     "path": "docs/SOURCE-PROVENANCE.md",
     "sha256": "f520151808fb5cf13a2c38da972e1892cbd3d39c6dc19398a4132650352810c9"
   },
@@ -12045,7 +12053,7 @@
   },
   {
     "path": "installer/new-installer-manifest.ps1",
-    "sha256": "cfdfecc86819dfec0c5e926715f169fe3e35dcdbc948ef142e0a0c4ca897c076"
+    "sha256": "a311922f1dd72430ab43892b625420883bf1cb602811dcf190ec442a131b329b"
   },
   {
     "path": "installer/prepare-signing-tools.ps1",
@@ -12053,7 +12061,7 @@
   },
   {
     "path": "licenses/BETA-TERMS.txt",
-    "sha256": "b16617025ba0a616e35ed9b58ce3ba1b11f63da12a7601f20fc1ac6efe327e95"
+    "sha256": "7098e9451095175af05af4812d9680345d6d7e59414d0a4fe0c94e0bb960a5ee"
   },
   {
     "path": "licenses/DOTNET-LICENSE.txt",
@@ -12113,19 +12121,19 @@
   },
   {
     "path": "site/about.html",
-    "sha256": "808cc61204a302ec0ca2459834c8ee6d1f56145913dcc189376911660dde6777"
+    "sha256": "eb1bcea80a4cc6d9d92cdff8f2511261862a6a883948ad820e5b8d98f3ba27b0"
   },
   {
     "path": "site/beta-testing.html",
-    "sha256": "0a91b187bdd252bae804f7f83f189053ad31c4e8a0ef91c0110201429ba788ac"
+    "sha256": "b2c30b1bb6680d3167061df452ba772024769466204b4355d57f0055044bdd9f"
   },
   {
     "path": "site/bug-report.html",
-    "sha256": "abbdbf16ef1c6e8a1146516aa8f14aaead06bd19738280c3cc4b1c7fcb1da9dd"
+    "sha256": "36c1dc49327c3dca5577ae8da9e304f246323ef5fcb17ff7fd84362bada1a24a"
   },
   {
     "path": "site/community.html",
-    "sha256": "10df1bb10ea78c6fe2aaae083adf2321305e451cbe81b2e17c7293a39fd21bab"
+    "sha256": "12759e4e175efea6a0e91658953910f3d147b3ecb2fa5a89b725f070afc6a725"
   },
   {
     "path": "site/data/explorer.json",
@@ -12141,11 +12149,11 @@
   },
   {
     "path": "site/download.html",
-    "sha256": "6681f7dc8c9945011653c5c67ee41f32db7b156dd58eb37cfb89d15bdca57e47"
+    "sha256": "b3b2c7d352e11fce519636e7f0f6601b49d9272d33744052db522cf3c5dcb36a"
   },
   {
     "path": "site/downloads.html",
-    "sha256": "1b37a9ce3f9300ba03a175be7b7278c2a58cdb589b51ebe5a6a946dd03b5569a"
+    "sha256": "ec0e1c09ea5418764ecfe62c681e0c58085a511d74e4cd7a27de146d97783388"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12157,7 +12165,7 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "3b04ef8bb77633aa8885401645d0333dd0b41f2de0849d782c76f469de6cbef6"
+    "sha256": "787e4320e7fc83844640b41694d340b9ce5db9370be565173acd7aaefbc5592d"
   },
   {
     "path": "site/explorer.js",
@@ -12169,15 +12177,15 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "d84bdaf4df725dc6ae6cc9f6bea6772b80c75505cc5bb4758ae9347d629261ee"
+    "sha256": "04d33a86df43603a3333f3a922b35e7e399b6170b85c6bea7070a143c990e67e"
   },
   {
     "path": "site/home-full.html",
-    "sha256": "a69439d1043dde4452ec3cc65f9c1d3e6f76af83a3262b743ff78e4df5bd06e5"
+    "sha256": "9ec01e5dd933743de3f01751141dc403f6729c9371f78b3762bc8fa0050e7a14"
   },
   {
     "path": "site/index.html",
-    "sha256": "915621e8505ad44cca593e321b269765f536d9f6fe24e4a248d0365258665127"
+    "sha256": "a32c4902a0e601d8bebafdfaa25a03b7fc22b7fe4ac3f3040e61cd0914d2b9f3"
   },
   {
     "path": "site/install/linux/README.txt",
@@ -12221,11 +12229,11 @@
   },
   {
     "path": "site/nodes.html",
-    "sha256": "a40767699cc26581f9037eb73b8ea09ecd042b8a798265d27a6056b4e3d18c9b"
+    "sha256": "1cd9dd520c78a65a69834917010a4f5ff440c3e9dd0fcdcf6e448b30a0093f92"
   },
   {
     "path": "site/privacy.html",
-    "sha256": "20b9ea1d67afd4059dec7105bb8062fc491bcfc667fe037b1f9545b92042af36"
+    "sha256": "3d3f71f826fc0b501699152b3417ef41ebb4cd1fe4b79f3137979d805053ad0c"
   },
   {
     "path": "site/robots.txt",
@@ -12241,11 +12249,11 @@
   },
   {
     "path": "site/terms.html",
-    "sha256": "2305020c37fd4966293692980f48fa34897a7da62cbfdf1fb47155f57f5ac2c7"
+    "sha256": "c3a820248e83990123f8c7a7917f34af8f1724f1e68895387795ec4f94fc6548"
   },
   {
     "path": "site/treasury.html",
-    "sha256": "0a8d797010faa1b58cd5cf02b4ed9616d282114e839f6f75241546d6018f879a"
+    "sha256": "637fc26a92f9d07037db22e8c9e4059ae119d8b142b7d0efbac61cf2fa5943b3"
   },
   {
     "path": "site/treasury.js",
@@ -12269,7 +12277,7 @@
   },
   {
     "path": "site/whitepaper.html",
-    "sha256": "34d806e06fe32cd3808a3f1997fe8bf74910b64ab167890d89b3b33af422fa29"
+    "sha256": "fa0b91b958f7fd86d8d365687c76a33c289e62dcfa14e3aa93937922aac99509"
   },
   {
     "path": "tests/installer/InstallerTests.csproj",
@@ -12285,7 +12293,7 @@
   },
   {
     "path": "tests/security/WalletSecurityTests.cs",
-    "sha256": "c9e80908d1f7dcb55a1ff6eb929abad5f6b63142240bd245ec2063613a73acd6"
+    "sha256": "05a1a377ec53ba8d7723c0c28f092b5e6165f8e92835c750b27e1b53343ee796"
   },
   {
     "path": "tests/security/beta-reset-integration.py",
@@ -12349,7 +12357,7 @@
   },
   {
     "path": "tests/terms/Program.cs",
-    "sha256": "ba8344b8f31cbf6073438d77ec4dc9ca71de92f808ef643bec02932110b00563"
+    "sha256": "eaf246dff738c677d853e5090d20a521623e19b9408e662f2d5aaf3ec412acf1"
   },
   {
     "path": "tests/terms/TermsTests.csproj",
@@ -12358,6 +12366,22 @@
   {
     "path": "tests/terms/linux-terms-test.py",
     "sha256": "2137a047479fbe11b7c4f825ff6071e9310dd5edea729114995152a354c5887e"
+  },
+  {
+    "path": "tests/wallet-timeout-ui/Program.cs",
+    "sha256": "39039ccd38b8a3dc4e8f0279151769092af3582e363ef80e393d08a2efe8a204"
+  },
+  {
+    "path": "tests/wallet-timeout-ui/WalletTimeoutUiTests.csproj",
+    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+  },
+  {
+    "path": "tests/wallet-timeout/Program.cs",
+    "sha256": "1d285e4f3aa9b258b6280a02d23ad0a789f4724d2a354fb28b42830bbad1dfe0"
+  },
+  {
+    "path": "tests/wallet-timeout/WalletTimeoutTests.csproj",
+    "sha256": "016743d5d6d3ab1540120600e232e53176064af4f6408d84f71095efcdcee309"
   },
   {
     "path": "tools/SlithySeedTool/Program.cs",

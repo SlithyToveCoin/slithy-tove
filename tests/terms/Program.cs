@@ -21,6 +21,7 @@ internal static class Program
         void Check(bool value, string message) { if (!value) throw new Exception(message); Console.WriteLine("PASS " + message); }
         Check(!Accepted(terms), "First run requires agreement");
         Check(Encoding.UTF8.GetString(terms).Contains("11. Changes and questions"), "Full terms bundled offline");
+        Check(Encoding.UTF8.GetString(terms).Contains("December 1, 2026 is the target"), "Current launch target bundled offline");
         Type updaterType = app.GetType("Slithy_Tove.UpdateInstaller", true)!;
         string updates = Path.Combine(root, "updates");
         updaterType.GetMethod("CreatePendingUpdate")!.Invoke(null,

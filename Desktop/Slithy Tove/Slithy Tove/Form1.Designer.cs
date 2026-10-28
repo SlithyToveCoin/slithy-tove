@@ -126,7 +126,7 @@ partial class Form1
     private Button checkUpdatesButton;
     private Label updateSafetyLabel;
     private LinkLabel supportEmailLinkLabel;
-    private Label autoLockLabel;
+    private CheckBox autoLockLabel;
     private NumericUpDown autoLockMinutesNumericUpDown;
     private Button backupWalletButton;
     private Button importWalletButton;
@@ -244,7 +244,7 @@ partial class Form1
         updateSafetyLabel = new Label();
         supportEmailLinkLabel = new LinkLabel();
         autoLockMinutesNumericUpDown = new NumericUpDown();
-        autoLockLabel = new Label();
+        autoLockLabel = new CheckBox();
         importWalletButton = new Button();
         backupWalletButton = new Button();
         checkUpdatesButton = new Button();
@@ -1480,7 +1480,9 @@ partial class Form1
         autoLockLabel.Name = "autoLockLabel";
         autoLockLabel.Size = new Size(317, 37);
         autoLockLabel.TabIndex = 6;
-        autoLockLabel.Text = "Lock wallet after minutes:";
+        autoLockLabel.Text = "Auto-lock (minutes):";
+        autoLockLabel.AccessibleDescription = "Turn off to leave your wallet balance visible. Spending may still ask for your password.";
+        autoLockLabel.CheckedChanged += autoLockEnabled_CheckedChanged;
         // 
         // importWalletButton
         // 
