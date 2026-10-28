@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "01113abb3e724875c3fde4b18e17e8454d46aab7c798dab1da54816ce2504a64"
+    "sha256": "313ac8fbf68509fc1db9c735bbc827f81fba3cf72d8ccf0d6d36d7a78e18a293"
   },
   {
     "path": ".gitignore",
@@ -12153,11 +12153,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "ec0e1c09ea5418764ecfe62c681e0c58085a511d74e4cd7a27de146d97783388"
+    "sha256": "40ce8556400a4836fe201a33d965a1f5c8fdbf7a7c9281f35482f71ebf92a6fd"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "152ac4a036cce0bf9d420ced23e5c40c3a1a37bbcf03a9f050898ad25784860e"
+    "sha256": "ffe2bdce2db7244f51dad5d5c500e84d9a4feb9e18c0bc5c9d80dae7f4ec0824"
   },
   {
     "path": "site/explorer-transactions.css",
@@ -12269,11 +12269,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "03adb429b6f95c5a609c0154f61003f8496a48cb9133e352d793b3032c1d8745"
+    "sha256": "b11900d314aa5c8edabe02803aa217b0dede6ee8941ae0a33b302c6d4c53237c"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "03adb429b6f95c5a609c0154f61003f8496a48cb9133e352d793b3032c1d8745"
+    "sha256": "b11900d314aa5c8edabe02803aa217b0dede6ee8941ae0a33b302c6d4c53237c"
   },
   {
     "path": "site/whitepaper.html",
