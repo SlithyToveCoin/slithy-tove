@@ -12269,11 +12269,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "b11900d314aa5c8edabe02803aa217b0dede6ee8941ae0a33b302c6d4c53237c"
+    "sha256": "7268a29408721b3e76193bc77a39a342af21a5e19bb3a9c6d35ddd9a39dabfc1"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "b11900d314aa5c8edabe02803aa217b0dede6ee8941ae0a33b302c6d4c53237c"
+    "sha256": "7268a29408721b3e76193bc77a39a342af21a5e19bb3a9c6d35ddd9a39dabfc1"
   },
   {
     "path": "site/whitepaper.html",
