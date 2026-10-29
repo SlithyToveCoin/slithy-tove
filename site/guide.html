@@ -72,7 +72,7 @@
       <section>
         <h2>What is Slithy Tove?</h2>
         <p>Slithy Tove uses CPU mining to build a public fund for children's literacy. Ten percent of each new block's subsidy goes to that fund. The <a href="/treasury.html">treasury page</a> explains who controls it today and the plans for community voting.</p>
-        <p>You can try the Windows app or the Linux terminal tool during the public beta. Both use the test network.</p>
+        <p>You can try the Windows app or choose between the Linux desktop app and terminal tool. These beta downloads use the test network.</p>
       </section>
 
       <section>
@@ -122,9 +122,24 @@
       </section>
 
       <section>
-        <h2>What does the Linux tool do?</h2>
+        <h2>What does the Linux terminal tool do?</h2>
         <p>The Linux tool puts wallet and mining controls in a terminal menu. You can watch mining as it runs, send SLTHY from your wallet, and check for updates there.</p>
         <p>The <a href="/downloads.html">install script</a> downloads the Linux package for you. Before installing it, the script checks the signed release information and compares the download's SHA256 hash with the published hash.</p>
+      </section>
+
+      <section id="linux-desktop">
+        <h2>Using the Linux desktop app</h2>
+        <p>The Linux desktop beta has Home, Activity and Settings tabs like the Windows app. It includes the local node and .NET runtime. Ubuntu 24.04 x64 is the reference platform. You need X11 or XWayland; this download is not for ARM computers or headless servers. Other distributions and desktop environments need testing.</p>
+        <p>Download the <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz">Linux desktop archive</a> and extract it into a folder you own. Open a terminal in the extracted folder and run:</p>
+        <pre style="overflow-x:auto;padding:1rem"><code>bash install-desktop.sh</code></pre>
+        <p>Open Slithy Tove from your application menu. Leave the extracted folder in place so the launcher can find it. You can also run <code>./slithy-desktop</code> from that folder. Do not use sudo.</p>
+        <p>Create a test wallet, record its recovery words privately and allow the node to catch up before starting mining. In Settings, you can turn automatic wallet locking on or off. Locking does not stop mining or hide the balance. Sending asks for your password when the spending keys are locked.</p>
+        <p>The GUI has its own data folder, separate from the terminal app. Start with a new test wallet. To bring over a terminal wallet, make a backup in the terminal app and restore that backup through Manage wallet in the GUI. Do not copy an active wallet database or delete the original wallet. Avoid sending from two copies of the same wallet at once.</p>
+        <p>Choose your wallet from the dropdown when the app opens. It remembers your last selection. You can create a wallet or restore one from that same screen.</p>
+        <p>Version 0.1.44-beta.2 checks for updates when it opens and about once an hour. A badge beside the version and an in-app notice let you review the release. You can also use Settings &gt; Updates. Downloading leaves mining running; installation stops the local node and opens the new app. Start mining again when you are ready.</p>
+        <p>If you have 0.1.43-beta.1 or earlier, close it, extract this package into a separate folder and run its <code>install-desktop.sh</code>. That one manual upgrade adds the updater. Your wallet data stays in your Linux account's data folder. The terminal app has a separate updater.</p>
+        <p>Some desktops need an extension to show notification-area icons. The app asks you to confirm that its icon is visible before hiding the window. If you cannot see the icon, cancel and turn off that option in Settings.</p>
+        <p>If the app will not open, run <code>./slithy-desktop</code> from a terminal and include the error, your distribution and desktop environment in a <a href="/bug-report.html">bug report</a>. Do not send passwords, recovery words or wallet files.</p>
       </section>
 
       <section>

@@ -12253,11 +12253,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "40ce8556400a4836fe201a33d965a1f5c8fdbf7a7c9281f35482f71ebf92a6fd"
+    "sha256": "827c6da0597c11f0ce0ee8c75860c36b0ee97425d21bb4b2316693043eaca6eb"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "ffe2bdce2db7244f51dad5d5c500e84d9a4feb9e18c0bc5c9d80dae7f4ec0824"
+    "sha256": "6d02b1c20388d238806cd31adb3fa0a0ded9542dc186667a1960010bda70927a"
   },
   {
     "path": "site/explorer-transactions.css",
@@ -12277,7 +12277,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "04d33a86df43603a3333f3a922b35e7e399b6170b85c6bea7070a143c990e67e"
+    "sha256": "4e1a4d4795823ebe3b6dcbc0860be5f8ee177db1da6edb8e03078f3f54753822"
   },
   {
     "path": "site/home-full.html",
@@ -12360,8 +12360,12 @@
     "sha256": "a23f1009275abd752e6a765a7bb689a0f31e6941ae0764224bfa2afc53e28aaa"
   },
   {
+    "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
+    "sha256": "4232bc7c4643dc351d395626b267c039fc348bcbc0c6936b4bc8e3d49aa60fac"
+  },
+  {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
-    "sha256": "08a0b12065cd0b8f2325d51653cd38671fb70b1cec8fd9148a360efb7c4301db"
+    "sha256": "73d1eec0aa4b12e3bd90e24d8e66351325279a44606b3e83ba5aab81ef686d7e"
   },
   {
     "path": "site/updates/linux-x64/stable.json",
@@ -12369,11 +12373,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "7268a29408721b3e76193bc77a39a342af21a5e19bb3a9c6d35ddd9a39dabfc1"
+    "sha256": "d088cabc255741e5ef83b1c7b5ac66fc5eae1d0234963385252184518e0a841a"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "7268a29408721b3e76193bc77a39a342af21a5e19bb3a9c6d35ddd9a39dabfc1"
+    "sha256": "d088cabc255741e5ef83b1c7b5ac66fc5eae1d0234963385252184518e0a841a"
   },
   {
     "path": "site/whitepaper.html",
