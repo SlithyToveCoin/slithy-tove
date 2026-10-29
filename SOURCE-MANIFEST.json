@@ -4,6 +4,10 @@
     "sha256": "f68cced1c5ec7f76cff59f0939b20d52283daf6a230df34f0132d4ae7612ef96"
   },
   {
+    "path": ".github/workflows/release-smoke.yml",
+    "sha256": "455e511af0d5b376c3af9bb674db10978c60bb213f1e59d85b17d7e89fa44d91"
+  },
+  {
     "path": ".github/workflows/source-checks.yml",
     "sha256": "13bbb2489340c056c45636ccb08eafd4dc19f3382bd09abdcdeaca98a7e29d7f"
   },
@@ -12060,6 +12064,10 @@
     "sha256": "b811cc3858b4f902159c703c4d18d35a204cb1d481f2231815d8529f2e891c3e"
   },
   {
+    "path": "docs/RELEASE-TESTING.md",
+    "sha256": "c392beb80a66596dd4ad6d7035d43a0d521d44f3136cdbd2f1e81ea5b44ef7a4"
+  },
+  {
     "path": "docs/SOURCE-PROVENANCE.md",
     "sha256": "f520151808fb5cf13a2c38da972e1892cbd3d39c6dc19398a4132650352810c9"
   },
@@ -12392,8 +12400,24 @@
     "sha256": "7cc9fc084c9e5a58685936a2f4970f4f1d59555f43c8257f6af709e855e8d925"
   },
   {
+    "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
+    "sha256": "18ba9545f05cdc90046bd97ce935b901dfca8da69baf467f4c72f0b7af796f17"
+  },
+  {
+    "path": "tests/linux-gui/desktop_smoke.py",
+    "sha256": "8fca593db138a99fc638d4d663398858dfe820ff0e9e898f9fd723e00db206a7"
+  },
+  {
     "path": "tests/linux-gui/test_desktop_install.py",
     "sha256": "5af41450089ada8d993ff5fab9b48f7ac030db2ba50a71d437dfcfbdf4e4656b"
+  },
+  {
+    "path": "tests/linux-gui/wayland-session.py",
+    "sha256": "4e7b6ae6cac4289132bcbd6399370bed23984a8c419d3fd15344d2d757a5ef49"
+  },
+  {
+    "path": "tests/linux-gui/xfce-session.py",
+    "sha256": "51473f1f0c7d6ef50ccfdc33a39634fcfbda62e1761210e3f2c3df7be9e1aca0"
   },
   {
     "path": "tests/security/Slithy.SecurityTests.csproj",
@@ -12553,7 +12577,7 @@
   },
   {
     "path": "tools/public-source.json",
-    "sha256": "fcc700610dbe5e38a00450f4bb13062d099e2fbdae7bb12804c7e77657988fa3"
+    "sha256": "07b5b4de35b03f22247f15e28936eca7a3ff739b29feed81698dc42431d6cb54"
   },
   {
     "path": "tools/scan-source.py",

@@ -2,7 +2,7 @@
   "files": [
     ".gitignore", ".gitattributes", "README.md", "LICENSE", "NOTICE", "SECURITY.md", "CONTRIBUTING.md",
     "docs/BUILDING.md", "docs/SOURCE-PROVENANCE.md", "docs/ARTWORK.md",
-    "docs/TERMS-ACCEPTANCE.md", "docs/LINUX-GUI-PREVIEW.md",
+    "docs/TERMS-ACCEPTANCE.md", "docs/LINUX-GUI-PREVIEW.md", "docs/RELEASE-TESTING.md",
     "installer/SlithyTove.iss", "installer/build-installer.ps1", "installer/prepare-signing-tools.ps1",
     "installer/azure-signing-metadata.sample.json", "installer/BUILD-INSTALLER.md", "installer/README.md",
     "tools/build-core.sh", "tools/build-linux-release-tarball.sh", "tools/build-linux-gui.sh", "tools/build-linux-gui-preview.ps1",

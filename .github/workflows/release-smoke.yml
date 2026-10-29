@@ -1,0 +1,93 @@
+name: Published desktop checks
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/release-smoke.yml'
+      - 'tests/installer/Test-PublishedWindowsInstaller.ps1'
+      - 'tests/linux-gui/desktop_smoke.py'
+      - 'tests/linux-gui/xfce-session.py'
+      - 'tests/linux-gui/wayland-session.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: published-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-installer:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, windows-2025]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install, launch, repair and uninstall the published package
+        id: installer-test
+        shell: pwsh
+        run: ./tests/installer/Test-PublishedWindowsInstaller.ps1 -EnvironmentKind GitHubHosted -ConfirmDisposableMachine
+      - name: Save installer checks
+        if: always() && steps.installer-test.outputs.evidence != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: installer-${{ matrix.os }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ steps.installer-test.outputs.evidence }}/*.json
+            ${{ steps.installer-test.outputs.evidence }}/*.log
+            ${{ steps.installer-test.outputs.evidence }}/*.png
+            ${{ steps.installer-test.outputs.evidence }}/*.txt
+
+  linux-desktop:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        session: [xfce-x11, weston-xwayland]
+    env:
+      DESKTOP_SESSION_TEST: ${{ matrix.session }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install desktop test dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3 python3-pil xdotool x11-utils desktop-file-utils libgtk-3-bin dbus-x11 xvfb xauth libfontconfig1 libfreetype6 libice6 libsm6 libx11-6 libxext6 libxrender1 libxtst6 fonts-dejavu-core xfwm4 xfce4-panel xfce4-settings weston xwayland
+      - name: Download the reviewed Linux GUI package
+        run: |
+          set -euo pipefail
+          mkdir -p build/downloads
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 'https://slithy.io/downloads/linux/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz' -o build/downloads/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz
+          echo 'aeb08782d19fd039623f84be4a9834e5b3f82e30ff37e293995f24a0a66489f3  build/downloads/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz' | sha256sum -c -
+      - name: Exercise the installed desktop application
+        run: |
+          set -euo pipefail
+          case "$DESKTOP_SESSION_TEST" in
+            xfce-x11) wrapper=tests/linux-gui/xfce-session.py ;;
+            weston-xwayland) wrapper=tests/linux-gui/wayland-session.py ;;
+            *) exit 1 ;;
+          esac
+          python3 "$wrapper" --output "build/desktop/$DESKTOP_SESSION_TEST/session" --timeout 900 -- \
+            python3 tests/linux-gui/desktop_smoke.py \
+            --archive "$PWD/build/downloads/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz" \
+            --session "$DESKTOP_SESSION_TEST" \
+            --output "build/desktop/$DESKTOP_SESSION_TEST/results"
+      - name: Save desktop checks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: desktop-${{ matrix.session }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: build/desktop/${{ matrix.session }}/
