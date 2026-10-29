@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/release-smoke.yml'
       - 'tests/installer/Test-PublishedWindowsInstaller.ps1'
+      - 'tests/installer/Test-InstalledWalletTransactions.ps1'
       - 'tests/linux-gui/desktop_smoke.py'
       - 'tests/linux-gui/xfce-session.py'
       - 'tests/linux-gui/wayland-session.py'
@@ -91,3 +92,41 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: build/desktop/${{ matrix.session }}/
+
+  linux-ubuntu26:
+    runs-on: ubuntu-24.04
+    container: ubuntu:26.04@sha256:0e73b71479e7bc5f006bca872e25c3cd680dc052a0116f90d63ae363537db0dd
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install Ubuntu 26 desktop test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends curl ca-certificates python3 xdotool x11-utils desktop-file-utils libgtk-3-bin dbus-x11 xvfb xauth libfontconfig1 libfreetype6 libice6 libsm6 libx11-6 libxext6 libxrender1 libxtst6 libicu-dev fonts-dejavu-core xfwm4 xfce4-panel xfce4-settings
+      - name: Download the reviewed Linux GUI package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/downloads
+          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 'https://slithy.io/downloads/linux/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz' -o build/downloads/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz
+          echo 'aeb08782d19fd039623f84be4a9834e5b3f82e30ff37e293995f24a0a66489f3  build/downloads/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz' | sha256sum -c -
+      - name: Exercise the application in Ubuntu 26 userspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tests/linux-gui/xfce-session.py --output build/desktop/ubuntu26-xfce/session --timeout 900 -- \
+            python3 tests/linux-gui/desktop_smoke.py \
+            --archive "$PWD/build/downloads/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz" \
+            --session xfce-x11 --output build/desktop/ubuntu26-xfce/results
+      - name: Save Ubuntu 26 checks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: desktop-ubuntu26-xfce
+          retention-days: 14
+          if-no-files-found: warn
+          path: build/desktop/ubuntu26-xfce/

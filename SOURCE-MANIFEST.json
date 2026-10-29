@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "455e511af0d5b376c3af9bb674db10978c60bb213f1e59d85b17d7e89fa44d91"
+    "sha256": "0e294c608bdb27f430c80daa122fee6dd4991a5e99e4f0fb5de9d0eb7e6e6d15"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12065,7 +12065,7 @@
   },
   {
     "path": "docs/RELEASE-TESTING.md",
-    "sha256": "c392beb80a66596dd4ad6d7035d43a0d521d44f3136cdbd2f1e81ea5b44ef7a4"
+    "sha256": "4d6427406b01932807ae9e915005e3d843d6922eb901ac7f203bd80e3e5fc170"
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
@@ -12400,12 +12400,16 @@
     "sha256": "7cc9fc084c9e5a58685936a2f4970f4f1d59555f43c8257f6af709e855e8d925"
   },
   {
+    "path": "tests/installer/Test-InstalledWalletTransactions.ps1",
+    "sha256": "367d407d4e10e38fc90adf885ea61dfc758fd70dae5af704f4db4935cb1636e3"
+  },
+  {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "18ba9545f05cdc90046bd97ce935b901dfca8da69baf467f4c72f0b7af796f17"
+    "sha256": "218e2ae18ab46b8e8cbf295da86b77b5b43be5fb597156ae347d01b28202c772"
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "8fca593db138a99fc638d4d663398858dfe820ff0e9e898f9fd723e00db206a7"
+    "sha256": "46169bbaa9b70513c9b2444d63800598d0362ae97a78b356fe4f919852c6614a"
   },
   {
     "path": "tests/linux-gui/test_desktop_install.py",
@@ -12413,7 +12417,7 @@
   },
   {
     "path": "tests/linux-gui/wayland-session.py",
-    "sha256": "4e7b6ae6cac4289132bcbd6399370bed23984a8c419d3fd15344d2d757a5ef49"
+    "sha256": "453655b714d4adaaa13b0562a9acf17bdd3fb4a702ab4d74b84ae074db4f3960"
   },
   {
     "path": "tests/linux-gui/xfce-session.py",

@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Run desktop checks inside a private Weston session with XWayland.
 
-Ubuntu 24.04 packages: weston, xwayland, xvfb, xauth, x11-utils, dbus-daemon.
+Ubuntu 24.04 packages: weston, xwayland, xvfb, xauth, x11-utils, xdotool, dbus-daemon.
 This tests X11 application compatibility under a Wayland compositor. It does
 not turn an X11 application into a native Wayland client.
+
+The test command receives DISPLAY for XWayland. SLITHY_INPUT_DISPLAY,
+SLITHY_INPUT_XAUTHORITY and SLITHY_INPUT_WINDOW identify the outer Xvfb window.
+Route input through that window so Weston sees the pointer and keyboard events.
 """
 import argparse
 from contextlib import ExitStack
@@ -77,6 +81,32 @@ def wait_for_display(process, capture, socket_name, env):
         time.sleep(0.2)
 
 
+def input_route(process, capture, env, width, height):
+    """Find this compositor's output window on its private parent X server."""
+    parent = json.loads(capture.read_text())
+    display, authority = parent.get("DISPLAY", ""), parent.get("XAUTHORITY", "")
+    if not re.fullmatch(r":\d+(?:\.\d+)?", display) or not Path(authority).is_file():
+        raise RuntimeError("The private Xvfb did not provide its display and authority file.")
+    parent_env = dict(env, DISPLAY=display, XAUTHORITY=authority)
+    deadline = time.monotonic() + 15
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            raise RuntimeError("Weston exited before its input window was ready.")
+        found = subprocess.run(["xdotool", "search", "--onlyvisible", "--class", "^Weston Compositor$"],
+                               env=parent_env, text=True, capture_output=True, timeout=3)
+        windows = found.stdout.split()
+        if len(windows) == 1 and windows[0].isdigit():
+            geometry = subprocess.check_output(["xdotool", "getwindowgeometry", "--shell", windows[0]],
+                                               env=parent_env, text=True, timeout=3)
+            values = dict(line.split("=", 1) for line in geometry.splitlines())
+            if int(values["WIDTH"]) == width and int(values["HEIGHT"]) == height:
+                env.update(SLITHY_INPUT_DISPLAY=display, SLITHY_INPUT_XAUTHORITY=authority,
+                           SLITHY_INPUT_WINDOW=windows[0])
+                return windows[0]
+        time.sleep(.1)
+    raise RuntimeError("The private Weston output window could not be identified for input routing.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True, help="Compositor logs and session metadata")
@@ -92,7 +122,7 @@ def main():
         parser.error("Use a positive timeout up to 7200 seconds and a supported desktop size.")
     if sys.platform != "linux":
         parser.error("Run this script on Linux.")
-    for executable in ("weston", "Xwayland", "Xvfb", "xvfb-run", "xauth", "xdpyinfo", "dbus-daemon"):
+    for executable in ("weston", "Xwayland", "Xvfb", "xvfb-run", "xauth", "xdpyinfo", "xdotool", "dbus-daemon"):
         if shutil.which(executable) is None:
             parser.error(f"Missing {executable}. Install the packages listed in this script's help.")
     output = args.output.resolve()
@@ -137,6 +167,15 @@ def main():
                               "pending = target.with_suffix('.pending')\npending.write_text(json.dumps(values))\n"
                               "pending.chmod(0o600)\npending.rename(target)\n")
             helper.chmod(0o700)
+            parent_capture = root / "parent-environment.json"
+            launcher = root / "launch-weston"
+            launcher.write_text("#!/usr/bin/python3\nimport json, os, sys\nfrom pathlib import Path\n"
+                                f"target = Path({str(parent_capture)!r})\n"
+                                "values = {key: os.environ[key] for key in ('DISPLAY', 'XAUTHORITY') if key in os.environ}\n"
+                                "pending = target.with_suffix('.pending')\npending.write_text(json.dumps(values))\n"
+                                "pending.chmod(0o600)\npending.rename(target)\n"
+                                "os.execvp('weston', ['weston', *sys.argv[1:]])\n")
+            launcher.chmod(0o700)
             config = root / "weston.ini"
             # Weston exports DISPLAY to children after choosing its own XWayland socket.
             config.write_text("[core]\nxwayland=true\nidle-time=0\n"
@@ -152,13 +191,15 @@ def main():
                 # seat, and older XWayland servers can crash on an XTest pointer event.
                 compositor = subprocess.Popen(["xvfb-run", "--auto-servernum",
                     f"--server-args=-screen 0 {args.width}x{args.height}x24 -nolisten tcp", "--",
-                    "weston", "--backend=x11", "--renderer=pixman", "--xwayland",
+                    str(launcher), "--backend=x11", "--renderer=pixman", "--xwayland",
                     "--idle-time=0", f"--width={args.width}", f"--height={args.height}", f"--socket={socket_name}",
                     f"--config={config}", f"--log={output / 'weston.log'}"], env=env,
                     stdout=compositor_log, stderr=compositor_log, start_new_session=True)
                 display = wait_for_display(compositor, capture, socket_name, env)
+                host_window = input_route(compositor, parent_capture, env, args.width, args.height)
                 result.update(status="running", compositor=version, display=display, wayland_display=socket_name,
-                              width=args.width, height=args.height, backend="nested X11 on a private Xvfb")
+                              width=args.width, height=args.height, backend="nested X11 on a private Xvfb",
+                              input_route="outer Xvfb through the Weston input seat", input_window=host_window)
                 print(f"Running desktop checks on {version}, XWayland DISPLAY={display}.", flush=True)
                 test = subprocess.Popen(command, env=env, start_new_session=True)
                 deadline = time.monotonic() + args.timeout

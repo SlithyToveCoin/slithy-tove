@@ -149,7 +149,7 @@ function Check-Signature([string]$Path, [string]$Label) {
     Save-Json $signatures 'signatures.json'
 }
 
-function Run-Program([string]$File, [string[]]$Arguments, [string]$Label, [int]$TimeoutSeconds = 180) {
+function Run-Program([string]$File, [string[]]$Arguments, [string]$Label, [int]$TimeoutSeconds = 180, [switch]$AllowFailure) {
     $start = [Diagnostics.ProcessStartInfo]::new($File)
     $start.UseShellExecute = $false
     $start.CreateNoWindow = $true
@@ -168,7 +168,9 @@ function Run-Program([string]$File, [string[]]$Arguments, [string]$Label, [int]$
         $text = $output.GetAwaiter().GetResult() + $errors.GetAwaiter().GetResult()
         $text = $text -replace '(?i)(rpcpassword=)[^\s]+', '$1[redacted]'
         $text = $text -replace '(https?://)[^\s/@:]+:[^\s/@]+@', '$1[redacted]@'
-        $text | Set-Content -LiteralPath (Join-Path $resultsRoot "$Label.log") -Encoding utf8
+        # Inno writes its own log. Captured stdout must not overwrite that file.
+        $text | Set-Content -LiteralPath (Join-Path $resultsRoot "$Label.process.log") -Encoding utf8
+        if ($AllowFailure) { return [pscustomobject]@{ ExitCode = $process.ExitCode; Output = $text.Trim() } }
         Assert-Check ($process.ExitCode -eq 0) "$Label failed with exit code $($process.ExitCode)."
     } finally { $process.Dispose() }
 }
@@ -312,11 +314,34 @@ public static class SlithyInstallerWindowProbe {
     Assert-Check (-not (Test-Path -LiteralPath (Join-Path $profileRoot 'terms-acceptance.json'))) 'Declining unexpectedly saved an agreement.'
     Pass 'Installed GUI opens terms, starts no node before agreement, and exits on decline'
 
-    foreach ($test in @('updates', 'wallet-restore', 'wallet-rpc', 'mining-rpc', 'seed-wallet', 'send-receive')) {
+    foreach ($test in @('updates', 'wallet-restore', 'wallet-rpc', 'mining-rpc', 'seed-wallet')) {
         Run-Program $app @('--self-test-' + $test) ('self-test-' + $test)
         Pass "Installed application self-test: $test"
     }
+    $bundledAttempts = [Collections.Generic.List[object]]::new()
+    $bundled = Run-Program $app @('--self-test-send-receive') 'self-test-send-receive-attempt-1' -AllowFailure
+    $bundledAttempts.Add($bundled)
+    $repeatedCancellation = $false
+    $cancellationDiagnostic = 'Disposable node test failed: The operation was canceled.'
+    if ($bundled.ExitCode -ne 0 -and $bundled.Output -ceq $cancellationDiagnostic) {
+        Write-Warning 'The bundled bulk-mining test reached its RPC timeout. Its first failure is retained; retrying it once.'
+        $bundled = Run-Program $app @('--self-test-send-receive') 'self-test-send-receive-attempt-2' -AllowFailure
+        $bundledAttempts.Add($bundled)
+        $repeatedCancellation = $bundled.ExitCode -ne 0 -and $bundled.Output -ceq $cancellationDiagnostic
+    }
+    Save-Json $bundledAttempts 'bundled-send-receive-attempts.json'
+    if ($repeatedCancellation) {
+        Write-Warning 'The bundled test timed out twice. Finishing the chunked transaction and uninstall checks before failing this job.'
+    } else {
+        Assert-Check ($bundled.ExitCode -eq 0) 'The bundled send/receive test failed. See its process log.'
+        Pass "Installed application self-test: send-receive ($($bundledAttempts.Count) attempt(s))"
+    }
     Assert-Check (@(Get-Process -Name slithyd -ErrorAction SilentlyContinue).Count -eq 0) 'A disposable self-test node did not stop.'
+    $transactionScript = Join-Path $PSScriptRoot 'Test-InstalledWalletTransactions.ps1'
+    $powerShell = (Get-Process -Id $PID).Path
+    Run-Program $powerShell @('-NoLogo', '-NoProfile', '-NonInteractive', '-File', $transactionScript,
+        '-InstalledDirectory', $installRoot, '-EvidenceDirectory', $resultsRoot) 'chunked-transactions' 420
+    Pass 'Installed wallet assembly sends, confirms, backs up and restores using bounded regtest block batches'
 
     # Real offline wallet data lives in the fresh runner profile, never in uploaded evidence.
     $networkRoot = Join-Path $profileRoot 'networks/beta-20260909'
@@ -344,8 +369,23 @@ public static class SlithyInstallerWindowProbe {
     # Run the installed signed uninstaller, not a substitute or rebuilt harness.
     Check-Signature $uninstaller 'uninstaller before removal'
     Run-Program $uninstaller @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', ('/LOG=' + (Join-Path $resultsRoot 'uninstall.log'))) 'uninstall' 180
-    $deadline = [DateTime]::UtcNow.AddSeconds(20)
-    while ((Test-Path -LiteralPath $uninstaller) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
+    # Inno's first process can exit before its temporary cleanup child finishes.
+    $uninstallLog = Join-Path $resultsRoot 'uninstall.log'
+    $deadline = [DateTime]::UtcNow.AddSeconds(30)
+    $uninstallFinished = $false
+    while (-not $uninstallFinished -and [DateTime]::UtcNow -lt $deadline) {
+        if (-not (Test-Path -LiteralPath $uninstaller) -and (Test-Path -LiteralPath $uninstallLog)) {
+            try {
+                $logHandle = [IO.File]::Open($uninstallLog, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::None)
+                $logHandle.Dispose()
+                $uninstallFinished = $true
+            } catch [IO.IOException] { }
+        }
+        if (-not $uninstallFinished) { Start-Sleep -Milliseconds 250 }
+    }
+    Assert-Check $uninstallFinished 'The uninstaller cleanup child did not finish within 30 seconds.'
+    $uninstallText = [IO.File]::ReadAllText($uninstallLog)
+    Assert-Check ($uninstallText.Contains('Uninstallation process succeeded.') -and $uninstallText.Contains('Removed all? Yes')) 'Inno did not report a complete uninstall.'
     Assert-Check (@(Get-SlithyRegistration).Count -eq 0) 'Uninstall left a registered Slithy installation.'
     foreach ($shortcut in $shortcutPaths) { Assert-Check (-not (Test-Path -LiteralPath $shortcut)) "Uninstall left a shortcut: $shortcut" }
     Assert-Check (-not (Test-Path -LiteralPath $app)) 'Uninstall left the application executable.'
@@ -356,6 +396,7 @@ public static class SlithyInstallerWindowProbe {
     Check-Canaries $canaries
     Assert-Check (@(Get-Process | Where-Object { $_.ProcessName -in @('Slithy Tove', 'slithyd') }).Count -eq 0) 'A tested application or node process survived uninstall.'
     Pass 'Public uninstall removes registration, shortcuts and payload without changing wallet, settings, chain or log fixtures'
+    Assert-Check (-not $repeatedCancellation) 'The bundled bulk-mining self-test timed out twice. Other evidence is retained, but this run is not a pass.'
     Save-Json @{
         Passed = $true; Version = $version; InstallerUrl = $installerUri; InstallerSha256 = $installerHash
         EnvironmentKind = $EnvironmentKind; OS = [Environment]::OSVersion.VersionString
