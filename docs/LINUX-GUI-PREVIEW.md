@@ -1,6 +1,6 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.44-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.44-beta.2. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
 
 The terminal app remains available. Installing this GUI does not replace it, and the terminal updater does not update the GUI.
 
@@ -74,7 +74,7 @@ The native tools must match the reviewed Slithy beta. The GUI checks the beta ge
 
 ## Updates
 
-Version 0.1.44-beta.1 adds updates inside the GUI. By default, Slithy checks when it opens and about once an hour while it runs. Under **Settings > Updates**, clear **Check for updates when Slithy opens and while it is running** to turn off those checks. **Check now** still lets you check yourself.
+Version 0.1.44-beta.2 adds updates inside the GUI. By default, Slithy checks when it opens and about once an hour while it runs. Under **Settings > Updates**, clear **Check for updates when Slithy opens and while it is running** to turn off those checks. **Check now** still lets you check yourself.
 
 A newer release adds an **Update available** badge beside the version and a notice above the tabs. Choose **Review update** to read the release notes and start the download. **Later** dismisses the notice; the badge stays available. The same release will not show that notice again during the current session.
 

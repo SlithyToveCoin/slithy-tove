@@ -17,11 +17,13 @@ Run with the release archive, an extracted previous GUI folder, and a report dir
 
 ```sh
 /tmp/slithy-update-harness/LinuxGuiPackageUpdate.Tests \
-  /path/to/Slithy-Tove-Linux-GUI-0.1.44-beta.1-x64.tar.gz \
+  /path/to/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz \
   /path/to/slithy-tove-linux-gui-0.1.43-beta.1 \
   /tmp/slithy-update-results
 ```
 
 The report contains checks and package hashes, not wallet secrets. The disposable profile remains under `/tmp/slithy-package-update-*` for inspection. It contains test keys, so do not include that folder in published results. Your regular settings and wallet folders are not used.
+
+Use the archive's release filename. The harness reads its version from that name when it builds the temporary signed manifest.
 
 The preceding GUI release has no built-in updater. Its native binary and a saved launcher act as the old installation for this test. The candidate is a real GUI process; the test does not click through its wallet password dialog. Wallet persistence is checked through the isolated node's RPC after the window has taken ownership.

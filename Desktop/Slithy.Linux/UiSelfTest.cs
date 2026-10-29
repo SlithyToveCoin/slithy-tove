@@ -56,6 +56,7 @@ internal static class UiSelfTest
                 if (!ReferenceEquals(window.Icon, Branding.WindowIcon)) throw new InvalidOperationException("Main window icon missing.");
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
+                CheckStartupOnce(window);
                 var logo = window.GetVisualDescendants().OfType<Image>().Single(c => c.Name == "SlithyHeaderLogo");
                 if (!ReferenceEquals(logo.Source, Branding.HeaderMark)) throw new InvalidOperationException("Header artwork missing.");
                 TabControl? tabs = window.GetVisualDescendants().OfType<TabControl>().FirstOrDefault();
@@ -103,6 +104,35 @@ internal static class UiSelfTest
             Console.Error.WriteLine("FAIL: GUI render test: " + e.Message);
             return 1;
         }
+    }
+
+    private static void CheckStartupOnce(MainWindow window)
+    {
+        var status = window.GetVisualDescendants().OfType<TextBlock>().Single(c => c.Name == "NetworkStatus");
+        string? original = status.Text;
+        int opened = 0;
+        EventHandler handler = (_, _) => opened++;
+        window.Opened += handler;
+        try
+        {
+            for (int attempt = 0; attempt < 2; attempt++)
+            {
+                status.Text = "Tray restore test";
+                window.Hide();
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+                if (status.Text != "Tray restore test")
+                    throw new InvalidOperationException("Restoring from the tray repeated startup and replaced the current display.");
+            }
+            if (opened != 2)
+                throw new InvalidOperationException("The tray restore test must exercise repeated Opened events.");
+        }
+        finally
+        {
+            window.Opened -= handler;
+            status.Text = original;
+        }
+        Console.WriteLine("PASS: repeated tray hide/show restores the window without running startup again.");
     }
 
     private static void CheckWindowChrome(MainWindow window)

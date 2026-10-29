@@ -8,7 +8,7 @@ internal static class Branding
 {
     // This ID also belongs to the Linux application-menu entry.
     internal const string DesktopId = "io.slithy.Tove";
-    internal const string Release = "0.1.44-beta.1";
+    internal const string Release = "0.1.44-beta.2";
     private static readonly Lazy<Bitmap> AppImage = new(() => LoadImage("Slithy.AppIcon"));
     private static readonly Lazy<Bitmap> MarkImage = new(() => LoadImage("Slithy.HeaderMark"));
     private static readonly Lazy<WindowIcon> IconImage = new(() =>

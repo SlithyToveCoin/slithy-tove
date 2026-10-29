@@ -12,7 +12,7 @@ namespace Slithy.Linux;
 internal static class LinuxGuiUpdateSelfTest
 {
     private static int _checks;
-    private const string Version = "0.1.44-beta.1";
+    private const string Version = "0.1.44-beta.2";
     private static readonly string Prefix = "slithy-tove-linux-gui-" + Version;
 
     public static async Task<int> RunAsync()

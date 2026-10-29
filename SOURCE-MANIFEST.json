@@ -241,7 +241,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Branding.cs",
-    "sha256": "4d6c77be693b36ca1ad43a9d2cc9d7dd195b242b1722b83dc08cbc66a302bb8c"
+    "sha256": "a9aed33817f598270809bce9b72c944d719abc691efeb64546f7023394e297cb"
   },
   {
     "path": "Desktop/Slithy.Linux/Dialogs.cs",
@@ -257,7 +257,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateSelfTest.cs",
-    "sha256": "01295f23cc3f4b257a10d75cf52a0005b6c2265c87b8a78ce931f872d7d26d30"
+    "sha256": "cca92680eab006e107e2bc6adee64f861501fc4ed4ac430bbffc99a438b1a3aa"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateService.cs",
@@ -281,7 +281,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.cs",
-    "sha256": "7a139b4fa6a57ed1f76937ff29ddcb31adec10f3246f276f9b4a2a15850ef466"
+    "sha256": "83f92942e5821ab8d7679cbb470344d7b3db091e5877df100debd9cc26e3c6f1"
   },
   {
     "path": "Desktop/Slithy.Linux/Program.cs",
@@ -289,11 +289,11 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
-    "sha256": "bdbd2db3e3f8958e4cd8ab9cad783f912441de8f7a5ce5200889a7c07246535a"
+    "sha256": "8e2fbb19ed5475365f978ab7ee342e3e939ad864973fca7102f7b5b43242e20f"
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
-    "sha256": "b414c023d5b0b5a951287e38632b4e10751729e1899a09c2a997ccbf00ef46ac"
+    "sha256": "c4cc80e634ad62fa8a446e34b13f2d895c571079289c47c855560af53ec91154"
   },
   {
     "path": "Desktop/Slithy.Linux/WindowChrome.cs",
@@ -12041,7 +12041,7 @@
   },
   {
     "path": "docs/LINUX-GUI-PREVIEW.md",
-    "sha256": "13e6221ad069b2f8a7be00cdce8f1ca284c173659431bd7904444d08403ac4b5"
+    "sha256": "20bcb010677013f4fac9c23121ce976efdb6a491e8a14947fa73cbe476349c1e"
   },
   {
     "path": "docs/NETWORK-TEST-COVERAGE.md",
@@ -12057,7 +12057,7 @@
   },
   {
     "path": "docs/RELEASE-0.1.44.md",
-    "sha256": "ad1d292f0778c0db31b5d54519fd9741f69688285b4651ac4222f5d2bc43fa26"
+    "sha256": "b811cc3858b4f902159c703c4d18d35a204cb1d481f2231815d8529f2e891c3e"
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
@@ -12421,15 +12421,15 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/Program.cs",
-    "sha256": "793e2261b0a0ffda9e29e837f23fd62a337246c702e8bcf7e611e92b5d94125c"
+    "sha256": "b62d4de2aeddefaec1b0146bf47ec02cc192f724ce34af9595599b92a1c98da7"
   },
   {
     "path": "tests/security/linux-gui-package-update/README.md",
-    "sha256": "94b4b66ccdc399ad202a7b9b9c04d25eab9997d5cff92d5df099e895d702aa3d"
+    "sha256": "31873085fba296657cebe752814aee3a5077879cd3437e0c99ab791a885d498d"
   },
   {
     "path": "tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj",
-    "sha256": "6396f3bcac853938a3da86c219c05061b1c3fe9a24ecf3894f9e92f2eefeec9b"
+    "sha256": "f7ce0a1c60095b38336ef32c2eff3303851ba43cde90f744c6cdc67da9c27589"
   },
   {
     "path": "tests/security/linux-gui-update/Program.cs",

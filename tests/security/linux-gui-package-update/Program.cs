@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Slithy.Linux;
 using Slithy_Tove;
 
@@ -13,6 +14,13 @@ if (!OperatingSystem.IsLinux() || args.Length != 3)
     return 2;
 }
 string archive = Path.GetFullPath(args[0]), previous = Path.GetFullPath(args[1]), results = Path.GetFullPath(args[2]);
+Match archiveName = Regex.Match(Path.GetFileName(archive), @"^Slithy-Tove-Linux-GUI-(?<version>\d+\.\d+\.\d+(?:-beta\.\d+)?)-x64\.tar\.gz$", RegexOptions.CultureInvariant);
+if (!archiveName.Success)
+{
+    Console.Error.WriteLine("Use the release archive filename, including its version.");
+    return 2;
+}
+string candidateVersion = archiveName.Groups["version"].Value;
 Directory.CreateDirectory(results);
 string root = Path.Combine(Path.GetTempPath(), "slithy-package-update-" + Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(root);
@@ -74,8 +82,8 @@ try
 
     using ECDsa key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
     byte[] package = await File.ReadAllBytesAsync(archive);
-    var manifest = new LinuxGuiUpdateManifest("0.1.44-beta.1",
-        "https://slithy.io/downloads/linux/Slithy-Tove-Linux-GUI-0.1.44-beta.1-x64.tar.gz",
+    var manifest = new LinuxGuiUpdateManifest(candidateVersion,
+        "https://slithy.io/downloads/linux/" + Path.GetFileName(archive),
         Convert.ToHexString(SHA256.HashData(package)), "Disposable package integration test", DateTimeOffset.UtcNow.AddMinutes(-1),
         LinuxGuiUpdateService.Platform, LinuxGuiUpdateService.Network, LinuxGuiUpdateService.Genesis);
     byte[] payload = JsonSerializer.SerializeToUtf8Bytes(manifest);

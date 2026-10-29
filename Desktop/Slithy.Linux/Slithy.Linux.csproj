@@ -7,7 +7,7 @@
     <AssemblyName>slithy-desktop</AssemblyName>
     <RootNamespace>Slithy.Linux</RootNamespace>
     <Version>0.1.44</Version>
-    <InformationalVersion>0.1.44-beta.1</InformationalVersion>
+    <InformationalVersion>0.1.44-beta.2</InformationalVersion>
     <Product>Slithy Tove Linux GUI Beta</Product>
     <Company>CS Idea Labs LLC</Company>
     <Description>Linux wallet and CPU miner for the Slithy test network.</Description>

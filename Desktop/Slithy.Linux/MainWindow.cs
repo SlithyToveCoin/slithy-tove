@@ -28,6 +28,7 @@ internal sealed partial class MainWindow : Window
     private readonly bool _preview, _regtest;
     private Uri? _endpoint;
     private bool _busy, _polling, _closing, _locked = true, _ready, _trayConfirmed, _paymentBlocked = true;
+    private bool _startupStarted;
     private string _walletName = "";
     private WalletSnapshot? _snapshot;
     private MiningInfo? _mining;
@@ -125,6 +126,9 @@ internal sealed partial class MainWindow : Window
         _timer.Tick += async (_, _) => await Poll();
         Opened += async (_, _) =>
         {
+            // Restoring from the tray raises Opened again. Startup belongs to the first show.
+            if (_startupStarted) return;
+            _startupStarted = true;
             try { await LinuxGuiUpdateInstaller.AcknowledgeStartupAsync(Program.StartupArguments); }
             catch
             {
