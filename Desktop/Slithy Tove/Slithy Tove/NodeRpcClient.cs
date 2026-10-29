@@ -410,3 +410,4 @@ internal sealed class NodeRpcClient : IDisposable
 
     public void Dispose() => _httpClient.Dispose();
 }
+

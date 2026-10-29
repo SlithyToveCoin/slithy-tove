@@ -9,6 +9,12 @@ CONFIG_FILE="$CONFIG_DIR/menu.conf"
 SYSTEM_CONFIG_FILE="${SLITHY_SYSTEM_CONFIG_FILE:-/etc/slithy/beta-20260909/menu.conf}"
 UPDATE_CACHE_FILE="$CONFIG_DIR/update-status.txt"
 UPDATE_CACHE_SECONDS="${SLITHY_UPDATE_CACHE_SECONDS:-900}"
+UPDATE_CHECK_PID=""
+UPDATE_LAST_REQUEST=0
+UPDATE_LAST_NOTIFICATION=""
+if [[ ! "$UPDATE_CACHE_SECONDS" =~ ^[0-9]{1,5}$ ]]; then UPDATE_CACHE_SECONDS=900; fi
+UPDATE_CACHE_SECONDS=$((10#$UPDATE_CACHE_SECONDS))
+if (( UPDATE_CACHE_SECONDS < 30 )); then UPDATE_CACHE_SECONDS=30; fi
 TREASURY_STATUS_URL="${SLITHY_TREASURY_STATUS_URL:-https://slithy.io/data/treasury-beta-20260909.json}"
 TREASURY_CACHE_FILE="$CONFIG_DIR/treasury-status.txt"
 TREASURY_CACHE_SECONDS="${SLITHY_TREASURY_CACHE_SECONDS:-300}"
@@ -403,6 +409,7 @@ LOGO
     cpu_status="$(call_cli getcpumininginfo 2>/dev/null || true)"
     mining_state="$(printf '%s' "$cpu_status" | python3 -c 'import json,sys; active=json.load(sys.stdin).get("active"); print("Mining is on" if active is True else "Mining is off" if active is False else "Mining state is unknown")' 2>/dev/null || echo 'Mining state is unavailable')"
     echo "$mining_state"
+    update_notice
     echo
     echo "Time: $now"
     echo "Working on block: ${next_height:-unknown}"
@@ -435,13 +442,23 @@ LOGO
     fi
 
     echo
-    echo "Press Ctrl+C to leave this screen. This does not send a mining stop request."
+    echo "Press U for updates, Q to go back, or Ctrl+C to leave. Mining continues."
     echo "Run 'slithy stop-mining' or choose Stop mining in the Mining menu."
 
     last_blocks="$blocks"
     last_spendable="$spendable"
     last_immature="$immature"
-    sleep 5
+    local watch_choice=""
+    if [[ -t 0 ]]; then
+      if IFS= read -r -s -n 1 -t 5 watch_choice; then
+        case "$watch_choice" in
+          u|U) updates_menu ;;
+          q|Q) return ;;
+        esac
+      fi
+    else
+      sleep 5
+    fi
   done
 }
 
@@ -906,35 +923,87 @@ install_update() {
   rm -f -- "$UPDATE_CACHE_FILE"
 }
 
-update_notice() {
-  local now cache_time cache_age output
+cached_update_notice() {
+  [[ -f "$UPDATE_CACHE_FILE" && ! -L "$UPDATE_CACHE_FILE" ]] || return 0
+  # Cached notices are display text, never commands or download instructions.
+  head -c 4096 -- "$UPDATE_CACHE_FILE" 2>/dev/null | tail -n +2 | head -n 1 | LC_ALL=C tr -cd '\11\40-\176'
+}
+
+refresh_update_notice() {
+  local now cache_time=0
   now="$(date +%s)"
-  cache_time=0
-
-  if [[ -f "$UPDATE_CACHE_FILE" ]]; then
-    cache_time="$(head -n 1 "$UPDATE_CACHE_FILE" 2>/dev/null || echo 0)"
-    cache_age=$((now - cache_time))
-    if [[ "$cache_age" -lt "$UPDATE_CACHE_SECONDS" ]]; then
-      tail -n +2 "$UPDATE_CACHE_FILE" 2>/dev/null || true
-      return
-    fi
+  if [[ -n "$UPDATE_CHECK_PID" ]]; then
+    if kill -0 "$UPDATE_CHECK_PID" 2>/dev/null; then return; fi
+    wait "$UPDATE_CHECK_PID" 2>/dev/null || true
+    UPDATE_CHECK_PID=""
   fi
+  if [[ -f "$UPDATE_CACHE_FILE" && ! -L "$UPDATE_CACHE_FILE" ]]; then
+    cache_time="$(head -n 1 -- "$UPDATE_CACHE_FILE" 2>/dev/null || true)"
+    [[ "$cache_time" =~ ^[0-9]{1,10}$ ]] || cache_time=0
+    cache_time=$((10#$cache_time))
+  fi
+  if (( now >= cache_time && now - cache_time < UPDATE_CACHE_SECONDS )); then return; fi
+  if (( now >= UPDATE_LAST_REQUEST && now - UPDATE_LAST_REQUEST < 30 )); then return; fi
+  UPDATE_LAST_REQUEST="$now"
+  (
+    # This child checks the signed feed. It never prompts, stops mining or installs.
+    trap - EXIT INT TERM
+    local output previous notice temporary version
+    previous="$(cached_update_notice)"
+    output="$(check_updates 2>&1 || true)"
+    version="$(printf '%s\n' "$output" | sed -nE 's/^.*Update available: ([0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.]+)?).*$/\1/p' | head -n 1)"
+    if [[ -n "$version" ]]; then
+      notice="[!] Update available: $version. Open Updates to install."
+    elif printf '%s\n' "$output" | grep -q 'Slithy is up to date\.'; then
+      notice='Update: Slithy is up to date.'
+    elif [[ "$previous" == '[!] Update available:'* ]]; then
+      notice="$previous"
+    else
+      notice='Update: unable to check right now. Try Check updates later.'
+    fi
+    [[ ! -L "$UPDATE_CACHE_FILE" ]] || exit 0
+    temporary="$(mktemp "$CONFIG_DIR/.update-notice.XXXXXXXX")" || exit 0
+    printf '%s\n%s\n' "$now" "$notice" > "$temporary"
+    chmod 600 "$temporary"
+    mv -f -- "$temporary" "$UPDATE_CACHE_FILE"
+  ) </dev/null >/dev/null 2>&1 &
+  UPDATE_CHECK_PID=$!
+}
 
-  output="$(check_updates 2>&1 || true)"
-  if printf '%s\n' "$output" | grep -q "Update available:"; then
-    printf '%s\n' "$output" | grep "Update available:" | head -n 1 | sed 's/^/Update: /'
-  elif printf '%s\n' "$output" | grep -q "Slithy is up to date."; then
-    echo "Update: Slithy is up to date."
-  else
-    echo "Update: unable to check right now."
-  fi | tee "$SLITHY_TMP/slithy-update-notice.$$" >/dev/null
+update_notice() {
+  local notice
+  refresh_update_notice
+  notice="$(cached_update_notice)"
+  if [[ -z "$notice" ]]; then notice='Update: checking in the background...'; fi
+  if [[ "$notice" == '[!] Update available:'* && "$notice" != "$UPDATE_LAST_NOTIFICATION" ]]; then
+    UPDATE_LAST_NOTIFICATION="$notice"
+    if [[ -t 1 ]]; then printf '\a'; fi
+  fi
+  printf '%s\n' "$notice"
+}
 
-  {
-    echo "$now"
-    cat "$SLITHY_TMP/slithy-update-notice.$$"
-  } > "$UPDATE_CACHE_FILE"
-  rm -f "$SLITHY_TMP/slithy-update-notice.$$"
-  tail -n +2 "$UPDATE_CACHE_FILE" 2>/dev/null || true
+read_live_menu_choice() {
+  local selected="" entered="" before="" after=""
+  before="$(cached_update_notice)"
+  printf 'Choose: '
+  while true; do
+    selected=""
+    if IFS= read -r -t 5 selected; then
+      entered+="$selected"
+      printf -v "$1" '%s' "$entered"
+      return 0
+    else
+      local status=$?
+      entered+="$selected"
+      if (( status <= 128 )); then return 1; fi
+    fi
+    refresh_update_notice
+    after="$(cached_update_notice)"
+    if [[ "$after" != "$before" && "$after" == '[!] Update available:'* ]]; then
+      printf '\n'; update_notice; printf 'Choose: '
+    fi
+    before="$after"
+  done
 }
 
 # Read the public fund total for the menu. This does not open the treasury wallet.
@@ -1055,7 +1124,7 @@ menu() {
     echo "6. Report bug"
     echo "0. Exit"
     echo
-    read -r -p "Choose: " choice
+    read_live_menu_choice choice || return
     echo
 
     case "$choice" in
@@ -1169,7 +1238,7 @@ updates_menu() {
     echo "3. Version"
     echo "0. Back"
     echo
-    read -r -p "Choose: " choice
+    read_live_menu_choice choice || return
     echo
 
     case "$choice" in

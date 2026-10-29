@@ -598,3 +598,4 @@ internal sealed class WalletRpcClient : IDisposable
 
     public void Dispose() => _rpc.Dispose();
 }
+

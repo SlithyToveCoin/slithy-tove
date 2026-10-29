@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>slithy-desktop</AssemblyName>
+    <RootNamespace>Slithy.Linux</RootNamespace>
+    <Version>0.1.44</Version>
+    <InformationalVersion>0.1.44-beta.1</InformationalVersion>
+    <Product>Slithy Tove Linux GUI Beta</Product>
+    <Company>CS Idea Labs LLC</Company>
+    <Description>Linux wallet and CPU miner for the Slithy test network.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Headless" Version="11.3.22" />
+    <PackageReference Include="NBitcoin" Version="7.0.49" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Both desktop apps use the same wallet RPC and recovery descriptors. -->
+    <Compile Include="../Slithy Tove/Slithy Tove/NodeRpcClient.cs" Link="Core/NodeRpcClient.cs" />
+    <Compile Include="../Slithy Tove/Slithy Tove/ReleaseTrust.cs" Link="Core/ReleaseTrust.cs" />
+    <Compile Include="../Slithy Tove/Slithy Tove/WalletRpcClient.cs" Link="Core/WalletRpcClient.cs" />
+    <Compile Include="../Slithy Tove/Slithy Tove/SlithySeedPhrase.cs" Link="Core/SlithySeedPhrase.cs" />
+    <Compile Include="../Slithy Tove/Slithy Tove/TreasuryStatusService.cs" Link="Core/TreasuryStatusService.cs" />
+    <Compile Include="../Slithy Tove/Slithy Tove/TreasuryStatusCalculator.cs" Link="Core/TreasuryStatusCalculator.cs" />
+    <Compile Include="../../shared/RecoveryWords.cs" Link="Core/RecoveryWords.cs" />
+    <EmbeddedResource Include="../../licenses/BETA-TERMS.txt" LogicalName="Slithy.BetaTerms" />
+    <EmbeddedResource Include="../Slithy Tove/Slithy Tove/Assets/slithy-mark.png" LogicalName="Slithy.HeaderMark" />
+    <EmbeddedResource Include="../Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png" LogicalName="Slithy.AppIcon" />
+    <Content Include="../../LICENSE;../../NOTICE"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory><Link>%(Filename)%(Extension)</Link></Content>
+    <Content Include="../../licenses/*.txt;../../licenses/*.md"><CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory><CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory><Link>licenses/%(Filename)%(Extension)</Link></Content>
+  </ItemGroup>
+</Project>

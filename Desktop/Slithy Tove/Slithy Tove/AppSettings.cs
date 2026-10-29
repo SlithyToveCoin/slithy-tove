@@ -370,3 +370,4 @@ internal sealed class AppSettingsStore
         }
     }
 }
+

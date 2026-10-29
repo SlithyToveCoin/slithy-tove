@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Version>0.1.44</Version>
+    <InformationalVersion>0.1.44-beta.1</InformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../Desktop/Slithy.Linux/LinuxGuiUpdateService.cs" Link="LinuxGuiUpdateService.cs" />
+    <Compile Include="../../../Desktop/Slithy.Linux/LinuxGuiUpdateInstaller.cs" Link="LinuxGuiUpdateInstaller.cs" />
+    <Compile Include="../../../Desktop/Slithy.Linux/LinuxGuiUpdateSelfTest.cs" Link="LinuxGuiUpdateSelfTest.cs" />
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/ReleaseTrust.cs" Link="ReleaseTrust.cs" />
+  </ItemGroup>
+</Project>

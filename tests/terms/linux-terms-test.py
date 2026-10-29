@@ -22,7 +22,7 @@ with tempfile.TemporaryDirectory(prefix='slithy-terms-') as scratch:
     terms.write_text((repo / 'licenses/BETA-TERMS.txt').read_text())
     for name in ('slithyd', 'slithy-cli'):
         tool = binary / name
-        tool.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$CALL_LOG"\ncase "$*" in *getblockhash*) echo 000f888cdb70403cd5310d02d7983951ee146ac799485bca337a7b52c24643f2;; *) echo "{}";; esac\n')
+        tool.write_text('#!/bin/sh\ncat >/dev/null\nprintf "%s\\n" "$*" >> "$CALL_LOG"\ncase "$*" in *getblockhash*) echo 000f888cdb70403cd5310d02d7983951ee146ac799485bca337a7b52c24643f2;; *) echo "{}";; esac\n')
         tool.chmod(0o755)
     env = dict(os.environ, HOME=str(root), SLITHY_BIN_DIR=str(binary),
                SLITHY_CONFIG_DIR=str(root / 'config'), SLITHY_SYSTEM_CONFIG_FILE=str(root / 'absent'),

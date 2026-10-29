@@ -52,9 +52,20 @@ jobs:
           ctest --test-dir build/native/linux --output-on-failure --timeout 600 -j2
           python3 -m unittest discover -s tests/security -p 'test_*.py'
           python3 tests/terms/linux-terms-test.py
+          python3 tests/security/linux-update-notice-test.py
+          python3 tests/linux-gui/test_desktop_install.py
           mkdir -p build/integration
           python3 tests/security/core-mining-integration.py --bin build/native/linux/bin --core-source core --work build/integration --seed-tool build/seed/linux/SlithySeedTool --linux-menu site/install/linux/slithy --status-server services/slithy-node-status-server.py
-          SLITHY_SEED_TOOL="$PWD/build/seed/linux/SlithySeedTool" bash tools/build-linux-release-tarball.sh "$PWD/build/native/linux/bin" 0.1.48-testnet "$PWD/build/packages"
+          SLITHY_SEED_TOOL="$PWD/build/seed/linux/SlithySeedTool" bash tools/build-linux-release-tarball.sh "$PWD/build/native/linux/bin" 0.1.50-testnet "$PWD/build/packages"
+      - name: Build and test Linux desktop
+        if: matrix.target == 'linux'
+        run: |
+          bash tools/build-linux-gui.sh "$PWD/build/native/linux/bin/slithyd" "$PWD/build/linux-gui"
+          build/linux-gui/slithy-desktop --self-test
+          build/linux-gui/slithy-desktop --integration-test
+          build/linux-gui/slithy-desktop --update-test
+          build/linux-gui/slithy-desktop --ui-test --screenshots "$PWD/build/gui-screenshots"
+          dotnet run --project tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj -c Release
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: matrix.target == 'windows'
         with:
@@ -91,6 +102,8 @@ jobs:
           dotnet run --project tests/wallet-timeout/WalletTimeoutTests.csproj
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet run --project tests/wallet-timeout-ui/WalletTimeoutUiTests.csproj
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project tests/windows-update-notice/WindowsUpdateNoticeTests.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet build installer/WebInstaller/WebInstaller.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

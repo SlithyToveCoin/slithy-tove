@@ -73,6 +73,7 @@ partial class Form1
     private LinkLabel _homeWebsiteLinkLabel;
     private Label _headerVersionLabel;
     private Label _headerBetaLabel;
+    private Button _headerUpdateButton;
     private BookMiningAnimation _bookMiningAnimation;
     private Panel _operationProgressPanel;
     private Panel _operationProgressTrack;
@@ -158,6 +159,7 @@ partial class Form1
         headerPanel = new Panel();
         _headerVersionLabel = new Label();
         _headerBetaLabel = new Label();
+        _headerUpdateButton = new Button();
         brandPictureBox = new PictureBox();
         subtitleLabel = new Label();
         titleLabel = new Label();
@@ -314,6 +316,7 @@ partial class Form1
         headerPanel.BackColor = Color.FromArgb(48, 68, 56);
         headerPanel.Controls.Add(_headerVersionLabel);
         headerPanel.Controls.Add(_headerBetaLabel);
+        headerPanel.Controls.Add(_headerUpdateButton);
         headerPanel.Controls.Add(brandPictureBox);
         headerPanel.Controls.Add(subtitleLabel);
         headerPanel.Controls.Add(titleLabel);
@@ -336,6 +339,24 @@ partial class Form1
         _headerVersionLabel.Size = new Size(83, 32);
         _headerVersionLabel.TabIndex = 5;
         _headerVersionLabel.Text = "v0.0.0";
+        //
+        // _headerUpdateButton
+        //
+        _headerUpdateButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        _headerUpdateButton.BackColor = Color.FromArgb(236, 214, 166);
+        _headerUpdateButton.FlatAppearance.BorderSize = 0;
+        _headerUpdateButton.FlatStyle = FlatStyle.Flat;
+        _headerUpdateButton.Font = new Font("Segoe UI Semibold", 8F, FontStyle.Bold);
+        _headerUpdateButton.ForeColor = Color.FromArgb(48, 68, 56);
+        _headerUpdateButton.Location = new Point(1188, 22);
+        _headerUpdateButton.Name = "_headerUpdateButton";
+        _headerUpdateButton.Size = new Size(294, 44);
+        _headerUpdateButton.TabIndex = 6;
+        _headerUpdateButton.Text = "Update available";
+        _headerUpdateButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+        _headerUpdateButton.UseVisualStyleBackColor = false;
+        _headerUpdateButton.Visible = false;
+        _headerUpdateButton.AccessibleName = "Review Slithy update";
         // 
         // _headerBetaLabel
         // 
@@ -1541,7 +1562,7 @@ partial class Form1
         automaticUpdatesCheckBox.Name = "automaticUpdatesCheckBox";
         automaticUpdatesCheckBox.Size = new Size(558, 41);
         automaticUpdatesCheckBox.TabIndex = 3;
-        automaticUpdatesCheckBox.Text = "Updates are checked whenever Slithy starts";
+        automaticUpdatesCheckBox.Text = "Check updates at startup and while Slithy is running";
         automaticUpdatesCheckBox.UseVisualStyleBackColor = true;
         automaticUpdatesCheckBox.CheckedChanged += automaticUpdatesCheckBox_CheckedChanged;
         // 
@@ -1972,3 +1993,4 @@ partial class Form1
     }
 
 }
+

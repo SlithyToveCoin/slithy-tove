@@ -1,7 +1,6 @@
 # Building Slithy
 
-Build the native programs before building the Windows app or packaging Linux.
-These instructions do not use private servers, wallet files or signing credentials.
+Build the native programs before packaging either desktop app or the Linux menu.
 Compiler output goes in `build/`, which is not source-controlled.
 
 ## Linux native tools
@@ -36,7 +35,7 @@ bash tools/build-core.sh windows
 
 The first run downloads and builds pinned dependencies from `core/depends`.
 Their recipes check source hashes. It can take a while. The executables appear
-in `build/native/windows/bin`. No signing account is needed.
+in `build/native/windows/bin`.
 
 To reuse an existing dependency build, set `SLITHY_TOOLCHAIN` to its
 `toolchain.cmake`. This is optional and is not required by the public build.
@@ -69,7 +68,7 @@ Install the .NET 8 SDK on Linux for the recovery helper. From the source root:
 
 ```sh
 dotnet publish tools/SlithySeedTool/SlithySeedTool.csproj -c Release -r linux-x64 --self-contained true -o build/seed/linux
-SLITHY_SEED_TOOL="$PWD/build/seed/linux/SlithySeedTool" bash tools/build-linux-release-tarball.sh "$PWD/build/native/linux/bin" 0.1.48-testnet "$PWD/build/packages"
+SLITHY_SEED_TOOL="$PWD/build/seed/linux/SlithySeedTool" bash tools/build-linux-release-tarball.sh "$PWD/build/native/linux/bin" 0.1.50-testnet "$PWD/build/packages"
 python3 tests/terms/linux-terms-test.py
 python3 -m unittest discover -s tests/security -p 'test_*.py'
 ```
@@ -77,6 +76,27 @@ python3 -m unittest discover -s tests/security -p 'test_*.py'
 Use a fresh package output directory for another run. The archive includes the
 terminal menu, native programs, helper, notices and full offline beta terms.
 The build never installs it over an existing node.
+
+## Linux desktop app
+
+Install the .NET 8 SDK and build the native Linux tools above. Then run:
+
+```sh
+bash tools/build-linux-gui.sh "$PWD/build/native/linux/bin/slithyd" "$PWD/build/linux-gui"
+build/linux-gui/slithy-desktop --self-test
+build/linux-gui/slithy-desktop --integration-test
+build/linux-gui/slithy-desktop --update-test
+build/linux-gui/slithy-desktop --ui-test --screenshots "$PWD/build/gui-screenshots"
+```
+
+The integration test uses a disconnected regtest node and temporary wallets.
+The UI test renders sample screens without opening your wallet. To try the
+window on your desktop, run `build/linux-gui/slithy-desktop --preview`.
+
+The app targets Linux x64 with X11 or XWayland. See the
+[Linux desktop guide](LINUX-GUI-PREVIEW.md) for runtime libraries, data paths
+and update behavior. Test your desktop's tray and window controls before relying
+on closing to the notification area.
 
 ## Windows installer
 

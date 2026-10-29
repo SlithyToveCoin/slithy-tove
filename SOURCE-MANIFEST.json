@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "313ac8fbf68509fc1db9c735bbc827f81fba3cf72d8ccf0d6d36d7a78e18a293"
+    "sha256": "13bbb2489340c056c45636ccb08eafd4dc19f3382bd09abdcdeaca98a7e29d7f"
   },
   {
     "path": ".gitignore",
@@ -21,7 +21,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/AppSettings.cs",
-    "sha256": "d120956a792c93edc63c6daaf5e730b0b5809e026a30d005f954838cc37291b1"
+    "sha256": "c4f8c3e2d06a6f741918ba56da1c3e4c05ab567b9c38c085bed843f1fbfdaf38"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png",
@@ -57,11 +57,11 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.Designer.cs",
-    "sha256": "8770eea4489c99e4acaece989cedb283759516c5b32639680fb1b8584a3ce582"
+    "sha256": "a2d4440501694d9322cbe6cbf8ab16b31ef2dd9754ff4f674637819107ae0141"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.cs",
-    "sha256": "2d8bc5f442744f6f8a1433b2874498e83c752135ef74de2cec90d14e956d6bb5"
+    "sha256": "5883b14a7c00295047719275ea5ace8d57a20e6b892fc10beebd3c20b6be7fde"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.resx",
@@ -69,7 +69,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/LocalNodeManager.cs",
-    "sha256": "f54e454e6b13fcf939a3d5e0a53e506c13965c32012d72974ac8354ff5559ede"
+    "sha256": "cfbc7c452af3e8299bb3e52c2bcb9275401212fdce937254874210d82da44fc9"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/MiningRpcSelfTest.cs",
@@ -81,11 +81,11 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/NodeRpcClient.cs",
-    "sha256": "8e2f26020f75f632a80dbb3e3fa899314bce43a5aa98f37d4ebb48d369157129"
+    "sha256": "09a3ef312f44a5a2248f2db51b045babe75134f938355751c996a0de46a4786c"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Program.cs",
-    "sha256": "11a6d83763f6b8360195cdf3a7b2149e4722d83f92e8d415dac44f2581f929c5"
+    "sha256": "526144a68c73618303319f1eb27aa7be95c134018a9c5a4ff0ae12e5aa87363d"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/PublicNodeRpcSelfTest.cs",
@@ -145,7 +145,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "05d6716649050ec0d956eba0b6484e8b2bf84591c3d223899bfb790c1594a4e6"
+    "sha256": "577ac4bd712af661abcbd3b187015d88eae551260b41c173896ccc717f5506fd"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
@@ -197,7 +197,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/UpdateService.cs",
-    "sha256": "49901de7ea747c6222aa965d8f2d06976f20ad842a91b54739479acae1accaee"
+    "sha256": "15cb7b40fa6d9f6661ff54cb5b74098cbdf30bf9334dfefa8d85b6b24bc0eb29"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/UserActivityFilter.cs",
@@ -233,11 +233,75 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.cs",
-    "sha256": "582ac672c5940fad3b55319596334c40f8d0550453dc8473876f5c3966883636"
+    "sha256": "1e0622b00e0a23ea401f7375d1bf0bf575d78cc3bb28efc047e05725ef2b62df"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcTransportSelfTest.cs",
     "sha256": "00110fb2d9b69b83e8d2f8a79f930fcd1a5be28e2309888c9a2e54202f46dc33"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/Branding.cs",
+    "sha256": "4d6c77be693b36ca1ad43a9d2cc9d7dd195b242b1722b83dc08cbc66a302bb8c"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/Dialogs.cs",
+    "sha256": "1b63a4fdee68b57c2e7a8f424561d79798855fd74c52a177a04d577ee680183b"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/IntegrationSelfTest.cs",
+    "sha256": "873c18c5758ae75e6a4188ecfe145d495f851459b6d07e73036e9e3572e85cae"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxGuiUpdateInstaller.cs",
+    "sha256": "ac80494935576812a5c8343b7012a1f80995f71bade5e91084ae2d5abbb1a5e2"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxGuiUpdateSelfTest.cs",
+    "sha256": "01295f23cc3f4b257a10d75cf52a0005b6c2265c87b8a78ce931f872d7d26d30"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxGuiUpdateService.cs",
+    "sha256": "bfff5381611b3d8270f440a120aa50f9fad490d4ec9e37bddf78e69f15f62e2a"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxNodeHost.cs",
+    "sha256": "49ed0e866011c182fd222931693035ed95a2fbdcd64aa695eef39c78e8bde6d4"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxRuntimeSelfTest.cs",
+    "sha256": "9afae9fa6ebd6a7ab648efeff8adfa4104f198d253c717e4ce84beeb357199d6"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxSettings.cs",
+    "sha256": "9e7728136d6e123967ea1908dc56e52415c5738cd67eb1472b20cbd6e744bc55"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/MainWindow.Updates.cs",
+    "sha256": "b03d47cec8cf5821f9bd28f63b4749b032c9cb4a4e38d49985ce5fd887344855"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/MainWindow.cs",
+    "sha256": "7a139b4fa6a57ed1f76937ff29ddcb31adec10f3246f276f9b4a2a15850ef466"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/Program.cs",
+    "sha256": "ef115f1bed147e234059888015ac6c97f400fec137157ec09323edf8a8afab3d"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
+    "sha256": "bdbd2db3e3f8958e4cd8ab9cad783f912441de8f7a5ce5200889a7c07246535a"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
+    "sha256": "b414c023d5b0b5a951287e38632b4e10751729e1899a09c2a997ccbf00ef46ac"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/WindowChrome.cs",
+    "sha256": "25974c411f4650d6860c1f8cd62459bcd1c0148e7ed9d9097b1d5ebdd76f95e6"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/install-desktop.sh",
+    "sha256": "670e71297205e9e090f243a32e4142849344bc2c0b576ecdbe1f9d7fa19cd521"
   },
   {
     "path": "LICENSE",
@@ -245,11 +309,11 @@
   },
   {
     "path": "NOTICE",
-    "sha256": "8bacde1aa07e19d3fba27ff39f5b69b6074d8385bedf5be651ed4a41b7eab96a"
+    "sha256": "7d3335f4a9c866049d5d2fdeaf1b61acc0e76abed3a5fce81db0bcdddc533812"
   },
   {
     "path": "README.md",
-    "sha256": "af80fe3f2bac64a5cdbe3c0e2db2d2d55451d22643be34d733e766f1b3d7cce8"
+    "sha256": "f76b5361177a6475e08253a889527aae30458c077afde4664b1a12cbffed5179"
   },
   {
     "path": "SECURITY.md",
@@ -11973,7 +12037,11 @@
   },
   {
     "path": "docs/BUILDING.md",
-    "sha256": "19f22d38850e0a0c0cd1141ded2f8536b9cf1545c05351db242756f584e37ed5"
+    "sha256": "c712ac45b1af8b54ea5a5036bbcb432ac64148a6a31727634c71cae2b39fc850"
+  },
+  {
+    "path": "docs/LINUX-GUI-PREVIEW.md",
+    "sha256": "13e6221ad069b2f8a7be00cdce8f1ca284c173659431bd7904444d08403ac4b5"
   },
   {
     "path": "docs/NETWORK-TEST-COVERAGE.md",
@@ -11986,6 +12054,10 @@
   {
     "path": "docs/RELEASE-0.1.43.md",
     "sha256": "aae7abe0918d0d56af1b1706530a595d2ed0506e9bac18de1f1df6bcaa1f5a9d"
+  },
+  {
+    "path": "docs/RELEASE-0.1.44.md",
+    "sha256": "ad1d292f0778c0db31b5d54519fd9741f69688285b4651ac4222f5d2bc43fa26"
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
@@ -12060,8 +12132,12 @@
     "sha256": "84f56df793795a965e7a2638b3849dfa9c79d4dda0bdaa4df3f173a48e4c0a18"
   },
   {
+    "path": "licenses/Avalonia-LICENSE.txt",
+    "sha256": "213814d306090074d234d760239ff0f67eb9b8d20eefb4d5631bb39dbe0b769b"
+  },
+  {
     "path": "licenses/BETA-TERMS.txt",
-    "sha256": "7098e9451095175af05af4812d9680345d6d7e59414d0a4fe0c94e0bb960a5ee"
+    "sha256": "feb390dbd15ff7669948111666ad36e22d2680a9f7982f88d2614f666d20bfae"
   },
   {
     "path": "licenses/DOTNET-LICENSE.txt",
@@ -12074,6 +12150,18 @@
   {
     "path": "licenses/DOTNET-THIRD-PARTY-NOTICES.txt",
     "sha256": "97c1a7b3da6a4c6ad516448719f45114b41a4d4c5aa300a944476e2e4f5da438"
+  },
+  {
+    "path": "licenses/HarfBuzzSharp-LICENSE.txt",
+    "sha256": "bc2eb4f37d574f9b1b67da2b17e14d151618850527d78f7323239e7518df5b77"
+  },
+  {
+    "path": "licenses/LINUX-GUI-NOTICES.md",
+    "sha256": "30a2a41a8972dba25fc65de7fd410d919655b0d41e969109382735b2ab61b9f6"
+  },
+  {
+    "path": "licenses/MicroCom-LICENSE.txt",
+    "sha256": "6ee769c9ac4dac9abb16b98b1341e9528ff9f4ab685481410d3376d14148f3a9"
   },
   {
     "path": "licenses/NATIVE-DEPENDENCIES.txt",
@@ -12094,6 +12182,18 @@
   {
     "path": "licenses/QRCoder-LICENSE.txt",
     "sha256": "044bd5eeee412a603a6e2b6201c7256da386788aaa4392be9870a5e899adea05"
+  },
+  {
+    "path": "licenses/SkiaSharp-LICENSE.txt",
+    "sha256": "bc2eb4f37d574f9b1b67da2b17e14d151618850527d78f7323239e7518df5b77"
+  },
+  {
+    "path": "licenses/SkiaSharp-THIRD-PARTY-NOTICES.txt",
+    "sha256": "98acf9d4d6083959988c884f630cdff760f94bfeb9acf57774653e08c23d1e45"
+  },
+  {
+    "path": "licenses/Tmds.DBus-LICENSE.txt",
+    "sha256": "2a86afd8f0173998b01c9af8bdfd7c703cae1db6cc5e57e7043a2b67fa0b2116"
   },
   {
     "path": "licenses/WINDOWSDESKTOP-LICENSE.txt",
@@ -12193,7 +12293,7 @@
   },
   {
     "path": "site/install/linux/slithy",
-    "sha256": "05ce69520660ab94908ca3ff6d2a2481c4fee687251178faebd84b77f880d2cf"
+    "sha256": "f11338a9eb693ede5e2246b644af1a70ca1c6617c1a4a0797004f1b269ec989a"
   },
   {
     "path": "site/install/linux/slithy-common.sh",
@@ -12288,6 +12388,10 @@
     "sha256": "7cc9fc084c9e5a58685936a2f4970f4f1d59555f43c8257f6af709e855e8d925"
   },
   {
+    "path": "tests/linux-gui/test_desktop_install.py",
+    "sha256": "5af41450089ada8d993ff5fab9b48f7ac030db2ba50a71d437dfcfbdf4e4656b"
+  },
+  {
     "path": "tests/security/Slithy.SecurityTests.csproj",
     "sha256": "fbeb40e39ccc12831bd276d932e8fd43ddeae82efa11bde26505480dbe767bfa"
   },
@@ -12312,12 +12416,36 @@
     "sha256": "bce65911f9c2c1d242c51a9e5cc0a172c2d0382848c68d3d0451cdb91c552ebf"
   },
   {
+    "path": "tests/security/linux-gui-package-update/LinuxGuiPackageUpdate.Tests.csproj",
+    "sha256": "f4a8e8eccf53e6e6fac8bc6eaacc4d9a9c4daf3625a1377090b5a91d7619a61d"
+  },
+  {
+    "path": "tests/security/linux-gui-package-update/Program.cs",
+    "sha256": "793e2261b0a0ffda9e29e837f23fd62a337246c702e8bcf7e611e92b5d94125c"
+  },
+  {
+    "path": "tests/security/linux-gui-package-update/README.md",
+    "sha256": "94b4b66ccdc399ad202a7b9b9c04d25eab9997d5cff92d5df099e895d702aa3d"
+  },
+  {
+    "path": "tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj",
+    "sha256": "6396f3bcac853938a3da86c219c05061b1c3fe9a24ecf3894f9e92f2eefeec9b"
+  },
+  {
+    "path": "tests/security/linux-gui-update/Program.cs",
+    "sha256": "337495748553aafa2c30da5580bc3ce8057bf9e1a60a3549c67264d45c9a70cf"
+  },
+  {
     "path": "tests/security/linux-install-integration.py",
     "sha256": "c22d7a0e95e8a468aec6e76ebc1ff15bdebeab35b339f0f543f51a5f74154f8c"
   },
   {
     "path": "tests/security/linux-update-integration.py",
     "sha256": "494e5a80054ca3e30213b835da024812c29b69ac166bad1efbdf2749d6661b6f"
+  },
+  {
+    "path": "tests/security/linux-update-notice-test.py",
+    "sha256": "5325feec4066a28fe56f7f4654a6fd7dfc2a534e396ea6fbb12fc56c1ff71edd"
   },
   {
     "path": "tests/security/public-beta-smoke.py",
@@ -12365,7 +12493,7 @@
   },
   {
     "path": "tests/terms/linux-terms-test.py",
-    "sha256": "2137a047479fbe11b7c4f825ff6071e9310dd5edea729114995152a354c5887e"
+    "sha256": "c0932762aad9bec3496cd2de17b68165d3b8a659f047a9c4ecfc921e71e6cc2e"
   },
   {
     "path": "tests/wallet-timeout-ui/Program.cs",
@@ -12384,6 +12512,14 @@
     "sha256": "016743d5d6d3ab1540120600e232e53176064af4f6408d84f71095efcdcee309"
   },
   {
+    "path": "tests/windows-update-notice/Program.cs",
+    "sha256": "54c7d17e11814c60187aa09a7deb1d9b7e4fb8964ec4b75e88961e38b155422a"
+  },
+  {
+    "path": "tests/windows-update-notice/WindowsUpdateNoticeTests.csproj",
+    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+  },
+  {
     "path": "tools/SlithySeedTool/Program.cs",
     "sha256": "58ac3f05f0d68aca8b9f3992ae2b0b01d7953dee4d9a4f139366e85c81b56d5f"
   },
@@ -12396,6 +12532,14 @@
     "sha256": "753eaa58342464c16bbe0e994fafdd498e03dba3f76fe224fc656b8c987ff5ed"
   },
   {
+    "path": "tools/build-linux-gui-preview.ps1",
+    "sha256": "41e589b510bcc86e816e08d740d912612e2df7871c1e6ad65140d26b50fa783e"
+  },
+  {
+    "path": "tools/build-linux-gui.sh",
+    "sha256": "99f0920516a1c23da3a86305a28a07c95fcc3da79eae89f4b8ecc908a74946c5"
+  },
+  {
     "path": "tools/build-linux-release-tarball.sh",
     "sha256": "05d966c0f9e698ada1cbfee15dad7e540d6e696d35599152ba87c0789cfd45bc"
   },
@@ -12405,7 +12549,7 @@
   },
   {
     "path": "tools/public-source.json",
-    "sha256": "cfb3459563d4817c9bb8501517ed7fd3375c6ecafcb4b5fbb69c52074aed6f33"
+    "sha256": "fcc700610dbe5e38a00450f4bb13062d099e2fbdae7bb12804c7e77657988fa3"
   },
   {
     "path": "tools/scan-source.py",

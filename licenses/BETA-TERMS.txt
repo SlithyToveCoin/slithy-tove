@@ -85,3 +85,4 @@ Revisions will be published here with an updated version and effective date. A c
 You can stop testing at any time. These terms do not authorize deleting your wallet files or taking your coins. For questions about the terms or beta, write to support@slithy.io.
 
 Thank you for helping test Slithy.
+

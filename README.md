@@ -1,11 +1,11 @@
 # Slithy Tove
 
-Slithy is cryptocurrency software for CPU mining, with a Windows wallet and
-a Linux terminal interface. Ten percent of the block subsidy goes to a
+Slithy is cryptocurrency software for CPU mining, with desktop wallets for
+Windows and Linux and a Linux terminal interface. Ten percent of the block subsidy goes to a
 public literacy treasury. Transaction fees go to the miner.
 
 Slithy is in public beta. Test coins have no market value. The test chain and
-wallets will reset before the live launch, currently planned for November 1, 2026.
+wallets will reset before the live launch, currently planned for December 1, 2026.
 
 ## Try Slithy
 
@@ -17,19 +17,20 @@ questions or share how testing went.
 ## Build and test
 
 To build from source, follow the [build guide](docs/BUILDING.md). It includes
-commands for the Windows app, Linux tools and tests.
+commands for both desktop apps, Linux terminal tools and tests.
 
 The September 15 native test run passed 153 tests. One optional test needs an
 external dataset and was skipped. See the build guide's testing limits before
 treating a successful build as a completed security review.
 
-The Windows app runs a local node and mines on your computer. Official public
+Both desktop apps run a local node and mine on your computer. Official public
 nodes relay and verify blocks; they do not mine on behalf of app users.
 
 ## Source layout
 
 - `core/`: complete Bitcoin-derived yespower core and upstream build recipes.
 - `Desktop/Slithy Tove/`: Windows Forms wallet, including Designer files.
+- `Desktop/Slithy.Linux/`: Avalonia Linux wallet and its signed-package updater.
 - `shared/` and `tools/SlithySeedTool/`: shared recovery-word implementation.
 - `site/install/linux/`: terminal menu, installer and updater.
 - `installer/`: per-user Windows installer source and artwork.

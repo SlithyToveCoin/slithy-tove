@@ -22,6 +22,10 @@ licenses. See licenses/DOTNET-NOTICES.md for their upstream locations.
 The .NET runtime and its dependencies have separate Microsoft and upstream
 notices when included in self-contained distribution packages.
 
+The Linux desktop app uses Avalonia, SkiaSharp, HarfBuzzSharp, MicroCom and
+Tmds.DBus.Protocol. Their license texts and graphics-library notices are in
+licenses/. See licenses/LINUX-GUI-NOTICES.md for versions and source locations.
+
 The software license does not grant rights to represent a modified build as
 an official Slithy release. Slithy branding and original artwork are not
 licensed by the root MIT grant. Third-party artwork and fonts retain their

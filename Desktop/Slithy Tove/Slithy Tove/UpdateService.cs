@@ -262,3 +262,4 @@ internal sealed class UpdateService : IDisposable
 
     private sealed record SignedUpdateEnvelope(string PayloadBase64, string SignatureBase64);
 }
+

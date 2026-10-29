@@ -42,6 +42,16 @@ public partial class Form1 : Form
     private bool _walletDialogOpen;
     private bool _loadingSettingsIntoControls;
     private bool _checkingForUpdates;
+    private bool _installingUpdate;
+    private bool _startupComplete;
+    private bool _closingForExit;
+    private bool _updateNotificationActive;
+    private UpdateManifest? _availableUpdate;
+    private readonly HashSet<string> _notifiedUpdateVersions = new(StringComparer.Ordinal);
+    private DateTimeOffset _lastUpdateAttemptUtc = DateTimeOffset.MinValue;
+    private readonly System.Windows.Forms.Timer _updateCheckTimer;
+    private readonly ToolStripMenuItem _trayUpdateItem = new("Review update") { Visible = false };
+    private Image? _updateBadgeImage;
     private bool _exitRequested;
     private bool _cleanupComplete;
     private bool _miningStartedByApp;
@@ -89,6 +99,13 @@ public partial class Form1 : Form
         _updateService = new UpdateService(_settingsStore.UpdateDirectory);
         Application.AddMessageFilter(_activityFilter);
         _trayIcon.Icon = Icon ?? Icon.ExtractAssociatedIcon(Application.ExecutablePath) ?? SystemIcons.Application;
+        _updateCheckTimer = new System.Windows.Forms.Timer(components!) { Interval = 60_000 };
+        _updateCheckTimer.Tick += async (_, _) =>
+        {
+            if (ShouldCheckForUpdatesNow(DateTimeOffset.UtcNow))
+                await CheckForUpdatesAsync(showCurrentMessage: false);
+        };
+        InitializeUpdateNotice();
         LoadSettingsIntoControls();
         ApplyCozyStyling();
     }
@@ -122,6 +139,79 @@ public partial class Form1 : Form
         _headerVersionLabel.BringToFront();
         _headerBetaLabel.BringToFront();
     }
+
+    private void InitializeUpdateNotice()
+    {
+        // The badge remains in the window even if Windows hides a tray notification.
+        Bitmap image = new(20, 20);
+        using (Graphics graphics = Graphics.FromImage(image))
+        using (Pen pen = new(Color.FromArgb(48, 68, 56), 2))
+        {
+            graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            graphics.DrawLine(pen, 10, 2, 10, 13);
+            graphics.DrawLines(pen, new Point[] { new(5, 9), new(10, 14), new(15, 9) });
+            graphics.DrawLines(pen, new Point[] { new(3, 14), new(3, 18), new(17, 18), new(17, 14) });
+        }
+        _updateBadgeImage = image;
+        _headerUpdateButton.Image = image;
+        _headerUpdateButton.Disposed += (_, _) => _updateBadgeImage?.Dispose();
+        headerPanel.Layout += (_, _) =>
+        {
+            _headerUpdateButton.Left = _headerBetaLabel.Left;
+            _headerUpdateButton.Width = _headerBetaLabel.Width;
+        };
+        _headerUpdateButton.Click += (_, _) => ShowUpdatePage();
+        _trayUpdateItem.Click += (_, _) => ShowUpdatePage();
+        _trayMenu.Items.Insert(1, _trayUpdateItem);
+        _trayIcon.BalloonTipClicked += (_, _) =>
+        {
+            if (_updateNotificationActive && _availableUpdate != null) ShowUpdatePage();
+            else RestoreFromTray();
+        };
+        _trayIcon.BalloonTipClosed += (_, _) => _updateNotificationActive = false;
+        _headerUpdateButton.BringToFront();
+    }
+
+    private void ShowUpdatePage()
+    {
+        if (_closingForExit || IsDisposed) return;
+        RestoreFromTray();
+        mainTabControl.SelectedTab = advancedTabPage;
+        advancedTabControl.SelectedTab = updatesTabPage;
+        checkUpdatesButton.Focus();
+    }
+
+    private bool WalletActionInProgress =>
+        _walletBusy || _walletOpening || _walletDialogOpen || _miningChangeInProgress;
+
+    internal bool ShouldCheckForUpdatesNow(DateTimeOffset now) =>
+        _startupComplete && InstallerUpdatesEnabled && _settings.CheckForUpdatesAutomatically &&
+        _settings.UpdatesConfigured && !_checkingForUpdates && !_installingUpdate &&
+        !_closingForExit && !_exitRequested && !_updateHandoffRequested && !WalletActionInProgress &&
+        (now - _lastUpdateAttemptUtc >= TimeSpan.FromHours(1) || now < _lastUpdateAttemptUtc);
+
+    private void PublishAvailableUpdate(UpdateManifest manifest, bool notify)
+    {
+        // A failed or older feed must not erase an update already verified this session.
+        if (_availableUpdate != null && Version.Parse(manifest.Version) < Version.Parse(_availableUpdate.Version)) return;
+        _availableUpdate = manifest;
+        _headerUpdateButton.Text = "Update available";
+        _headerUpdateButton.AccessibleDescription = $"Slithy {manifest.Version} is available. Open Settings to review it.";
+        _headerUpdateButton.Visible = true;
+        _trayUpdateItem.Text = $"Review update {manifest.Version}";
+        _trayUpdateItem.Visible = true;
+        checkUpdatesButton.Text = "Review update";
+        updateStatusLabel.Text = $"Version {manifest.Version} is available. You can install it when you are ready.";
+        HoldNetworkForDeclinedUpdate(UpdateService.GetEffectiveUpdateLevel(manifest));
+        if (notify && ShouldNotifyForUpdate(manifest.Version))
+        {
+            _updateNotificationActive = true;
+            _trayIcon.ShowBalloonTip(7000, "Slithy update available",
+                $"Version {manifest.Version} is ready. Click to review the update.", ToolTipIcon.Info);
+        }
+    }
+
+    internal bool ShouldNotifyForUpdate(string version) => _notifiedUpdateVersions.Add(version);
 
     private void ArchivePreSeedWallets()
     {
@@ -247,7 +337,8 @@ public partial class Form1 : Form
         }
         await RefreshNodeStatusAsync();
         await ShowWalletAccessAsync(startupPrompt: true);
-
+        _startupComplete = true;
+        _updateCheckTimer.Start();
         if (InstallerUpdatesEnabled && _settings.CheckForUpdatesAutomatically)
         {
             await CheckForUpdatesAsync(showCurrentMessage: false);
@@ -1169,6 +1260,7 @@ public partial class Form1 : Form
         _settings.CheckForUpdatesAutomatically =
             InstallerUpdatesEnabled && automaticUpdatesCheckBox.Checked;
         _settingsStore.Save(_settings);
+        if (_settings.CheckForUpdatesAutomatically) _lastUpdateAttemptUtc = DateTimeOffset.MinValue;
     }
 
     private void minimizeToTrayOnCloseCheckBox_CheckedChanged(object? sender, EventArgs e)
@@ -1184,8 +1276,7 @@ public partial class Form1 : Form
 
     private async Task CheckForUpdatesAsync(bool showCurrentMessage)
     {
-        // Update flow:
-        // download signed manifest, verify signature, download package, verify hash, then restart into updater.
+        // Background checks announce a verified release. Installation starts after a user action.
         if (!InstallerUpdatesEnabled)
         {
             updateStatusLabel.Text = "Automatic updates are inactive.";
@@ -1200,12 +1291,19 @@ public partial class Form1 : Form
             return;
         }
 
-        if (_checkingForUpdates)
+        if (_checkingForUpdates || _installingUpdate || _closingForExit || _exitRequested || _updateHandoffRequested)
         {
             return;
         }
 
+        if (WalletActionInProgress)
+        {
+            if (showCurrentMessage) updateStatusLabel.Text = "Finish the open wallet action, then review the update.";
+            return;
+        }
+
         _checkingForUpdates = true;
+        _lastUpdateAttemptUtc = DateTimeOffset.UtcNow;
         checkUpdatesButton.Enabled = false;
         SetUpdateProgress("Checking for Slithy updates...", 15);
         updateStatusLabel.Text = "Checking for updates...";
@@ -1229,17 +1327,26 @@ public partial class Form1 : Form
                 ReleaseTrust.UpdatePublicKeyPem,
                 Version.Parse(CurrentVersion));
 
+            if (_closingForExit || IsDisposed) return;
+
             _settings.LastUpdateCheckUtc = DateTimeOffset.UtcNow;
             _settingsStore.Save(_settings);
 
             if (!result.UpdateAvailable)
             {
-                _networkLockedByUpdate = false;
-                updateStatusLabel.Text = $"Slithy is up to date. Version {CurrentVersion}.";
-                SetUpdateProgress("Slithy is up to date.", 100);
+                if (_availableUpdate == null)
+                {
+                    _networkLockedByUpdate = false;
+                    updateStatusLabel.Text = $"Slithy is up to date. Version {CurrentVersion}.";
+                    SetUpdateProgress("Slithy is up to date.", 100);
+                }
+                else
+                {
+                    updateStatusLabel.Text = $"Version {_availableUpdate.Version} was available at the last check. The current feed does not offer it. Try again later.";
+                }
                 if (showCurrentMessage)
                 {
-                    MessageBox.Show(this, updateStatusLabel.Text, "No update needed",
+                    MessageBox.Show(this, updateStatusLabel.Text, "Slithy updates",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 return;
@@ -1247,7 +1354,14 @@ public partial class Form1 : Form
 
             UpdateManifest manifest = result.Manifest!;
             string updateLevel = UpdateService.GetEffectiveUpdateLevel(manifest);
-            updateStatusLabel.Text = $"Version {manifest.Version} is available.";
+            PublishAvailableUpdate(manifest, notify: !showCurrentMessage);
+            if (!showCurrentMessage) return;
+            // A send or wallet dialog may have started while the feed was being fetched.
+            if (WalletActionInProgress)
+            {
+                updateStatusLabel.Text = "The update is ready. Finish the open wallet action before installing it.";
+                return;
+            }
             bool shouldInstall = PromptForUpdateInstall(manifest, updateLevel);
             if (!shouldInstall)
             {
@@ -1257,14 +1371,18 @@ public partial class Form1 : Form
 
             if (shouldInstall)
             {
+                _installingUpdate = true;
+                SetWalletBusy(true, "Preparing the update. Your wallet files stay in place.");
                 SetUpdateProgress($"Downloading Slithy {manifest.Version}...", 35);
                 Progress<int> progress = new(percent =>
                 {
+                    if (_closingForExit || IsDisposed) return;
                     int scaled = 35 + Math.Clamp(percent, 0, 100) * 40 / 100;
                     SetUpdateProgress($"Downloading update... {percent}%", scaled);
                     updateStatusLabel.Text = $"Downloading Slithy {manifest.Version}... {percent}%";
                 });
                 string packagePath = await _updateService.DownloadVerifiedPackageAsync(manifest, progress);
+                if (_closingForExit || IsDisposed) return;
                 SetUpdateProgress("Verifying update package...", 80);
                 updateStatusLabel.Text = "Update downloaded and verified.";
                 AppendLog($"Verified update saved to {packagePath}");
@@ -1274,24 +1392,31 @@ public partial class Form1 : Form
         }
         catch (Exception ex)
         {
-            updateStatusLabel.Text = "Update check could not be completed.";
+            if (_closingForExit || IsDisposed) return;
+            updateStatusLabel.Text = _availableUpdate == null
+                ? "Update check could not be completed. Try again when you are connected."
+                : $"Version {_availableUpdate.Version} is available. This check could not finish; try again to install it.";
             AppendLog($"Update check failed: {ex.Message}");
             if (showCurrentMessage)
             {
                 MessageBox.Show(this,
-                    "Slithy could not securely check for updates. No files were changed.",
-                    "Update check failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _installingUpdate
+                        ? "Slithy could not finish installing the update. Your wallet files were not changed. Try again from Settings."
+                        : "Slithy could not securely check for updates. Your current app is still available.",
+                    _installingUpdate ? "Update not installed" : "Update check failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
         finally
         {
             _checkingForUpdates = false;
-            checkUpdatesButton.Enabled = true;
-            if (!_updateHandoffRequested)
+            if (!IsDisposed && !_closingForExit)
             {
-                SetWalletBusy(false);
+                checkUpdatesButton.Enabled = true;
+                // Checking a feed must never release a busy send or wallet operation.
+                if (_installingUpdate && !_updateHandoffRequested) SetWalletBusy(false);
                 UpdateUpdateProgressFill(0);
             }
+            _installingUpdate = false;
         }
     }
 
@@ -1308,11 +1433,11 @@ public partial class Form1 : Form
         {
             "required" => "Install this update before mining or sending.",
             "blocked" => "Install this update before using the Slithy network.",
-            "recommended" => "Install now, or choose No and update later from Settings.",
-            _ => "Install now, or choose No and update later from Settings."
+            "recommended" => "Install now, or choose No and use the update badge later.",
+            _ => "Install now, or choose No and use the update badge later."
         };
         DialogResult choice = MessageBox.Show(this,
-            $"Slithy {manifest.Version} is available.\n\n{manifest.ReleaseNotes}\n\n{reason}\n\nDownload, install, and restart now?",
+            $"Slithy {manifest.Version} is available.\n\n{manifest.ReleaseNotes}\n\n{reason}\n\nInstalling stops mining and restarts Slithy. Your wallet files stay in place.\n\nDownload, install, and restart now?",
             title,
             MessageBoxButtons.YesNo,
             updateLevel is "required" or "blocked"
@@ -1326,7 +1451,8 @@ public partial class Form1 : Form
         if (updateLevel is not ("required" or "blocked"))
         {
             _networkLockedByUpdate = false;
-            updateStatusLabel.Text = "Update skipped. You can check again from Settings.";
+            if (_availableUpdate != null)
+                updateStatusLabel.Text = $"Version {_availableUpdate.Version} is available. Use Review update when you are ready.";
             return;
         }
 
@@ -1338,7 +1464,7 @@ public partial class Form1 : Form
         statusMessageLabel.Text = message;
         AppendLog(message);
         sendButton.Enabled = false;
-        miningToggleButton.Enabled = false;
+        miningToggleButton.Enabled = _miningStartedByApp && !_miningChangeInProgress && !_walletBusy;
     }
 
     private void openDataFolderButton_Click(object? sender, EventArgs e)
@@ -1872,7 +1998,7 @@ public partial class Form1 : Form
 
     private void SetUpdateProgress(string message, int progressPercent)
     {
-        SetWalletBusy(true, message, progressPercent);
+        if (_installingUpdate) SetWalletBusy(true, message, progressPercent);
         updateStatusLabel.Text = message;
         UpdateUpdateProgressFill(progressPercent);
     }
@@ -2773,6 +2899,7 @@ public partial class Form1 : Form
     {
         Hide();
         ShowInTaskbar = false;
+        _updateNotificationActive = false;
         _trayIcon.ShowBalloonTip(
             2500,
             "Slithy Tove is still running",
@@ -2797,8 +2924,10 @@ public partial class Form1 : Form
         }
 
         e.Cancel = true;
+        _closingForExit = true;
         Enabled = false;
         statusTimer.Stop();
+        _updateCheckTimer.Stop();
         try
         {
             SaveControlsToSettings();
@@ -2842,7 +2971,10 @@ public partial class Form1 : Form
         }
         catch (Exception ex)
         {
+            _closingForExit = false;
             Enabled = true;
+            statusTimer.Start();
+            _updateCheckTimer.Start();
             AppendLog($"Shutdown failed: {ex.Message}");
             MessageBox.Show(this,
                 $"Slithy could not finish shutting down.\n\n{ex.Message}",
@@ -2854,3 +2986,4 @@ public partial class Form1 : Form
 
     private enum StatusKind { Neutral, Success, Error }
 }
+
