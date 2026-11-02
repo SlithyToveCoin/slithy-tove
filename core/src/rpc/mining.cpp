@@ -55,6 +55,13 @@
 #include <thread>
 #include <vector>
 
+#ifdef WIN32
+#include <compat/compat.h>
+#include <windows.h>
+#elif defined(__linux__)
+#include <sched.h>
+#endif
+
 using interfaces::BlockRef;
 using interfaces::BlockTemplate;
 using interfaces::Mining;
@@ -407,13 +414,30 @@ static RPCHelpMan generate()
     }};
 }
 
+static int SlithyCpuThreadsAvailable()
+{
+#ifdef WIN32
+    // A processor group can contain 64 CPUs. Count every group on larger PCs.
+    const DWORD count = GetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+    if (count > 0) return static_cast<int>(count);
+#elif defined(__linux__)
+    cpu_set_t allowed;
+    CPU_ZERO(&allowed);
+    if (sched_getaffinity(0, sizeof(allowed), &allowed) == 0) {
+        const int count = CPU_COUNT(&allowed);
+        if (count > 0) return count;
+    }
+#endif
+    return std::max(1, GetNumCores());
+}
+
 static RPCHelpMan startcpumining()
 {
     return RPCHelpMan{"startcpumining",
         "Start Slithy CPU mining in this node process. This is local nonce hashing, not developer block generation.",
         {
             {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The address to receive miner rewards."},
-            {"threads", RPCArg::Type::NUM, RPCArg::Default{1}, "Number of CPU mining threads."},
+            {"threads", RPCArg::Type::NUM, RPCArg::Default{1}, "Number of CPU mining threads, clamped from 1 to the available logical CPU count."},
         },
         RPCResult{
             RPCResult::Type::OBJ, "", "",
@@ -434,8 +458,7 @@ static RPCHelpMan startcpumining()
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
     }
 
-    int threads = std::max(1, request.params[1].isNull() ? 1 : request.params[1].getInt<int>());
-    threads = std::min(threads, 64);
+    const int threads = SlithyCpuMiningThreads(request.params[1].isNull() ? 1 : request.params[1].getInt<int>(), SlithyCpuThreadsAvailable());
 
     NodeContext& node = EnsureAnyNodeContext(request.context);
     CScript coinbase_output_script = GetScriptForDestination(destination);
@@ -515,6 +538,7 @@ static RPCHelpMan getcpumininginfo()
                 {RPCResult::Type::BOOL, "active", "Whether CPU mining is active."},
                 {RPCResult::Type::NUM, "speed", "Approximate hashes per second since mining started."},
                 {RPCResult::Type::NUM, "threads", "Number of active mining threads."},
+                {RPCResult::Type::NUM, "max_threads", "Available logical CPU count for mining."},
                 {RPCResult::Type::STR, "address", "Reward address."},
                 {RPCResult::Type::NUM, "blocks", "Blocks found by this miner since start."},
                 {RPCResult::Type::STR, "algorithm", "Mining algorithm."},
@@ -529,6 +553,7 @@ static RPCHelpMan getcpumininginfo()
     result.pushKV("active", SlithyCpuMinerActive());
     result.pushKV("speed", SlithyCpuMinerHashrate());
     result.pushKV("threads", SlithyCpuMinerThreadCount());
+    result.pushKV("max_threads", SlithyCpuThreadsAvailable());
     result.pushKV("address", SlithyCpuMinerAddress());
     result.pushKV("blocks", g_slithy_cpu_miner_blocks.load(std::memory_order_relaxed));
     result.pushKV("algorithm", "yespower");

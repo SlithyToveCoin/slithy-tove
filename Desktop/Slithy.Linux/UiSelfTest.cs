@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Headless;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -75,9 +76,12 @@ internal static class UiSelfTest
                         var mine = home.OfType<Button>().Single(c => c.Name == "MiningToggle");
                         if (balance.Bounds.Width < 200 || mine.Bounds.Width < 180)
                             throw new InvalidOperationException("Home controls lost their usable width.");
+                        if (home.OfType<ComboBox>().Any() || home.OfType<Slider>().Any())
+                            throw new InvalidOperationException("CPU selection belongs in Settings, not Home.");
                     }
                 }
                 var controls = window.GetVisualDescendants().OfType<Control>().ToArray();
+                CheckMiningSettings(window, output, width);
                 var autoLock = controls.OfType<CheckBox>().Single(c => c.Name == "AutoLockEnabled");
                 var minutes = controls.OfType<NumericUpDown>().Single(c => c.Name == "AutoLockMinutes");
                 if (autoLock.IsChecked != true || !minutes.IsEnabled) throw new InvalidOperationException("Auto-lock should start enabled.");
@@ -104,6 +108,50 @@ internal static class UiSelfTest
             Console.Error.WriteLine("FAIL: GUI render test: " + e.Message);
             return 1;
         }
+    }
+
+    private static void CheckMiningSettings(MainWindow window, string output, int width)
+    {
+        var controls = window.GetVisualDescendants().OfType<Control>().ToArray();
+        var slider = controls.OfType<Slider>().Single(c => c.Name == "MiningThreads");
+        var count = controls.OfType<TextBlock>().Single(c => c.Name == "MiningThreadCount");
+        var card = controls.OfType<Border>().Single(c => c.Name == "MiningSettings");
+        var scroll = slider.GetVisualAncestors().OfType<ScrollViewer>().First();
+        var field = typeof(MainWindow).GetField("_settings", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var settings = (LinuxSettings)field.GetValue(window)!;
+        if (slider.Minimum != 1 || slider.Maximum != Environment.ProcessorCount || !slider.IsSnapToTickEnabled || slider.TickFrequency != 1)
+            throw new InvalidOperationException("The thread slider must cover whole numbers from one to the available CPU count.");
+        foreach (double requested in new[] { 1d, Math.Min(3.4, slider.Maximum), slider.Maximum })
+        {
+            slider.Value = requested;
+            Dispatcher.UIThread.RunJobs();
+            int expected = Math.Clamp((int)Math.Round(requested), 1, Environment.ProcessorCount);
+            if (slider.Value != expected || settings.GetMiningThreadCount() != expected || !count.Text!.StartsWith(expected + " CPU thread"))
+                throw new InvalidOperationException("The selected thread count was not applied to the next-start setting.");
+        }
+        if (!slider.IsEnabled) throw new InvalidOperationException("Mining settings should remain editable while mining, for the next start.");
+        slider.Value = 1;
+        slider.Focus();
+        window.KeyPressQwerty(PhysicalKey.ArrowRight, RawInputModifiers.None);
+        window.KeyReleaseQwerty(PhysicalKey.ArrowRight, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+        if (settings.GetMiningThreadCount() != Math.Min(2, Environment.ProcessorCount))
+            throw new InvalidOperationException("The right arrow must select the next CPU thread.");
+        window.KeyPressQwerty(PhysicalKey.ArrowLeft, RawInputModifiers.None);
+        window.KeyReleaseQwerty(PhysicalKey.ArrowLeft, RawInputModifiers.None);
+        Dispatcher.UIThread.RunJobs();
+        if (settings.GetMiningThreadCount() != 1)
+            throw new InvalidOperationException("The left arrow must return to one CPU thread.");
+        if (Avalonia.Automation.AutomationProperties.GetName(slider) != "CPU mining threads")
+            throw new InvalidOperationException("The mining slider needs an accessible name.");
+        scroll.Offset = new Avalonia.Vector(0, card.Bounds.Top);
+        Dispatcher.UIThread.RunJobs();
+        if (slider.Bounds.Width < 300 || slider.Bounds.Right > card.Bounds.Width)
+            throw new InvalidOperationException("The CPU slider does not fit the settings card.");
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        using var image = window.CaptureRenderedFrame() ?? throw new InvalidOperationException("No mining settings frame.");
+        image.Save(Path.Combine(output, $"linux-{width}-mining-settings.png"));
+        Console.WriteLine($"PASS: whole-number CPU slider, bounds, accessible name and next-start setting at {width}px.");
     }
 
     private static void CheckStartupOnce(MainWindow window)

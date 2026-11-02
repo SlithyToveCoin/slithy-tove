@@ -13,6 +13,21 @@ internal static class LinuxRuntimeSelfTest
             LinuxSettings settings = store.Load();
             Check(settings.AutoLockEnabled && settings.AutoLockMinutes == 10, "Secure defaults");
             Check(settings.AutoCheckUpdates, "Update checks start enabled");
+            Check(settings.MiningThreads == Math.Max(1, Environment.ProcessorCount / 2), "New wallets start with half the available CPU threads");
+            foreach (int available in new[] { 1, 2, 3, 8, 64 })
+            {
+                Check(LinuxSettings.ResolveMiningThreads(null, "Quiet", available) == 1, "Migrate Quiet preset");
+                Check(LinuxSettings.ResolveMiningThreads(null, "Balanced", available) == Math.Max(1, available / 2), "Migrate Balanced preset");
+                Check(LinuxSettings.ResolveMiningThreads(null, "Full power", available) == available, "Migrate Full power preset");
+                Check(LinuxSettings.ResolveMiningThreads(null, "invalid", available) == Math.Max(1, available / 2), "Unknown presets use the default");
+                Check(LinuxSettings.ResolveMiningThreads(-4, "Full power", available) == 1, "Clamp low CPU thread counts");
+                Check(LinuxSettings.ResolveMiningThreads(1000, null, available) == available, "Clamp CPU thread counts after changing computers");
+                Check(LinuxSettings.ResolveMiningThreads(1, "Full power", available) == 1, "Saved thread count takes precedence over an old preset");
+            }
+            var legacy = JsonSerializer.Deserialize<LinuxSettings>("{\"MiningMode\":\"Full power\"}")!;
+            legacy.Validate();
+            Check(legacy.MiningThreads == Environment.ProcessorCount && legacy.MiningMode == null, "Old settings migrate once");
+            Check(!JsonSerializer.Serialize(legacy).Contains("MiningMode"), "New settings omit the retired preset");
             DateTimeOffset now = DateTimeOffset.UtcNow;
             Check(settings.ShouldAutoLock(now.AddMinutes(-11), now), "Inactivity timeout");
             settings.AutoLockEnabled = false;
@@ -21,10 +36,12 @@ internal static class LinuxRuntimeSelfTest
             settings.AutoLockMinutes = -5;
             settings.PublicNodePreference = "untrusted.example";
             settings.LastWalletName = "test wallet";
+            settings.MiningThreads = Math.Min(3, Environment.ProcessorCount);
             store.Save(settings);
             LinuxSettings reloaded = store.Load();
             Check(!reloaded.AutoLockEnabled && reloaded.AutoLockMinutes == 1, "Persist and clamp timeout");
             Check(!reloaded.AutoCheckUpdates, "Remember disabled update checks");
+            Check(reloaded.MiningThreads == settings.MiningThreads, "Remember the exact mining thread count");
             Check(reloaded.PublicNodePreference == "auto" && reloaded.LastWalletName == "test wallet", "Validate preferences");
             string json = File.ReadAllText(store.SettingsPath);
             Check(!json.Contains("password", StringComparison.OrdinalIgnoreCase), "No password setting");

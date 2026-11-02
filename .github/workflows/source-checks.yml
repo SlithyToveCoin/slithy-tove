@@ -76,6 +76,16 @@ jobs:
             build/native/windows/bin/slithy-wallet.exe
             build/native/windows/bin/slithy-tx.exe
           if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.target == 'linux'
+        with:
+          name: linux-native-reviewed
+          path: |
+            build/native/linux/bin/slithyd
+            build/native/linux/bin/slithy-cli
+            build/native/linux/bin/slithy-wallet
+            build/native/linux/bin/slithy-tx
+          if-no-files-found: error
   windows-app:
     needs: native
     runs-on: windows-2022
@@ -103,7 +113,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet run --project tests/wallet-timeout-ui/WalletTimeoutUiTests.csproj
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          dotnet run --project tests/windows-update-notice/WindowsUpdateNoticeTests.csproj -c Release
+          dotnet run --project tests/windows-update-notice/WindowsUpdateNoticeTests.csproj
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project tests/mining-settings/MiningSettingsTests.csproj
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet build installer/WebInstaller/WebInstaller.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

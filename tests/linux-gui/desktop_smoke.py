@@ -44,6 +44,14 @@ def run(command, env, **kwargs):
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
 
 
+def process_stopped(pid):
+    try:
+        # A container's PID 1 may leave an exited launcher child waiting to be reaped.
+        return Path("/proc", str(pid), "stat").read_text().rsplit(") ", 1)[1].split()[0] == "Z"
+    except FileNotFoundError:
+        return True
+
+
 def extract_archive(archive, destination, expected):
     with archive.open("rb") as stream:
         digest = hashlib.file_digest(stream, "sha256").hexdigest()
@@ -312,6 +320,12 @@ class Suite:
                 pass
 
     def fixtures(self, app, env):
+        libraries = run(["ldd", str(app.parent / "Binaries/slithyd")], env)
+        (self.output / "native-libraries.log").write_text(libraries.stdout + libraries.stderr)
+        missing = [line.strip().split(" =>", 1)[0] for line in libraries.stdout.splitlines() if "not found" in line]
+        assert not missing, "Install the documented native node dependencies: " + ", ".join(missing)
+        run([str(app.parent / "Binaries/slithyd"), "--version"], env)
+        self.passed("bundled native node runtime dependencies")
         for flag in ("--self-test", "--update-test", "--ui-test"):
             command = [str(app), flag]
             if flag == "--ui-test":
@@ -369,6 +383,12 @@ class Suite:
             x.click(window, size["WIDTH"] - 20 * factor, 16 * factor)
             assert process.wait(timeout=10) == 0, "Titlebar close failed"
             self.passed("native logo, maximize/restore/close and scaling " + scale)
+        except Exception:
+            try:
+                x.screenshot(self.output / ("preview-failure-" + scale + ".png"))
+            except Exception:
+                pass
+            raise
         finally:
             self.stop_process(process)
             x.close()
@@ -413,12 +433,13 @@ class Suite:
             wait_for(lambda: not x.windows("Open wallet"), "cancel empty picker")
             cookie = wait_for(lambda: next(iter(data.glob("gui-rpc-*.cookie")), None), "regtest cookie")
             authorization = "Basic " + base64.b64encode(cookie.read_bytes().strip()).decode()
+            local_http = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
             def rpc_call(method, parameters=None, wallet=""):
                 payload = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": parameters or []}).encode()
                 request = urllib.request.Request("http://127.0.0.1:54436/" + ("wallet/" + wallet if wallet else ""), payload,
                     headers={"Authorization": authorization, "Content-Type": "application/json"})
-                with urllib.request.urlopen(request, timeout=30) as response:
+                with local_http.open(request, timeout=30) as response:
                     reply = json.load(response)
                 if reply.get("error"):
                     raise AssertionError("Regtest RPC failed: " + method)
@@ -452,21 +473,29 @@ class Suite:
             x.screenshot(self.output / "wallet-open.png", window)
             self.passed("real wallet dropdown selects, opens and remembers the chosen wallet")
             x.click(window, x.geometry(window)["WIDTH"] - 20, 16)
-            wait_for(lambda: not Path("/proc", str(app_pid)).exists(), "quit installed app", timeout=30)
+            wait_for(lambda: process_stopped(app_pid), "quit installed app", timeout=30)
             with socket.socket() as probe:
                 assert probe.connect_ex(("127.0.0.1", 54436)) != 0, "Owned regtest node did not stop"
             self.passed("installed launcher app quits and stops its node")
+        except Exception:
+            # This desktop contains disposable test windows, never a user's session.
+            try:
+                x.screenshot(self.output / "wallet-failure.png")
+                self.results["wallet_failure_windows"] = [x.command("getwindowname", win) for win in x.windows()]
+            except Exception:
+                pass
+            raise
         finally:
             if rpc is not None:
                 try:
                     rpc("stop")
                 except Exception:
                     pass
-            if app_pid and Path("/proc", str(app_pid)).exists():
+            if app_pid and not process_stopped(app_pid):
                 if Path("/proc", str(app_pid), "exe").resolve() == app:
                     os.kill(app_pid, signal.SIGTERM)
                     try:
-                        wait_for(lambda: not Path("/proc", str(app_pid)).exists(), "owned app cleanup", timeout=10)
+                        wait_for(lambda: process_stopped(app_pid), "owned app cleanup", timeout=10)
                     except AssertionError:
                         if Path("/proc", str(app_pid), "exe").resolve() == app:
                             os.kill(app_pid, signal.SIGKILL)

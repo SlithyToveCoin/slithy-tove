@@ -5,11 +5,11 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "0e294c608bdb27f430c80daa122fee6dd4991a5e99e4f0fb5de9d0eb7e6e6d15"
+    "sha256": "57a28d7240de5e4fcb37128887c5b8b4ae976871e7e6661e01c056a081cd01bd"
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "13bbb2489340c056c45636ccb08eafd4dc19f3382bd09abdcdeaca98a7e29d7f"
+    "sha256": "3011551970973ec7c64e05eafa880698ef9bddbffd872a76ac187de6540b3759"
   },
   {
     "path": ".gitignore",
@@ -25,7 +25,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/AppSettings.cs",
-    "sha256": "c4f8c3e2d06a6f741918ba56da1c3e4c05ab567b9c38c085bed843f1fbfdaf38"
+    "sha256": "ca6ba223548214dd0ee787e221c6a7a9c5ba1f19c650705e0c7942e0d99edb13"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png",
@@ -48,6 +48,10 @@
     "sha256": "04e2bac7805eb5240aeac7bacdba577f59edb4ebeafcc0d9535871f175f0cbdf"
   },
   {
+    "path": "Desktop/Slithy Tove/Slithy Tove/BufferedPanel.cs",
+    "sha256": "97722ee816563dd942bc2222a9b51894dab35d5c84f93349930769c6f23cd237"
+  },
+  {
     "path": "Desktop/Slithy Tove/Slithy Tove/ChainSyncDisplay.cs",
     "sha256": "c64357dfecb8344bbae00d9026c255c6f82c45b2f687cd6778b59a6b2607488d"
   },
@@ -61,11 +65,15 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.Designer.cs",
-    "sha256": "a2d4440501694d9322cbe6cbf8ab16b31ef2dd9754ff4f674637819107ae0141"
+    "sha256": "51ec075ced01431667515b39e23495fa040d19374f5a78082cbd10b2f0cc8545"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/Form1.MiningSettings.cs",
+    "sha256": "df47c2a83e8848dfa8b6948ed4d65e6ba958a4683589165f3580fd9113646db2"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.cs",
-    "sha256": "5883b14a7c00295047719275ea5ace8d57a20e6b892fc10beebd3c20b6be7fde"
+    "sha256": "4f89f5fe3ca7f88a9710603dd4cfb06227f6a2c90485ca4cfba9aa739af18c26"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.resx",
@@ -149,7 +157,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "577ac4bd712af661abcbd3b187015d88eae551260b41c173896ccc717f5506fd"
+    "sha256": "c15bd50b889542ad158d0eb29ce0ca350606cd3fbbf05e52c94136d58a7d0b66"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
@@ -201,7 +209,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/UpdateService.cs",
-    "sha256": "15cb7b40fa6d9f6661ff54cb5b74098cbdf30bf9334dfefa8d85b6b24bc0eb29"
+    "sha256": "7335f0622a36bcf9b64450ad5e3943412ca4cd79f69b84fc77c42a4e7db4ab08"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/UserActivityFilter.cs",
@@ -245,7 +253,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Branding.cs",
-    "sha256": "a9aed33817f598270809bce9b72c944d719abc691efeb64546f7023394e297cb"
+    "sha256": "5cba7260c209e3b247a6be59b7f21989c213c6a198961c8ce896d40cdb6861be"
   },
   {
     "path": "Desktop/Slithy.Linux/Dialogs.cs",
@@ -253,7 +261,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/IntegrationSelfTest.cs",
-    "sha256": "873c18c5758ae75e6a4188ecfe145d495f851459b6d07e73036e9e3572e85cae"
+    "sha256": "a1ccda73c73a9bda37e245e85528878d58ff790cc83afffd8319d13dbb95c41c"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateInstaller.cs",
@@ -261,7 +269,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateSelfTest.cs",
-    "sha256": "cca92680eab006e107e2bc6adee64f861501fc4ed4ac430bbffc99a438b1a3aa"
+    "sha256": "d0a52a91c5f39d75b717595c7269fd920c25034d49da2bb90a5e9cbd3c51aadf"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateService.cs",
@@ -273,11 +281,11 @@
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxRuntimeSelfTest.cs",
-    "sha256": "9afae9fa6ebd6a7ab648efeff8adfa4104f198d253c717e4ce84beeb357199d6"
+    "sha256": "c02d0b4c6315a99057fe462d3011d2daf9401bfcc98cee9f79f4edd9870c9ff1"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxSettings.cs",
-    "sha256": "9e7728136d6e123967ea1908dc56e52415c5738cd67eb1472b20cbd6e744bc55"
+    "sha256": "962320d6e8a54502cf7aaea6fbd905bb10301ee79c9865796e6abc54d3da46b2"
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.Updates.cs",
@@ -285,7 +293,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.cs",
-    "sha256": "83f92942e5821ab8d7679cbb470344d7b3db091e5877df100debd9cc26e3c6f1"
+    "sha256": "333909d6d4494831852203e023d530d7086c0ae49dbcc82136fc8825ccb6fa1b"
   },
   {
     "path": "Desktop/Slithy.Linux/Program.cs",
@@ -293,11 +301,11 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
-    "sha256": "8e2fbb19ed5475365f978ab7ee342e3e939ad864973fca7102f7b5b43242e20f"
+    "sha256": "627d48fd6b6c2c9e1944fa4cd7d09b14da7f746dc53bb71b893b20b1e516fc08"
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
-    "sha256": "c4cc80e634ad62fa8a446e34b13f2d895c571079289c47c855560af53ec91154"
+    "sha256": "217111d745323d5bcfb9cfbb0ba91856d85d4410b44633a62d06d108abfe2717"
   },
   {
     "path": "Desktop/Slithy.Linux/WindowChrome.cs",
@@ -7029,11 +7037,11 @@
   },
   {
     "path": "core/src/rpc/mining.cpp",
-    "sha256": "5dd864454eebc8d205e93aa2c4e25da1c5ef8efba1ab735923b56e3d174b85c7"
+    "sha256": "e872cc8c0ab3e630fd69520e8649957988c4091eaa8b875f0909edc5e93e817d"
   },
   {
     "path": "core/src/rpc/mining.h",
-    "sha256": "e48989fbb9a58345d8823a5c3ee712b258a198afc2c8f7e44959d6337563e9c0"
+    "sha256": "4ef7180a1b0c0e540a749cbe8b0d5e36c2ebb6fe54ed86a5cfc1c801cb8a87db"
   },
   {
     "path": "core/src/rpc/net.cpp",
@@ -8929,7 +8937,7 @@
   },
   {
     "path": "core/src/test/pow_tests.cpp",
-    "sha256": "08354563cb9ff3676a7bbfd26a54a8c56bfc05d701e9d431fc7b4c134fa6d54f"
+    "sha256": "59c461dadb0832a6ec44bff740e871d3064781d1cf996a83c4ae65f71bfd1a8d"
   },
   {
     "path": "core/src/test/prevector_tests.cpp",
@@ -12045,7 +12053,7 @@
   },
   {
     "path": "docs/LINUX-GUI-PREVIEW.md",
-    "sha256": "20bcb010677013f4fac9c23121ce976efdb6a491e8a14947fa73cbe476349c1e"
+    "sha256": "89808f41b784e42721ecfae5708020d172d9a0a56c8f40c4d5e77425cea90fca"
   },
   {
     "path": "docs/NETWORK-TEST-COVERAGE.md",
@@ -12409,7 +12417,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "46169bbaa9b70513c9b2444d63800598d0362ae97a78b356fe4f919852c6614a"
+    "sha256": "71d8615b5b11494d06a5174e256d53f1c2f192b44a6cfe9f7b69de973462b427"
   },
   {
     "path": "tests/linux-gui/test_desktop_install.py",
@@ -12422,6 +12430,14 @@
   {
     "path": "tests/linux-gui/xfce-session.py",
     "sha256": "51473f1f0c7d6ef50ccfdc33a39634fcfbda62e1761210e3f2c3df7be9e1aca0"
+  },
+  {
+    "path": "tests/mining-settings/MiningSettingsTests.csproj",
+    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+  },
+  {
+    "path": "tests/mining-settings/Program.cs",
+    "sha256": "ef8f4353907eae149aa644f345612d12ce6080f2fae9784a78e7428f8f1301e3"
   },
   {
     "path": "tests/security/Slithy.SecurityTests.csproj",
@@ -12441,7 +12457,7 @@
   },
   {
     "path": "tests/security/core-mining-integration.py",
-    "sha256": "97ee216b03fbfc5e53849a3900de358da036d6f15050ef4d6d242c54e2ef68d8"
+    "sha256": "daf9a218b66036133e6de51526b277e1112f86a7c3702ffeb705ccb6f321879c"
   },
   {
     "path": "tests/security/linux-common-test.sh",

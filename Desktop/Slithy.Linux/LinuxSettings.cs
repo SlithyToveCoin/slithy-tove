@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Slithy.Linux;
 
@@ -10,7 +11,10 @@ internal sealed class LinuxSettings
     public bool AutoCheckUpdates { get; set; } = true;
     public string LastWalletName { get; set; } = "";
     public string PublicNodePreference { get; set; } = "auto";
-    public string MiningMode { get; set; } = "Balanced";
+    public int? MiningThreads { get; set; }
+    // Read the old preset once so an update preserves the chosen CPU use.
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? MiningMode { get; set; }
     public string CustomMiningAddress { get; set; } = "";
     public bool MineToCustomAddress { get; set; }
     public string TermsAcceptedVersion { get; set; } = "";
@@ -19,7 +23,8 @@ internal sealed class LinuxSettings
     {
         AutoLockMinutes = Math.Clamp(AutoLockMinutes, 1, 1440);
         if (PublicNodePreference is not ("auto" or "borogove" or "mome" or "rath")) PublicNodePreference = "auto";
-        if (MiningMode is not ("Quiet" or "Balanced" or "Full power")) MiningMode = "Balanced";
+        MiningThreads = GetMiningThreadCount();
+        MiningMode = null;
         LastWalletName ??= "";
         CustomMiningAddress ??= "";
         TermsAcceptedVersion ??= "";
@@ -27,6 +32,20 @@ internal sealed class LinuxSettings
 
     public bool ShouldAutoLock(DateTimeOffset lastActivity, DateTimeOffset now) =>
         AutoLockEnabled && now - lastActivity >= TimeSpan.FromMinutes(Math.Clamp(AutoLockMinutes, 1, 1440));
+
+    public int GetMiningThreadCount() => ResolveMiningThreads(MiningThreads, MiningMode, Environment.ProcessorCount);
+
+    internal static int ResolveMiningThreads(int? savedThreads, string? oldMode, int processorCount)
+    {
+        int maximum = Math.Max(1, processorCount);
+        int requested = savedThreads ?? (oldMode switch
+        {
+            "Quiet" => 1,
+            "Full power" => maximum,
+            _ => Math.Max(1, maximum / 2)
+        });
+        return Math.Clamp(requested, 1, maximum);
+    }
 }
 
 internal sealed class LinuxSettingsStore
@@ -62,7 +81,12 @@ internal sealed class LinuxSettingsStore
 
     public LinuxSettings Load()
     {
-        if (!File.Exists(SettingsPath)) return new();
+        if (!File.Exists(SettingsPath))
+        {
+            LinuxSettings defaults = new();
+            defaults.Validate();
+            return defaults;
+        }
         RejectLink(SettingsPath);
         if (new FileInfo(SettingsPath).Length > 65536) throw new InvalidOperationException("The settings file is too large. Move it aside before starting Slithy.");
         try

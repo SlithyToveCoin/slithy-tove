@@ -75,8 +75,15 @@ internal static class IntegrationSelfTest
             phase = "locked-wallet mining controls";
             for (int cycle = 1; cycle <= 2; cycle++)
             {
-                await rpc.StartMiningAsync(endpoint, initial.Address, 1);
-                Check((await rpc.GetMiningInfoAsync(endpoint)).Active, "locked wallet can start mining, cycle " + cycle);
+                settings.MiningThreads = Math.Min(cycle, Environment.ProcessorCount);
+                store.Save(settings);
+                int requestedThreads = store.Load().GetMiningThreadCount();
+                await rpc.StartMiningAsync(endpoint, initial.Address, requestedThreads);
+                var mining = await rpc.GetMiningInfoAsync(endpoint);
+                Check(mining.Active && mining.Threads == requestedThreads, "locked wallet mines with the saved thread count, cycle " + cycle);
+                settings.MiningThreads = requestedThreads == 1 ? Math.Min(2, Environment.ProcessorCount) : 1;
+                store.Save(settings);
+                Check((await rpc.GetMiningInfoAsync(endpoint)).Threads == requestedThreads, "saving next-start threads does not change the active miner");
                 await rpc.StopMiningAsync(endpoint);
                 Check(!(await rpc.GetMiningInfoAsync(endpoint)).Active, "locked wallet can stop mining, cycle " + cycle);
             }

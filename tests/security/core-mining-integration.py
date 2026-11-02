@@ -123,6 +123,15 @@ def main():
         except RuntimeError as error: assert "treasury" in str(error)
         else: raise AssertionError("Treasury mining address was accepted")
         print("PASS: 10 SLTHY subsidy, 1 SLTHY treasury and treasury-address mining rejection", flush=True)
+        maximum = a.call("getcpumininginfo")["max_threads"]
+        assert isinstance(maximum, int) and maximum >= 1
+        for requested in (-1, 0, 1, min(2, maximum)):
+            expected = max(1, min(requested, maximum))
+            started = a.call("startcpumining", addresses[0], requested)
+            assert started["threads"] == expected
+            assert a.call("getcpumininginfo")["threads"] == expected
+            a.call("stopcpumining")
+        print("PASS: CPU worker counts follow the request and clamp invalid low settings", flush=True)
         treasury_rejection_test(a, b, addresses[0], treasury_script,
                                 args.core_source or args.bin.parent.parent / "core")
         start = a.call("getblockcount")
@@ -160,8 +169,9 @@ def main():
             recovery_test(a, args.seed_tool, root, args.bin, args.linux_menu)
         if args.status_server:
             status_test(a, args.status_server, args.bin, root, treasury_script, treasury_address)
-        a.call("startcpumining", addresses[0], 2)
-        wait(lambda: a.call("getcpumininginfo")["threads"] == 2)
+        shutdown_threads = min(2, maximum)
+        a.call("startcpumining", addresses[0], shutdown_threads)
+        wait(lambda: a.call("getcpumininginfo")["threads"] == shutdown_threads)
         a.call("stop")
         a.process.wait(20)
         assert a.process.returncode == 0

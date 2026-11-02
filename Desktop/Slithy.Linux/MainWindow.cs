@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -56,7 +57,13 @@ internal sealed partial class MainWindow : Window
     private readonly Button _sendButton = Dialogs.Button("Send");
     private readonly Button _receiveButton = Dialogs.Button("Receive");
     private readonly Button _miningButton = Dialogs.Button("Start mining");
-    private readonly ComboBox _power = new() { ItemsSource = new[] { "Quiet", "Balanced", "Full power" }, HorizontalAlignment = HorizontalAlignment.Stretch };
+    private readonly Slider _miningThreads = new()
+    {
+        Name = "MiningThreads", Minimum = 1, Maximum = Math.Max(1, Environment.ProcessorCount),
+        TickFrequency = 1, IsSnapToTickEnabled = true, SmallChange = 1, LargeChange = 1,
+        HorizontalAlignment = HorizontalAlignment.Stretch, MinHeight = 36
+    };
+    private readonly TextBlock _threadCount = Dialogs.Text("");
     private readonly ComboBox _peers = new() { ItemsSource = new[] { "Automatic, closest", "Borogove (East Coast)", "Mome (West Coast)", "Rath (Europe)" }, MinWidth = 280 };
     private readonly CheckBox _custom = new() { Content = Dialogs.Text("Mine to another Slithy address") };
     private readonly TextBox _miningAddress = new() { Watermark = "Mining address", HorizontalAlignment = HorizontalAlignment.Stretch };
@@ -78,6 +85,7 @@ internal sealed partial class MainWindow : Window
             _settingsError = ex.Message;
             _status.Text = "Settings could not be loaded. Your wallet files have not been changed.";
         }
+        _settings.Validate();
         _host = new LinuxNodeHost(_store, _settings, regtest);
         Title = "Slithy Tove | Linux GUI beta";
         Icon = Branding.WindowIcon;
@@ -105,8 +113,16 @@ internal sealed partial class MainWindow : Window
             if (_installingUpdate) await StopMiningForUpdate();
             else await Run(ToggleMining);
         };
-        _power.SelectedItem = _settings.MiningMode;
-        _power.SelectionChanged += (_, _) => { _settings.MiningMode = _power.SelectedItem?.ToString() ?? "Balanced"; Save(); };
+        _miningThreads.Value = _settings.GetMiningThreadCount();
+        UpdateThreadCount();
+        _miningThreads.ValueChanged += (_, _) =>
+        {
+            int selected = Math.Clamp((int)Math.Round(_miningThreads.Value), 1, Math.Max(1, Environment.ProcessorCount));
+            if (_miningThreads.Value != selected) { _miningThreads.Value = selected; return; }
+            _settings.MiningThreads = selected;
+            UpdateThreadCount();
+            Save();
+        };
         _custom.IsChecked = _settings.MineToCustomAddress;
         _miningAddress.Text = _settings.CustomMiningAddress;
         _custom.IsCheckedChanged += (_, _) => { _settings.MineToCustomAddress = _custom.IsChecked == true; Save(); };
@@ -197,7 +213,7 @@ internal sealed partial class MainWindow : Window
         money.Children.Add(payments);
         grid.Children.Add(Card(null, money));
         var mine = new StackPanel { Spacing = 10 };
-        mine.Children.Add(_miningTitle); mine.Children.Add(_miningStatus); mine.Children.Add(_power); mine.Children.Add(_custom);
+        mine.Children.Add(_miningTitle); mine.Children.Add(_miningStatus); mine.Children.Add(_custom);
         mine.Children.Add(_miningAddress); mine.Children.Add(_miningButton);
         var mineCard = Card(null, mine); Grid.SetColumn(mineCard, 1); grid.Children.Add(mineCard); page.Children.Add(grid);
         var fund = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 16 };
@@ -213,6 +229,7 @@ internal sealed partial class MainWindow : Window
         var page = new StackPanel { Spacing = 14, Margin = new Thickness(24) };
         var refresh = Dialogs.Button("Refresh"); refresh.Click += async (_, _) => await Run(Refresh);
         page.Children.Add(Card("Network", _network, _peers, Dialogs.Text("Your local node connects to the official peers. Changing this preference does not move mining to a server."), refresh, _storage));
+        page.Children.Add(MiningSettings());
         page.Children.Add(Card("Wallet locking", _autoLock, Row(Dialogs.Text("Minutes without activity"), _minutes),
             Dialogs.Text("Locking protects spending access. It does not stop mining or remove your coins. The last balance stays visible. Sending asks for your password."), _traySetting));
         var backup = Dialogs.Button("Back up open wallet"); backup.Click += async (_, _) => await Run(Backup);
@@ -221,6 +238,28 @@ internal sealed partial class MainWindow : Window
         page.Children.Add(BuildUpdatesCard());
         page.Children.Add(Card("Technical log", _log));
         return new ScrollViewer { Content = page };
+    }
+
+    private Control MiningSettings()
+    {
+        _threadCount.Name = "MiningThreadCount";
+        AutomationProperties.SetName(_miningThreads, "CPU mining threads");
+        AutomationProperties.SetHelpText(_miningThreads, "Choose how many CPU threads to use. Changes apply the next time you start mining.");
+        var limits = new Grid { ColumnDefinitions = new ColumnDefinitions("*,*") };
+        limits.Children.Add(Dialogs.Text("1 thread", 12));
+        var maximum = Dialogs.Text($"{Environment.ProcessorCount} available", 12);
+        maximum.HorizontalAlignment = HorizontalAlignment.Right;
+        Grid.SetColumn(maximum, 1); limits.Children.Add(maximum);
+        var card = Card("CPU mining", _threadCount, _miningThreads, limits,
+            Dialogs.Text("Changes apply the next time you start mining. More threads use more power and can make your computer warmer.", 13));
+        card.Name = "MiningSettings";
+        return card;
+    }
+
+    private void UpdateThreadCount()
+    {
+        int threads = _settings.GetMiningThreadCount();
+        _threadCount.Text = $"{threads} CPU thread{(threads == 1 ? "" : "s")} selected";
     }
 
     private static Border Card(string? title, params Control[] children)
@@ -537,7 +576,7 @@ internal sealed partial class MainWindow : Window
         var disk = await Task.Run(_host.GetStorage); if (disk.FreeBytes < 1073741824) throw new IOException("Less than 1 GiB of disk space remains. Free some space before starting mining.");
         string address = _custom.IsChecked == true ? _miningAddress.Text?.Trim() ?? "" : _snapshot?.Address ?? "";
         if (string.IsNullOrEmpty(address) || !(await _wallet.ValidateAddressAsync(_endpoint!, address)).Valid) throw new InvalidOperationException("Open a wallet or enter a valid mining address first.");
-        int cores = Environment.ProcessorCount, threads = _settings.MiningMode switch { "Quiet" => 1, "Full power" => cores, _ => Math.Max(1, cores / 2) };
+        int threads = _settings.GetMiningThreadCount();
         await _node.StartMiningAsync(_endpoint!, address, threads); await Refresh();
     }
 
@@ -550,7 +589,8 @@ internal sealed partial class MainWindow : Window
         _miningButton.IsEnabled = _ready && (!_busy || canStopDuringUpdate);
         _miningButton.Content = canStopDuringUpdate ? "Stop mining" : _busy ? "Please wait..." : active ? "Stop mining" : "Start mining";
         _walletButton.Content = _walletName.Length == 0 ? "Open wallet" : "Manage wallet";
-        _power.IsEnabled = !active && !_busy; _custom.IsEnabled = !active && !_busy; _miningAddress.IsEnabled = !active && !_busy;
+        _miningThreads.IsEnabled = !_busy && !_installingUpdate;
+        _custom.IsEnabled = !active && !_busy; _miningAddress.IsEnabled = !active && !_busy;
     }
 
     private async Task Run(Func<Task> action)

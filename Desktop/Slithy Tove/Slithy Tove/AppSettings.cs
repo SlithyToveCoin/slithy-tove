@@ -62,6 +62,10 @@ internal sealed class AppSettings
         AutoLockEnabled && now - lastActivity >= TimeSpan.FromMinutes(Math.Clamp(AutoLockMinutes, 1, 120));
     public bool MineToCustomAddress { get; set; }
     public string CustomMiningAddress { get; set; } = "";
+    public int MiningThreads { get; set; } = Math.Max(1, Environment.ProcessorCount / 2);
+
+    internal static int ClampMiningThreads(int threads, int processors) =>
+        Math.Clamp(threads, 1, Math.Max(1, processors));
 
     // Updates are considered safe when the URL is allowed and the signing key exists.
     public bool UpdatesConfigured =>
@@ -311,6 +315,7 @@ internal sealed class AppSettingsStore
                     }
                 }
 
+                settings.MiningThreads = AppSettings.ClampMiningThreads(settings.MiningThreads, Environment.ProcessorCount);
                 return settings;
             }
         }
@@ -322,6 +327,7 @@ internal sealed class AppSettingsStore
                 AppSettings recovered = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(SettingsPath + ".previous"), _jsonOptions)
                     ?? throw new InvalidDataException("The saved settings backup is invalid.", failure);
                 if (File.Exists(SettingsPath)) File.Move(SettingsPath, SettingsPath + ".damaged-" + Guid.NewGuid().ToString("N"));
+                recovered.MiningThreads = AppSettings.ClampMiningThreads(recovered.MiningThreads, Environment.ProcessorCount);
                 return recovered;
             }
             throw new InvalidDataException("Slithy could not read its settings. Existing wallet and configuration files were not replaced.", failure);
@@ -346,6 +352,7 @@ internal sealed class AppSettingsStore
 
     public void Save(AppSettings settings)
     {
+        settings.MiningThreads = AppSettings.ClampMiningThreads(settings.MiningThreads, Environment.ProcessorCount);
         // Make sure the config folder exists before writing settings.json.
         string? directory = Path.GetDirectoryName(SettingsPath);
         if (directory is not null)

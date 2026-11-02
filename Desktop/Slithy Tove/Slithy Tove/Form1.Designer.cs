@@ -40,7 +40,7 @@ partial class Form1
     private Panel miningCard;
     private Label miningTitleLabel;
     private Label miningDescriptionLabel;
-    private ComboBox miningEffortComboBox;
+    private LinkLabel miningSettingsLink;
     private CheckBox mineToAddressCheckBox;
     private Label miningAddressLabel;
     private TextBox miningAddressTextBox;
@@ -166,7 +166,7 @@ partial class Form1
         mainTabControl = new TabControl();
         homeTabPage = new TabPage();
         homeNoteLabel = new Label();
-        _homeLayout = new TableLayoutPanel();
+        _homeLayout = new BufferedTableLayoutPanel();
         homeStatusCard = new Panel();
         statusMessageLabel = new Label();
         treasuryStatusLabel = new Label();
@@ -189,7 +189,7 @@ partial class Form1
         miningAddressTextBox = new TextBox();
         miningAddressLabel = new Label();
         mineToAddressCheckBox = new CheckBox();
-        miningEffortComboBox = new ComboBox();
+        miningSettingsLink = new LinkLabel();
         miningDescriptionLabel = new Label();
         miningTitleLabel = new Label();
         _homeMissionCard = new Panel();
@@ -217,7 +217,7 @@ partial class Form1
         networkValueLabel = new Label();
         syncCaptionLabel = new Label();
         syncValueLabel = new Label();
-        chainSyncPanel = new Panel();
+        chainSyncPanel = new BufferedPanel();
         chainSyncLabel = new Label();
         chainSyncProgressBar = new ProgressBar();
         versionCaptionLabel = new Label();
@@ -252,7 +252,7 @@ partial class Form1
         checkUpdatesButton = new Button();
         automaticUpdatesCheckBox = new CheckBox();
         minimizeToTrayOnCloseCheckBox = new CheckBox();
-        updateProgressTrackPanel = new Panel();
+        updateProgressTrackPanel = new BufferedPanel();
         updateProgressFillPanel = new Panel();
         updateStatusLabel = new Label();
         installedVersionLabel = new Label();
@@ -273,9 +273,9 @@ partial class Form1
         activityAmountColumnHeader = new ColumnHeader();
         activityDateColumnHeader = new ColumnHeader();
         recentActivityTitleLabel = new Label();
-        _operationProgressPanel = new Panel();
+        _operationProgressPanel = new BufferedPanel();
         _operationProgressLabel = new Label();
-        _operationProgressTrack = new Panel();
+        _operationProgressTrack = new BufferedPanel();
         _operationProgressFill = new Panel();
         _trayIcon = new NotifyIcon(components);
         _trayMenu = new ContextMenuStrip(components);
@@ -669,13 +669,14 @@ partial class Form1
         // miningCard
         // 
         miningCard.BackColor = Color.FromArgb(255, 253, 247);
+        miningCard.AutoScroll = true;
         miningCard.Controls.Add(_bookMiningAnimation);
         miningCard.Controls.Add(miningStatusLineLabel);
         miningCard.Controls.Add(miningToggleButton);
         miningCard.Controls.Add(miningAddressTextBox);
         miningCard.Controls.Add(miningAddressLabel);
         miningCard.Controls.Add(mineToAddressCheckBox);
-        miningCard.Controls.Add(miningEffortComboBox);
+        miningCard.Controls.Add(miningSettingsLink);
         miningCard.Controls.Add(miningDescriptionLabel);
         miningCard.Controls.Add(miningTitleLabel);
         miningCard.Dock = DockStyle.Fill;
@@ -754,17 +755,18 @@ partial class Form1
         mineToAddressCheckBox.UseVisualStyleBackColor = true;
         mineToAddressCheckBox.CheckedChanged += mineToAddressCheckBox_CheckedChanged;
         // 
-        // miningEffortComboBox
-        // 
-        miningEffortComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-        miningEffortComboBox.Font = new Font("Segoe UI", 10F);
-        miningEffortComboBox.FormattingEnabled = true;
-        miningEffortComboBox.Items.AddRange(new object[] { "Light and quiet", "Balanced", "Full power" });
-        miningEffortComboBox.Location = new Point(44, 176);
-        miningEffortComboBox.Margin = new Padding(5);
-        miningEffortComboBox.Name = "miningEffortComboBox";
-        miningEffortComboBox.Size = new Size(420, 45);
-        miningEffortComboBox.TabIndex = 2;
+        // miningSettingsLink
+        //
+        miningSettingsLink.Font = new Font("Segoe UI", 9F);
+        miningSettingsLink.LinkColor = Color.FromArgb(71, 103, 80);
+        miningSettingsLink.ActiveLinkColor = Color.FromArgb(48, 68, 56);
+        miningSettingsLink.LinkBehavior = LinkBehavior.HoverUnderline;
+        miningSettingsLink.Location = new Point(44, 176);
+        miningSettingsLink.Name = "miningSettingsLink";
+        miningSettingsLink.Size = new Size(420, 45);
+        miningSettingsLink.TabIndex = 2;
+        miningSettingsLink.Text = "CPU threads: change in Settings";
+        miningSettingsLink.LinkClicked += (_, _) => ShowMiningSettings();
         // 
         // miningDescriptionLabel
         // 

@@ -66,6 +66,7 @@ public partial class Form1 : Form
     private long _lastWalletRefreshHeight;
     private long _lastMiningBlocksCount = -1;
     private int _operationProgressPercent;
+    private int _updateProgressPercent;
 
     private sealed record DiskSpaceSnapshot(
         string DriveName,
@@ -85,6 +86,8 @@ public partial class Form1 : Form
         // 3. Load saved settings.
         // 4. Prepare services like wallet RPC, updates, and the tray icon.
         InitializeComponent();
+        DoubleBuffered = true;
+        InitializeMiningSettings();
         LoadApplicationIcon();
         LoadBrandMark();
         InitializeActivityViews();
@@ -114,7 +117,7 @@ public partial class Form1 : Form
     {
         // The progress bar is laid out in the designer. This syncs the fill.
         _operationProgressTrack.Resize += (_, _) => UpdateOperationProgressFill();
-        updateProgressTrackPanel.Resize += (_, _) => UpdateUpdateProgressFill(_operationProgressPercent);
+        updateProgressTrackPanel.Resize += (_, _) => UpdateUpdateProgressFill(_updateProgressPercent);
 
         _operationProgressPanel.BringToFront();
         mainTabControl.BringToFront();
@@ -155,11 +158,11 @@ public partial class Form1 : Form
         _updateBadgeImage = image;
         _headerUpdateButton.Image = image;
         _headerUpdateButton.Disposed += (_, _) => _updateBadgeImage?.Dispose();
-        headerPanel.Layout += (_, _) =>
-        {
-            _headerUpdateButton.Left = _headerBetaLabel.Left;
-            _headerUpdateButton.Width = _headerBetaLabel.Width;
-        };
+        _headerBetaLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+        _headerUpdateButton.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+        _headerVersionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+        headerPanel.SizeChanged += (_, _) => LayoutHeaderBadges();
+        LayoutHeaderBadges();
         _headerUpdateButton.Click += (_, _) => ShowUpdatePage();
         _trayUpdateItem.Click += (_, _) => ShowUpdatePage();
         _trayMenu.Items.Insert(1, _trayUpdateItem);
@@ -179,6 +182,28 @@ public partial class Form1 : Form
         mainTabControl.SelectedTab = advancedTabPage;
         advancedTabControl.SelectedTab = updatesTabPage;
         checkUpdatesButton.Focus();
+    }
+
+    private bool _layingOutHeader;
+
+    private void LayoutHeaderBadges()
+    {
+        if (_layingOutHeader) return;
+        _layingOutHeader = true;
+        try
+        {
+            int Scale(int value) => (int)Math.Round(value * DeviceDpi / 192d);
+            int right = headerPanel.ClientSize.Width - Scale(44);
+            _headerBetaLabel.Left = right - _headerBetaLabel.Width;
+            _headerUpdateButton.Left = _headerBetaLabel.Left;
+            _headerUpdateButton.Width = _headerBetaLabel.Width;
+            _headerVersionLabel.Left = right - _headerVersionLabel.Width;
+            const string full = "A simple wallet that helps support children’s literacy";
+            int available = _headerBetaLabel.Left - subtitleLabel.Left - Scale(24);
+            subtitleLabel.Text = TextRenderer.MeasureText(full, subtitleLabel.Font).Width <= available
+                ? full : "Helping children learn to read";
+        }
+        finally { _layingOutHeader = false; }
     }
 
     private bool WalletActionInProgress =>
@@ -1373,20 +1398,21 @@ public partial class Form1 : Form
             {
                 _installingUpdate = true;
                 SetWalletBusy(true, "Preparing the update. Your wallet files stay in place.");
-                SetUpdateProgress($"Downloading Slithy {manifest.Version}...", 35);
+                SetUpdateProgress($"Downloading Slithy {manifest.Version}...", 0);
+                bool downloading = true;
                 Progress<int> progress = new(percent =>
                 {
-                    if (_closingForExit || IsDisposed) return;
-                    int scaled = 35 + Math.Clamp(percent, 0, 100) * 40 / 100;
-                    SetUpdateProgress($"Downloading update... {percent}%", scaled);
-                    updateStatusLabel.Text = $"Downloading Slithy {manifest.Version}... {percent}%";
+                    if (!downloading || _closingForExit || IsDisposed) return;
+                    SetUpdateProgress($"Downloading update... {percent}%", percent);
                 });
-                string packagePath = await _updateService.DownloadVerifiedPackageAsync(manifest, progress);
+                string packagePath;
+                try { packagePath = await _updateService.DownloadVerifiedPackageAsync(manifest, progress); }
+                finally { downloading = false; }
                 if (_closingForExit || IsDisposed) return;
-                SetUpdateProgress("Verifying update package...", 80);
+                SetUpdateProgress("Update downloaded and verified.", 100);
                 updateStatusLabel.Text = "Update downloaded and verified.";
                 AppendLog($"Verified update saved to {packagePath}");
-                SetUpdateProgress("Preparing to restart with the update...", 92);
+                SetUpdateProgress("Preparing to restart with the update...", 100);
                 await StartUpdateHandoffAsync(packagePath, manifest);
             }
         }
@@ -1823,11 +1849,11 @@ public partial class Form1 : Form
     {
         miningTitleLabel.Text = "Mining is on";
         miningDescriptionLabel.Text = speed > 0
-            ? $"Mining at {speed:N0} H/s with {threads} worker{(threads == 1 ? "" : "s")}."
-            : $"Mining with {threads} worker{(threads == 1 ? "" : "s")}. Waiting for a block.";
+            ? $"Mining at {speed:N0} H/s.\n{threads} CPU thread{(threads == 1 ? "" : "s")}."
+            : $"Mining with {threads} CPU thread{(threads == 1 ? "" : "s")}.\nWaiting for a block.";
         miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         miningToggleButton.Text = "Stop mining";
-        miningEffortComboBox.Enabled = false;
+        UpdateMiningThreadLabels();
         _bookMiningAnimation.Mining = true;
     }
 
@@ -1837,7 +1863,7 @@ public partial class Form1 : Form
         miningDescriptionLabel.Text = "Starting miner...";
         miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         miningToggleButton.Text = "Starting...";
-        miningEffortComboBox.Enabled = false;
+        UpdateMiningThreadLabels();
         _bookMiningAnimation.Mining = true;
     }
 
@@ -1846,12 +1872,12 @@ public partial class Form1 : Form
         miningTitleLabel.Text = "Earn Slithy";
         miningDescriptionLabel.Text =
             mineToAddressCheckBox.Checked
-                ? "Use this computer's CPU and send rewards to the address below."
-                : "Use this computer's CPU and send rewards to this wallet.";
+                ? "Mine to the address below."
+                : "Mine with this computer's CPU.";
         miningStatusLineLabel.Text = BuildMiningDestinationText(active: false);
         miningToggleButton.Text = "Start mining";
         miningToggleButton.Enabled = CanMine();
-        miningEffortComboBox.Enabled = true;
+        UpdateMiningThreadLabels();
         _bookMiningAnimation.Mining = false;
     }
 
@@ -1946,16 +1972,8 @@ public partial class Form1 : Form
         }
     }
 
-    private int MiningThreadCount()
-    {
-        int processors = Math.Max(1, Environment.ProcessorCount);
-        return miningEffortComboBox.SelectedIndex switch
-        {
-            0 => 1,
-            2 => processors,
-            _ => Math.Max(1, processors / 2)
-        };
-    }
+    private int MiningThreadCount() =>
+        AppSettings.ClampMiningThreads(_settings.MiningThreads, Environment.ProcessorCount);
 
     private void SetWalletBusy(bool busy, string? message = null, int progressPercent = -1)
     {
@@ -1969,7 +1987,7 @@ public partial class Form1 : Form
         miningToggleButton.Enabled = !busy && CanMine();
         if (!string.IsNullOrWhiteSpace(message))
         {
-            availableBalanceLabel.Text = message;
+            if (!_installingUpdate) availableBalanceLabel.Text = message;
             _operationProgressLabel.Text = message;
         }
         if (progressPercent >= 0)
@@ -1986,14 +2004,8 @@ public partial class Form1 : Form
         }
         UpdateOperationProgressFill();
         _operationProgressPanel.Visible = busy;
-        if (busy)
-        {
-            _operationProgressPanel.BringToFront();
-            mainTabControl.BringToFront();
-            _operationProgressPanel.Refresh();
-            _operationProgressLabel.Refresh();
-            _operationProgressTrack.Refresh();
-        }
+        // The dock order is set at startup. Reordering it on each download chunk
+        // resized and repainted the entire Home page.
     }
 
     private void SetUpdateProgress(string message, int progressPercent)
@@ -2005,9 +2017,9 @@ public partial class Form1 : Form
 
     private void UpdateUpdateProgressFill(int progressPercent)
     {
+        _updateProgressPercent = Math.Clamp(progressPercent, 0, 100);
         int availableWidth = Math.Max(0, updateProgressTrackPanel.ClientSize.Width);
-        updateProgressFillPanel.Width = availableWidth * Math.Clamp(progressPercent, 0, 100) / 100;
-        updateProgressTrackPanel.Refresh();
+        updateProgressFillPanel.Width = availableWidth * _updateProgressPercent / 100;
     }
 
     private void UpdateOperationProgressFill()
@@ -2290,7 +2302,7 @@ public partial class Form1 : Form
         chainSyncPanel.Visible = display.Visible;
         chainSyncProgressBar.Style = display.Waiting ? ProgressBarStyle.Marquee : ProgressBarStyle.Continuous;
         chainSyncProgressBar.Value = display.Percent;
-        chainSyncLabel.Text = display.Text;
+        chainSyncLabel.Text = "Chain sync: " + display.Text;
     }
 
     private async Task<bool> RefreshNodeStatusAsync()
@@ -2567,7 +2579,9 @@ public partial class Form1 : Form
             autoLockMinutesNumericUpDown.Value = Math.Clamp(_settings.AutoLockMinutes, 1, 120);
             autoLockLabel.Checked = _settings.AutoLockEnabled;
             autoLockMinutesNumericUpDown.Enabled = _settings.AutoLockEnabled;
-            miningEffortComboBox.SelectedIndex = 1;
+            miningThreadsTrackBar.Maximum = Math.Max(1, Environment.ProcessorCount);
+            miningThreadsTrackBar.Value = MiningThreadCount();
+            UpdateMiningThreadLabels();
             mineToAddressCheckBox.Checked = _settings.MineToCustomAddress;
             miningAddressTextBox.Text = _settings.CustomMiningAddress;
             UpdateCustomMiningAddressControls();
@@ -2642,6 +2656,14 @@ public partial class Form1 : Form
         bool custom = mineToAddressCheckBox.Checked;
         miningAddressLabel.Enabled = custom;
         miningAddressTextBox.Enabled = custom;
+        miningAddressLabel.Visible = custom;
+        miningAddressTextBox.Visible = custom;
+        int Scale(int value) => (int)Math.Round(value * DeviceDpi / 192d);
+        mineToAddressCheckBox.Top = Scale(218);
+        miningAddressLabel.Top = Scale(258);
+        miningAddressTextBox.Top = Scale(293);
+        miningToggleButton.Top = Scale(custom ? 335 : 264);
+        miningStatusLineLabel.Top = miningToggleButton.Bottom + Scale(8);
         if (!_miningStartedByApp)
         {
             ShowMiningStopped();

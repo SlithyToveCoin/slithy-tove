@@ -1,6 +1,6 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.44-beta.2. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.45-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
 
 The terminal app remains available. Installing this GUI does not replace it, and the terminal updater does not update the GUI.
 
@@ -56,6 +56,10 @@ Opening or restoring a wallet can show a fresh receiving address. Previously use
 
 Create a wallet and record its recovery words privately. Confirm that the node catches up, then start mining. Check the total and spendable balances as rewards arrive.
 
+Choose your thread count under **Settings > CPU mining**. The slider runs from one thread to the number of logical processors available to the app. Slithy remembers your choice. A higher count gives mining more of your CPU and can increase heat and power use. If mining is already running, stop and start it to use the new count. Moving the slider does not interrupt a running miner.
+
+The Home page no longer has the Quiet, Balanced and Full power dropdown. Existing Linux selections carry over to the matching thread count. New installations start at half the available logical processors, with a minimum of one.
+
 In **Settings**, toggle automatic wallet locking and restart the app to confirm the choice is remembered. With locking enabled, let the timer expire. The GUI should label the wallet as locked while continuing to display its balance. Mining should continue until you stop it. Sending requests your password.
 
 Send a small amount to another test wallet. Check the displayed fee before confirming. Test a backup and recovery-word restore, including the restored address and balance. Try closing to the notification area and using **Quit**. Before hiding for the first time, the app asks you to confirm that the tray icon is visible. If it is missing, cancel and turn off the notification-area option in Settings. Closing will then stop this app's node and exit.
@@ -74,7 +78,7 @@ The native tools must match the reviewed Slithy beta. The GUI checks the beta ge
 
 ## Updates
 
-Version 0.1.44-beta.2 adds updates inside the GUI. By default, Slithy checks when it opens and about once an hour while it runs. Under **Settings > Updates**, clear **Check for updates when Slithy opens and while it is running** to turn off those checks. **Check now** still lets you check yourself.
+Updates have been available inside the GUI since version 0.1.44. By default, Slithy checks when it opens and about once an hour while it runs. Under **Settings > Updates**, clear **Check for updates when Slithy opens and while it is running** to turn off those checks. **Check now** still lets you check yourself.
 
 A newer release adds an **Update available** badge beside the version and a notice above the tabs. Choose **Review update** to read the release notes and start the download. **Later** dismisses the notice; the badge stays available. The same release will not show that notice again during the current session.
 

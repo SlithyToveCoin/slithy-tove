@@ -136,6 +136,7 @@ internal sealed class UpdateService : IDisposable
         response.EnsureSuccessStatusCode();
         long? contentLength = response.Content.Headers.ContentLength;
         if (contentLength > MaxPackageBytes) throw new InvalidDataException("The update package exceeds the download limit.");
+        int lastReportedPercent = -1;
         await using (Stream source = await response.Content.ReadAsStreamAsync(cancellationToken))
         await using (FileStream destination = new(
             temporaryPath, FileMode.Create, FileAccess.Write, FileShare.None, 81920, useAsync: true))
@@ -151,11 +152,18 @@ internal sealed class UpdateService : IDisposable
                 totalRead += read;
                 if (contentLength is > 0)
                 {
-                    progress?.Report(Math.Clamp((int)(totalRead * 100 / contentLength.Value), 0, 100));
+                    int percent = Math.Clamp((int)(totalRead * 100 / contentLength.Value), 0, 100);
+                    // A large download can have thousands of chunks per percent.
+                    // Post a UI update when the displayed number changes.
+                    if (percent != lastReportedPercent)
+                    {
+                        progress?.Report(percent);
+                        lastReportedPercent = percent;
+                    }
                 }
             }
         }
-        progress?.Report(100);
+        if (lastReportedPercent != 100) progress?.Report(100);
 
         string actualHash;
         await using (FileStream package = File.OpenRead(temporaryPath))

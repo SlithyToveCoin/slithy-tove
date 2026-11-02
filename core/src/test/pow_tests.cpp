@@ -224,6 +224,19 @@ BOOST_AUTO_TEST_CASE(ChainParams_SIGNET_sanity)
     sanity_check_chainparams(*m_node.args, ChainType::SIGNET);
 }
 
+BOOST_AUTO_TEST_CASE(slithy_cpu_thread_bounds)
+{
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(1, 1), 1);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(64, 64), 64);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(128, 128), 128);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(96, 128), 96);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(1000, 128), 128);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(0, 8), 1);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(-2, 8), 1);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(8, 0), 1);
+    BOOST_CHECK_EQUAL(SlithyCpuMiningThreads(8, -1), 1);
+}
+
 BOOST_AUTO_TEST_CASE(slithy_cpu_work_expiry)
 {
     const uint256 parent{1};
