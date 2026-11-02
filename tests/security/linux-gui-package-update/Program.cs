@@ -37,7 +37,9 @@ Environment.SetEnvironmentVariable("HTTP_PROXY", "http://127.0.0.1:1");
 Environment.SetEnvironmentVariable("HTTPS_PROXY", "http://127.0.0.1:1");
 Environment.SetEnvironmentVariable("NO_PROXY", "127.0.0.1,localhost");
 var store = new LinuxSettingsStore();
-var settings = new LinuxSettings { AutoCheckUpdates = false, MinimizeToTrayOnClose = false, AutoLockEnabled = false, LastWalletName = "upgrade-fixture" };
+LinuxSettings freshSettings = store.Load();
+int savedThreadChoice = Math.Min(3, Math.Max(1, Environment.ProcessorCount));
+var settings = new LinuxSettings { AutoCheckUpdates = false, MinimizeToTrayOnClose = false, AutoLockEnabled = false, LastWalletName = "upgrade-fixture", MiningThreads = savedThreadChoice };
 string terms = File.ReadAllText(Path.Combine(previous, "licenses/BETA-TERMS.txt"));
 settings.TermsAcceptedVersion = "1.0:" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(terms)));
 store.Save(settings);
@@ -60,6 +62,7 @@ async Task Reject(Func<Task> action, string label)
 Uri? current = null;
 try
 {
+    Check(freshSettings.MiningThreads == 1 && freshSettings.GetMiningThreadCount() == 1, "fresh settings start with one CPU thread");
     string apps = Path.Combine(root, "apps");
     Directory.CreateDirectory(apps);
     string launcher = Path.Combine(LinuxGuiUpdatePaths.DesktopDataDirectory, "applications/io.slithy.Tove.desktop");
@@ -144,12 +147,13 @@ try
     Check((await rpc.CallAsync(current, "upgrade-fixture", "getaddressinfo", new object[] { address })).GetProperty("ismine").GetBoolean(), "replacement retains the original wallet address");
     Check((await rpc.CallAsync(current, "upgrade-fixture", "getwalletinfo", Array.Empty<object>())).GetProperty("unlocked_until").GetInt64() == 0, "wallet stays encrypted and locked after replacement");
     Check(!(await rpc.GetMiningInfoAsync(current)).Active, "replacement does not start mining automatically");
+    Check(store.Load().MiningThreads == savedThreadChoice, "chosen numeric CPU thread count survives replacement");
     Check(store.Load().LastWalletName == "upgrade-fixture" && !store.Load().AutoLockEnabled, "wallet selection and timeout preferences survive update");
     Check(File.ReadAllText(launcher).Contains(staged.Directory + "/slithy-desktop"), "desktop launcher points to the verified candidate");
     Check(File.Exists(Path.Combine(previous, "slithy-desktop")), "previous version remains available");
     await File.WriteAllTextAsync(Path.Combine(results, "package-upgrade-result.json"), JsonSerializer.Serialize(new
     {
-        passed = checks, candidateSha256 = manifest.Sha256.ToLowerInvariant(), previousVersion, expectedNativeSha256,
+        passed = checks, candidateSha256 = manifest.Sha256.ToLowerInvariant(), previousVersion, expectedNativeSha256, savedThreadChoice,
         boundary = "Production download/staging/activation and node ownership code; test process adapter adds --regtest to the actual unchanged GUI executable. Temporary signing key and in-memory HTTP fixture; no production trust changes."
     }, new JsonSerializerOptions { WriteIndented = true }));
     Console.WriteLine($"PASS: {checks} packaged GUI upgrade checks. No public-chain wallets or transactions.");
