@@ -12269,11 +12269,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "e8da00d77cb0d6f3d9675d345ee93124a6330da3bc04af0ffb657075db7afbbc"
+    "sha256": "c7f781d668875090ad79919b12e19ecf02b11fc527817a2db73fdecd1a2a253a"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "2231dda3eec243de22077e994fbf594d45ad2a52997901902548e46db66aa0ef"
+    "sha256": "d14e8ff6872e30531bf3e85984891b1349b74385d9fd328cd511a5acfb835e45"
   },
   {
     "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.45-beta.1-manifest.json",
@@ -12284,8 +12284,20 @@
     "sha256": "a2746148f1de3629321f15e3a8b3c00d294dc529b48085fbc99f35088d6813f3"
   },
   {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.46-beta.1-manifest.json",
+    "sha256": "b3b06079646bee3b995b07b5c81160d5319fccf50f0f8f6be7a64ab9f4157cd5"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.46-beta.1-x64.tar.gz.sha256",
+    "sha256": "bec6b67ce431d122571083e4f38221d56816225dfd608dba47ed1078f86657fc"
+  },
+  {
     "path": "site/downloads/windows/Slithy-Tove-0.1.45-manifest.json",
     "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
+  },
+  {
+    "path": "site/downloads/windows/Slithy-Tove-0.1.46-manifest.json",
+    "sha256": "932d30a214885f3a06b94b2a79461ad51909adaaecfae1773c7cbaf779802e94"
   },
   {
     "path": "site/explorer-transactions.css",
@@ -12305,7 +12317,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "b5c6446767c10c9d1ff1efc3a15888edc0875f9ea4669e4473333e2696aceed6"
+    "sha256": "0910e20850bb488db7d8e04f68c24d5abcf0d37ba4f595e09468f3cea47c9350"
   },
   {
     "path": "site/home-full.html",
@@ -12389,7 +12401,7 @@
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
-    "sha256": "e838e0e4c17d78be2b32e9e5f56ae87c26a77d945f9a26f482d84ef6cfa45cfd"
+    "sha256": "b3b06079646bee3b995b07b5c81160d5319fccf50f0f8f6be7a64ab9f4157cd5"
   },
   {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
@@ -12401,11 +12413,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
+    "sha256": "932d30a214885f3a06b94b2a79461ad51909adaaecfae1773c7cbaf779802e94"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
+    "sha256": "932d30a214885f3a06b94b2a79461ad51909adaaecfae1773c7cbaf779802e94"
   },
   {
     "path": "site/whitepaper.html",
