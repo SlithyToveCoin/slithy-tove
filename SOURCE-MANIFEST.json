@@ -12269,11 +12269,23 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "827c6da0597c11f0ce0ee8c75860c36b0ee97425d21bb4b2316693043eaca6eb"
+    "sha256": "e8da00d77cb0d6f3d9675d345ee93124a6330da3bc04af0ffb657075db7afbbc"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "6d02b1c20388d238806cd31adb3fa0a0ded9542dc186667a1960010bda70927a"
+    "sha256": "2231dda3eec243de22077e994fbf594d45ad2a52997901902548e46db66aa0ef"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.45-beta.1-manifest.json",
+    "sha256": "e838e0e4c17d78be2b32e9e5f56ae87c26a77d945f9a26f482d84ef6cfa45cfd"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.45-beta.1-x64.tar.gz.sha256",
+    "sha256": "a2746148f1de3629321f15e3a8b3c00d294dc529b48085fbc99f35088d6813f3"
+  },
+  {
+    "path": "site/downloads/windows/Slithy-Tove-0.1.45-manifest.json",
+    "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
   },
   {
     "path": "site/explorer-transactions.css",
@@ -12293,7 +12305,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "4e1a4d4795823ebe3b6dcbc0860be5f8ee177db1da6edb8e03078f3f54753822"
+    "sha256": "b5c6446767c10c9d1ff1efc3a15888edc0875f9ea4669e4473333e2696aceed6"
   },
   {
     "path": "site/home-full.html",
@@ -12377,7 +12389,7 @@
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
-    "sha256": "4232bc7c4643dc351d395626b267c039fc348bcbc0c6936b4bc8e3d49aa60fac"
+    "sha256": "e838e0e4c17d78be2b32e9e5f56ae87c26a77d945f9a26f482d84ef6cfa45cfd"
   },
   {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
@@ -12389,11 +12401,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "d088cabc255741e5ef83b1c7b5ac66fc5eae1d0234963385252184518e0a841a"
+    "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "d088cabc255741e5ef83b1c7b5ac66fc5eae1d0234963385252184518e0a841a"
+    "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
   },
   {
     "path": "site/whitepaper.html",

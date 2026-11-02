@@ -117,8 +117,10 @@
       <section>
         <h2>What does the Windows app do?</h2>
         <p>The Windows app starts a local node and connects it to public peers. That node downloads and checks the chain so your wallet can show its balance.</p>
-        <p>Click Start mining to use your computer's CPU. Rewards go to your wallet address unless you choose another address in the mining settings.</p>
-        <p>Allow time for the first chain download, and check the disk space shown in the app. Mining also uses electricity and can make your computer run warmer. Start with a lower power setting if you need it for other work.</p>
+        <p>Click Start mining to use your computer's CPU. Rewards go to your wallet address unless you select Mine to another Slithy address on Home.</p>
+        <p>Set the CPU thread count in Settings &gt; Mining. The slider runs from one thread to the logical processors available to Slithy. Your choice is saved. If mining is running, stop and start it to use a new count. Start with fewer threads if you need the computer for other work.</p>
+        <p>When an update downloads while the node catches up, two progress bars can appear. The update bar tracks the app download. The chain-sync bar tracks blocks checked by your local node. They finish independently.</p>
+        <p>Allow time for the first chain download, and check the disk space shown in the app. Mining also uses electricity and can make your computer run warmer.</p>
       </section>
 
       <section>
@@ -130,13 +132,14 @@
       <section id="linux-desktop">
         <h2>Using the Linux desktop app</h2>
         <p>The Linux desktop beta has Home, Activity and Settings tabs like the Windows app. It includes the local node and .NET runtime. Ubuntu 24.04 x64 is the reference platform. You need X11 or XWayland; this download is not for ARM computers or headless servers. Other distributions and desktop environments need testing.</p>
-        <p>Download the <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.44-beta.2-x64.tar.gz">Linux desktop archive</a> and extract it into a folder you own. Open a terminal in the extracted folder and run:</p>
+        <p>Download the <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.45-beta.1-x64.tar.gz">Linux desktop archive</a> and extract it into a folder you own. Open a terminal in the extracted folder and run:</p>
         <pre style="overflow-x:auto;padding:1rem"><code>bash install-desktop.sh</code></pre>
         <p>Open Slithy Tove from your application menu. Leave the extracted folder in place so the launcher can find it. You can also run <code>./slithy-desktop</code> from that folder. Do not use sudo.</p>
         <p>Create a test wallet, record its recovery words privately and allow the node to catch up before starting mining. In Settings, you can turn automatic wallet locking on or off. Locking does not stop mining or hide the balance. Sending asks for your password when the spending keys are locked.</p>
         <p>The GUI has its own data folder, separate from the terminal app. Start with a new test wallet. To bring over a terminal wallet, make a backup in the terminal app and restore that backup through Manage wallet in the GUI. Do not copy an active wallet database or delete the original wallet. Avoid sending from two copies of the same wallet at once.</p>
         <p>Choose your wallet from the dropdown when the app opens. It remembers your last selection. You can create a wallet or restore one from that same screen.</p>
-        <p>Version 0.1.44-beta.2 checks for updates when it opens and about once an hour. A badge beside the version and an in-app notice let you review the release. You can also use Settings &gt; Updates. Downloading leaves mining running; installation stops the local node and opens the new app. Start mining again when you are ready.</p>
+        <p>The app checks for updates when it opens and about once an hour. A badge beside the version and an in-app notice let you review the release. You can also use Settings &gt; Updates. Downloading leaves mining running; installation stops the local node and opens the new app. Start mining again when you are ready.</p>
+        <p>Under Settings &gt; CPU mining, choose a thread count from one to the number of logical processors available on your computer. The app remembers it. If mining is running, stop and start it to apply a different count. More threads can use more electricity and make the computer warmer.</p>
         <p>If you have 0.1.43-beta.1 or earlier, close it, extract this package into a separate folder and run its <code>install-desktop.sh</code>. That one manual upgrade adds the updater. Your wallet data stays in your Linux account's data folder. The terminal app has a separate updater.</p>
         <p>Some desktops need an extension to show notification-area icons. The app asks you to confirm that its icon is visible before hiding the window. If you cannot see the icon, cancel and turn off that option in Settings.</p>
         <p>If the app will not open, run <code>./slithy-desktop</code> from a terminal and include the error, your distribution and desktop environment in a <a href="/bug-report.html">bug report</a>. Do not send passwords, recovery words or wallet files.</p>
