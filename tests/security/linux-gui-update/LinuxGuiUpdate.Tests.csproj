@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>0.1.44</Version>
-    <InformationalVersion>0.1.44-beta.2</InformationalVersion>
+    <Version>0.1.45</Version>
+    <InformationalVersion>0.1.45-beta.1</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../Desktop/Slithy.Linux/LinuxGuiUpdateService.cs" Link="LinuxGuiUpdateService.cs" />

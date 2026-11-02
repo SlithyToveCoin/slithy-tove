@@ -12417,7 +12417,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "71d8615b5b11494d06a5174e256d53f1c2f192b44a6cfe9f7b69de973462b427"
+    "sha256": "b13ae3addcf132f0f7bd5c62fca0fe3587d66b6086a5e40df9bb38b5b507373b"
   },
   {
     "path": "tests/linux-gui/test_desktop_install.py",
@@ -12477,7 +12477,7 @@
   },
   {
     "path": "tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj",
-    "sha256": "f7ce0a1c60095b38336ef32c2eff3303851ba43cde90f744c6cdc67da9c27589"
+    "sha256": "fc91ef2bf4c6e7eb83784bb091c0592b79ab46dcad56933b729bee97375233b0"
   },
   {
     "path": "tests/security/linux-gui-update/Program.cs",

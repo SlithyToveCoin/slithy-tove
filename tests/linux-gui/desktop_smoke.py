@@ -353,9 +353,16 @@ class Suite:
             size = x.geometry(window)
             x.click(window, size["WIDTH"] - 60 * factor, 16 * factor)
             wait_for(lambda: x.atom("_NET_WM_STATE_MAXIMIZED_VERT") in x.prop(window, "_NET_WM_STATE"), "maximize")
+            wait_for(lambda: x.geometry(window)["WIDTH"] > round(980 * factor), "maximized size")
+            time.sleep(.4)
             size = x.geometry(window)
             x.click(window, size["WIDTH"] - 60 * factor, 16 * factor)
             wait_for(lambda: x.atom("_NET_WM_STATE_MAXIMIZED_VERT") not in x.prop(window, "_NET_WM_STATE"), "restore")
+            # The window-manager state can arrive before Avalonia's restored layout.
+            # Wait for its size before aiming at another titlebar button.
+            wait_for(lambda: x.geometry(window)["WIDTH"] == round(980 * factor)
+                     and x.geometry(window)["HEIGHT"] == round(720 * factor), "restored size")
+            time.sleep(.4)
             if self.args.session == "xfce-x11":
                 size = x.geometry(window)
                 x.click(window, size["WIDTH"] - 100 * factor, 16 * factor)
