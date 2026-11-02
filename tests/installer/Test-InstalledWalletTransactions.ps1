@@ -16,9 +16,9 @@ if (-not $evidence.StartsWith($allowed, [StringComparison]::OrdinalIgnoreCase) -
     throw 'Use the evidence directory created by the disposable installer test.'
 }
 $assemblyPath = Join-Path $installed 'Slithy Tove.dll'
-$expectedAssemblyHash = '038D7339FDBE171D069E19BE34EE5AB704FBA031EBC9BD31C6A4EDCD99281CA3'
+$expectedAssemblyHash = '7A948E6513B192D39326B6D24F69BCA625C3044EE9067A0B6EED918FECCBAA06'
 if ((Get-FileHash -LiteralPath $assemblyPath).Hash -ne $expectedAssemblyHash) {
-    throw 'This transaction fixture is pinned to the signed 0.1.44 application assembly.'
+    throw 'This transaction fixture is pinned to the signed 0.1.45 application assembly.'
 }
 $phases = [Collections.Generic.List[object]]::new()
 $phase = 'load installed application'
