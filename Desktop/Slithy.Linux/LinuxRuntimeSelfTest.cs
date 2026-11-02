@@ -13,21 +13,31 @@ internal static class LinuxRuntimeSelfTest
             LinuxSettings settings = store.Load();
             Check(settings.AutoLockEnabled && settings.AutoLockMinutes == 10, "Secure defaults");
             Check(settings.AutoCheckUpdates, "Update checks start enabled");
-            Check(settings.MiningThreads == Math.Max(1, Environment.ProcessorCount / 2), "New wallets start with half the available CPU threads");
-            foreach (int available in new[] { 1, 2, 3, 8, 64 })
+            Check(settings.MiningThreads == 1 && settings.GetMiningThreadCount() == 1, "Fresh settings start with one CPU thread");
+            foreach (int available in new[] { -1, 0, 1, 2, 3, 8, 64, 128 })
             {
-                Check(LinuxSettings.ResolveMiningThreads(null, "Quiet", available) == 1, "Migrate Quiet preset");
-                Check(LinuxSettings.ResolveMiningThreads(null, "Balanced", available) == Math.Max(1, available / 2), "Migrate Balanced preset");
-                Check(LinuxSettings.ResolveMiningThreads(null, "Full power", available) == available, "Migrate Full power preset");
-                Check(LinuxSettings.ResolveMiningThreads(null, "invalid", available) == Math.Max(1, available / 2), "Unknown presets use the default");
-                Check(LinuxSettings.ResolveMiningThreads(-4, "Full power", available) == 1, "Clamp low CPU thread counts");
-                Check(LinuxSettings.ResolveMiningThreads(1000, null, available) == available, "Clamp CPU thread counts after changing computers");
-                Check(LinuxSettings.ResolveMiningThreads(1, "Full power", available) == 1, "Saved thread count takes precedence over an old preset");
+                int maximum = Math.Max(1, available);
+                Check(LinuxSettings.ResolveMiningThreads(null, available) == 1, "Missing numeric choice uses one thread on every CPU size");
+                Check(LinuxSettings.ResolveMiningThreads(-4, available) == 1, "Clamp low CPU thread counts");
+                Check(LinuxSettings.ResolveMiningThreads(0, available) == 1, "Clamp zero CPU thread count");
+                Check(LinuxSettings.ResolveMiningThreads(1000, available) == maximum, "Clamp CPU thread counts after changing computers");
+                foreach (int chosen in new[] { 1, Math.Max(1, maximum / 2), maximum }.Distinct())
+                    Check(LinuxSettings.ResolveMiningThreads(chosen, available) == chosen, "Preserve a saved valid numeric choice");
             }
-            var legacy = JsonSerializer.Deserialize<LinuxSettings>("{\"MiningMode\":\"Full power\"}")!;
-            legacy.Validate();
-            Check(legacy.MiningThreads == Environment.ProcessorCount && legacy.MiningMode == null, "Old settings migrate once");
-            Check(!JsonSerializer.Serialize(legacy).Contains("MiningMode"), "New settings omit the retired preset");
+            LinuxSettingsStore legacyStore = new(Path.Combine(root, "legacy"));
+            LinuxSettingsStore.EnsurePrivateDirectory(legacyStore.ConfigDirectory);
+            foreach (string? mode in new string?[] { null, "Quiet", "Balanced", "Full power", "invalid" })
+            {
+                File.WriteAllText(legacyStore.SettingsPath, JsonSerializer.Serialize(new { MiningMode = mode }));
+                LinuxSettings legacy = legacyStore.Load();
+                Check(legacy.MiningThreads == 1 && legacy.MiningMode == null, "Retired presets without a numeric choice start at one");
+                legacyStore.Save(legacy);
+                Check(legacyStore.Load().MiningThreads == 1, "Remember the one-thread starting value after saving");
+                Check(!File.ReadAllText(legacyStore.SettingsPath).Contains("MiningMode"), "Saved settings omit the retired preset");
+            }
+            int savedChoice = Math.Min(3, Math.Max(1, Environment.ProcessorCount));
+            File.WriteAllText(legacyStore.SettingsPath, JsonSerializer.Serialize(new { MiningMode = "Full power", MiningThreads = savedChoice }));
+            Check(legacyStore.Load().MiningThreads == savedChoice, "An old preset does not replace a saved numeric choice");
             DateTimeOffset now = DateTimeOffset.UtcNow;
             Check(settings.ShouldAutoLock(now.AddMinutes(-11), now), "Inactivity timeout");
             settings.AutoLockEnabled = false;

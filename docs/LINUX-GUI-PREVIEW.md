@@ -1,6 +1,6 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.45-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.46-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
 
 The terminal app remains available. Installing this GUI does not replace it, and the terminal updater does not update the GUI.
 
@@ -58,7 +58,7 @@ Create a wallet and record its recovery words privately. Confirm that the node c
 
 Choose your thread count under **Settings > CPU mining**. The slider runs from one thread to the number of logical processors available to the app. Slithy remembers your choice. A higher count gives mining more of your CPU and can increase heat and power use. If mining is already running, stop and start it to use the new count. Moving the slider does not interrupt a running miner.
 
-The Home page no longer has the Quiet, Balanced and Full power dropdown. Existing Linux selections carry over to the matching thread count. New installations start at half the available logical processors, with a minimum of one.
+The Home page no longer has the Quiet, Balanced and Full power dropdown. Slithy starts with one CPU thread when no thread count has been saved. Choose a different count in Settings and the app remembers it. Updates leave an existing saved count in place.
 
 In **Settings**, toggle automatic wallet locking and restart the app to confirm the choice is remembered. With locking enabled, let the timer expire. The GUI should label the wallet as locked while continuing to display its balance. Mining should continue until you stop it. Sending requests your password.
 

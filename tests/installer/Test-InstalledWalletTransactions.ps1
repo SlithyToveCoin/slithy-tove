@@ -2,7 +2,9 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$InstalledDirectory,
-    [Parameter(Mandatory)][string]$EvidenceDirectory
+    [Parameter(Mandatory)][string]$EvidenceDirectory,
+    [Parameter(Mandatory)][ValidatePattern('^[A-Fa-f0-9]{64}$')][string]$ExpectedAssemblyHash,
+    [Parameter(Mandatory)][ValidatePattern('^\d+\.\d+\.\d+$')][string]$ExpectedVersion
 )
 
 $ErrorActionPreference = 'Stop'
@@ -16,9 +18,12 @@ if (-not $evidence.StartsWith($allowed, [StringComparison]::OrdinalIgnoreCase) -
     throw 'Use the evidence directory created by the disposable installer test.'
 }
 $assemblyPath = Join-Path $installed 'Slithy Tove.dll'
-$expectedAssemblyHash = '7A948E6513B192D39326B6D24F69BCA625C3044EE9067A0B6EED918FECCBAA06'
-if ((Get-FileHash -LiteralPath $assemblyPath).Hash -ne $expectedAssemblyHash) {
-    throw 'This transaction fixture is pinned to the signed 0.1.45 application assembly.'
+if ((Get-FileHash -LiteralPath $assemblyPath).Hash -ne $ExpectedAssemblyHash) {
+    throw 'The installed application assembly does not match the release hash supplied by the installer test.'
+}
+if ([Diagnostics.FileVersionInfo]::GetVersionInfo($assemblyPath).ProductVersion -cne $ExpectedVersion -or
+    [Reflection.AssemblyName]::GetAssemblyName($assemblyPath).Version -ne [version]($ExpectedVersion + '.0')) {
+    throw 'The installed application assembly does not match the release version supplied by the installer test.'
 }
 $phases = [Collections.Generic.List[object]]::new()
 $phase = 'load installed application'
@@ -34,7 +39,7 @@ $work = Join-Path $evidence ('private-regtest-' + [guid]::NewGuid().ToString('N'
 function Save-Result([bool]$Passed, [string]$ErrorMessage = '') {
     @{
         Passed = $Passed; Phase = $phase; Error = $ErrorMessage
-        AssemblySha256 = $expectedAssemblyHash; Seconds = [math]::Round($watch.Elapsed.TotalSeconds, 2)
+        AssemblySha256 = $ExpectedAssemblyHash; Version = $ExpectedVersion; Seconds = [math]::Round($watch.Elapsed.TotalSeconds, 2)
         Phases = $phases.ToArray(); Network = 'isolated regtest'; BlocksPerRequest = 10
     } | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $evidence 'transactions.json') -Encoding utf8
 }

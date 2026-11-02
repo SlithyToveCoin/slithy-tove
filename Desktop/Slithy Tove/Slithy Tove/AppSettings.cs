@@ -62,7 +62,7 @@ internal sealed class AppSettings
         AutoLockEnabled && now - lastActivity >= TimeSpan.FromMinutes(Math.Clamp(AutoLockMinutes, 1, 120));
     public bool MineToCustomAddress { get; set; }
     public string CustomMiningAddress { get; set; } = "";
-    public int MiningThreads { get; set; } = Math.Max(1, Environment.ProcessorCount / 2);
+    public int MiningThreads { get; set; } = 1;
 
     internal static int ClampMiningThreads(int threads, int processors) =>
         Math.Clamp(threads, 1, Math.Max(1, processors));

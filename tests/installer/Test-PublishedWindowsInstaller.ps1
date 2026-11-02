@@ -19,6 +19,7 @@ Set-StrictMode -Version Latest
 $version = '0.1.45'
 $installerUri = 'https://slithy.io/downloads/windows/Slithy-Tove-Setup-0.1.45.exe'
 $installerHash = 'B085D5A155C7B35560029ED9FEB658ABE0101E51AF4A255B7E889197956F2EA1'
+$assemblyHash = '7A948E6513B192D39326B6D24F69BCA625C3044EE9067A0B6EED918FECCBAA06'
 $appId = '{B6358ED9-8389-4851-85D2-76236D2D1FCB}_is1'
 $uninstallRoot = 'Software\Microsoft\Windows\CurrentVersion\Uninstall'
 
@@ -340,7 +341,8 @@ public static class SlithyInstallerWindowProbe {
     $transactionScript = Join-Path $PSScriptRoot 'Test-InstalledWalletTransactions.ps1'
     $powerShell = (Get-Process -Id $PID).Path
     Run-Program $powerShell @('-NoLogo', '-NoProfile', '-NonInteractive', '-File', $transactionScript,
-        '-InstalledDirectory', $installRoot, '-EvidenceDirectory', $resultsRoot) 'chunked-transactions' 420
+        '-InstalledDirectory', $installRoot, '-EvidenceDirectory', $resultsRoot,
+        '-ExpectedAssemblyHash', $assemblyHash, '-ExpectedVersion', $version) 'chunked-transactions' 420
     Pass 'Installed wallet assembly sends, confirms, backs up and restores using bounded regtest block batches'
 
     # Real offline wallet data lives in the fresh runner profile, never in uploaded evidence.

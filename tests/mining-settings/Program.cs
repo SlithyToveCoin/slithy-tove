@@ -26,13 +26,28 @@ internal static class Program
                 Check((int)clamp.Invoke(null, [0, cpus])! == 1, "Zero is clamped to one on " + cpus + " CPUs");
                 Check((int)clamp.Invoke(null, [cpus + 20, cpus])! == cpus, "Saved count is clamped to " + cpus);
                 Check((int)clamp.Invoke(null, [cpus, cpus])! == cpus, "Maximum remains reachable: " + cpus);
+                int chosen = Math.Max(1, cpus / 2);
+                Check((int)clamp.Invoke(null, [chosen, cpus])! == chosen, "A valid saved choice stays unchanged on " + cpus + " CPUs");
             }
+            Check((int)settingsType.GetProperty("MiningThreads")!.GetValue(Activator.CreateInstance(settingsType))! == 1,
+                "New settings default to one thread");
             object store = Activator.CreateInstance(App.GetType("Slithy_Tove.AppSettingsStore")!, [root])!;
+            string settingsPath = (string)store.GetType().GetProperty("SettingsPath", Hidden)!.GetValue(store)!;
+            object firstLoad = store.GetType().GetMethod("Load")!.Invoke(store, null)!;
+            Check((int)settingsType.GetProperty("MiningThreads")!.GetValue(firstLoad)! == 1,
+                "A new installation defaults to one thread");
+            Directory.CreateDirectory(Path.GetDirectoryName(settingsPath)!);
+            File.WriteAllText(settingsPath, "{\"AutoLockMinutes\":17}");
+            object legacy = store.GetType().GetMethod("Load")!.Invoke(store, null)!;
+            Check((int)settingsType.GetProperty("MiningThreads")!.GetValue(legacy)! == 1,
+                "Settings without a saved thread count default to one thread");
+            Check((int)settingsType.GetProperty("AutoLockMinutes")!.GetValue(legacy)! == 17,
+                "Defaulting the thread count leaves unrelated settings unchanged");
             using Form1 form = CreateForm(store);
             TrackBar slider = (TrackBar)Field(form, "miningThreadsTrackBar");
             Check(slider.Minimum == 1 && slider.Maximum == Math.Max(1, Environment.ProcessorCount), "Slider spans every available CPU thread");
             Check(slider.SmallChange == 1 && slider.LargeChange == 1, "Keyboard changes by one thread");
-            Check(slider.Value == Math.Max(1, Environment.ProcessorCount / 2), "Existing Windows users start with their previous balanced default");
+            Check(slider.Value == 1, "The slider starts at one thread when no count was saved");
             Check(!AllControls((Control)Field(form, "miningCard")).Any(c => c is ComboBox), "Home has no mining preset selector");
             Check(slider.AccessibleName == "CPU mining threads", "Slider has a screen-reader name");
             int exact = Math.Min(3, slider.Maximum);
@@ -43,7 +58,14 @@ internal static class Program
             Check((int)settingsType.GetProperty("MiningThreads")!.GetValue(loaded)! == exact, "Exact thread count persists to disk");
             using (Form1 reopened = CreateForm(store))
                 Check(((TrackBar)Field(reopened, "miningThreadsTrackBar")).Value == exact, "Reopening restores the saved count");
-            string settingsPath = (string)store.GetType().GetProperty("SettingsPath", Hidden)!.GetValue(store)!;
+            foreach (int saved in new[] { 1, Math.Max(1, slider.Maximum / 2), slider.Maximum }.Distinct())
+            {
+                settingsType.GetProperty("MiningThreads")!.SetValue(loaded, saved);
+                store.GetType().GetMethod("Save")!.Invoke(store, [loaded]);
+                object reloaded = store.GetType().GetMethod("Load")!.Invoke(store, null)!;
+                Check((int)settingsType.GetProperty("MiningThreads")!.GetValue(reloaded)! == saved,
+                    "A saved count survives reload without resetting to one: " + saved);
+            }
             foreach (int invalid in new[] { -10, int.MaxValue })
             {
                 settingsType.GetProperty("MiningThreads")!.SetValue(loaded, invalid);

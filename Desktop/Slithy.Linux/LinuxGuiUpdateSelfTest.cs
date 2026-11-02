@@ -12,7 +12,7 @@ namespace Slithy.Linux;
 internal static class LinuxGuiUpdateSelfTest
 {
     private static int _checks;
-    private const string Version = "0.1.45-beta.1";
+    private const string Version = "0.1.46-beta.1";
     private static readonly string Prefix = "slithy-tove-linux-gui-" + Version;
 
     public static async Task<int> RunAsync()
@@ -53,13 +53,13 @@ internal static class LinuxGuiUpdateSelfTest
             foreach (string invalid in new[] { "v0.1.44", "0.1", "01.1.44", "0.1.44-testnet", "0.1.44+other", "0.1.44-beta.-1", "999999999999999999.1.1", "0.1.44\n" })
                 Reject(() => LinuxGuiVersion.Parse(invalid), "invalid GUI version");
             Check(LinuxGuiVersion.Parse("0.1.44-beta.10").CompareTo(LinuxGuiVersion.Parse("0.1.44-beta.2")) > 0, "numeric beta version ordering");
-            Check(LinuxGuiVersion.Parse("0.1.45").CompareTo(LinuxGuiVersion.Parse(Version)) > 0, "stable version follows its beta");
+            Check(LinuxGuiVersion.Parse("0.1.46").CompareTo(LinuxGuiVersion.Parse(Version)) > 0, "stable version follows its beta");
 
             using (var service = Service(root, publicKey, _ => Response(envelope)))
             {
                 Check(await service.CheckAsync("0.1.43-beta.1") == manifest, "new release is offered");
                 Check(await service.CheckAsync(Version) == null, "current release is not offered again");
-                Check(await service.CheckAsync("0.1.46-beta.1") == null, "older release is not installed");
+                Check(await service.CheckAsync("0.1.47-beta.1") == null, "older release is not installed");
             }
             using (var service = Service(root, publicKey, _ => new HttpResponseMessage(HttpStatusCode.Redirect)))
                 await RejectAsync(() => service.CheckAsync("0.1.43-beta.1"), "manifest redirects refused");

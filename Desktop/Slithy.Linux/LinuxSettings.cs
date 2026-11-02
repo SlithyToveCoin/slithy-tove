@@ -12,7 +12,7 @@ internal sealed class LinuxSettings
     public string LastWalletName { get; set; } = "";
     public string PublicNodePreference { get; set; } = "auto";
     public int? MiningThreads { get; set; }
-    // Read the old preset once so an update preserves the chosen CPU use.
+    // Discard the retired preset when saving. A missing numeric choice starts at one.
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? MiningMode { get; set; }
     public string CustomMiningAddress { get; set; } = "";
@@ -33,17 +33,12 @@ internal sealed class LinuxSettings
     public bool ShouldAutoLock(DateTimeOffset lastActivity, DateTimeOffset now) =>
         AutoLockEnabled && now - lastActivity >= TimeSpan.FromMinutes(Math.Clamp(AutoLockMinutes, 1, 1440));
 
-    public int GetMiningThreadCount() => ResolveMiningThreads(MiningThreads, MiningMode, Environment.ProcessorCount);
+    public int GetMiningThreadCount() => ResolveMiningThreads(MiningThreads, Environment.ProcessorCount);
 
-    internal static int ResolveMiningThreads(int? savedThreads, string? oldMode, int processorCount)
+    internal static int ResolveMiningThreads(int? savedThreads, int processorCount)
     {
         int maximum = Math.Max(1, processorCount);
-        int requested = savedThreads ?? (oldMode switch
-        {
-            "Quiet" => 1,
-            "Full power" => maximum,
-            _ => Math.Max(1, maximum / 2)
-        });
+        int requested = savedThreads ?? 1;
         return Math.Clamp(requested, 1, maximum);
     }
 }
