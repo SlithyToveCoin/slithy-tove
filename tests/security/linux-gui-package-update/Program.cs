@@ -8,12 +8,16 @@ using System.Text.RegularExpressions;
 using Slithy.Linux;
 using Slithy_Tove;
 
-if (!OperatingSystem.IsLinux() || args.Length != 3)
+if (!OperatingSystem.IsLinux() || args.Length != 4 || !Regex.IsMatch(args[3], "^[0-9a-fA-F]{64}$", RegexOptions.CultureInvariant))
 {
-    Console.Error.WriteLine("Run on Linux with: PACKAGE.tar.gz OLD_GUI_FOLDER RESULTS_FOLDER");
+    Console.Error.WriteLine("Run on Linux with: PACKAGE.tar.gz OLD_GUI_FOLDER RESULTS_FOLDER EXPECTED_NATIVE_SHA256");
     return 2;
 }
 string archive = Path.GetFullPath(args[0]), previous = Path.GetFullPath(args[1]), results = Path.GetFullPath(args[2]);
+string expectedNativeSha256 = args[3].ToLowerInvariant();
+string previousVersion = FileVersionInfo.GetVersionInfo(Path.Combine(previous, "slithy-desktop.dll")).ProductVersion?.Split('+')[0]
+    ?? throw new InvalidDataException("The previous GUI has no product version.");
+_ = LinuxGuiVersion.Parse(previousVersion);
 Match archiveName = Regex.Match(Path.GetFileName(archive), @"^Slithy-Tove-Linux-GUI-(?<version>\d+\.\d+\.\d+(?:-beta\.\d+)?)-x64\.tar\.gz$", RegexOptions.CultureInvariant);
 if (!archiveName.Success)
 {
@@ -94,7 +98,7 @@ try
     });
     using var updates = new LinuxGuiUpdateService(LinuxGuiUpdatePaths.CacheDirectory,
         new FixtureHttp(envelope, package, manifest.PackageUrl), key.ExportSubjectPublicKeyInfoPem());
-    Check((await updates.CheckAsync("0.1.43-beta.1")) == manifest, "signed fixture offers real candidate to the preceding version");
+    Check((await updates.CheckAsync(previousVersion)) == manifest, "signed fixture offers real candidate to the preceding version");
     using (var cancel = new CancellationTokenSource())
     {
         var progress = new InlineProgress(_ => cancel.Cancel());
@@ -106,7 +110,8 @@ try
     var installer = new LinuxGuiUpdateInstaller(apps, LinuxGuiUpdatePaths.DesktopDataDirectory, processes);
     PreparedLinuxGuiUpdate staged = await installer.StageAsync(manifest, downloaded);
     updates.RemoveCachedDownload(downloaded);
-    Check(File.ReadAllBytes(Path.Combine(staged.Directory, "Binaries/slithyd")).SequenceEqual(File.ReadAllBytes(Path.Combine(previous, "Binaries/slithyd"))), "candidate preserves reviewed native binary");
+    using (var native = File.OpenRead(Path.Combine(staged.Directory, "Binaries/slithyd")))
+        Check(Convert.ToHexString(SHA256.HashData(native)).Equals(expectedNativeSha256, StringComparison.OrdinalIgnoreCase), "staged candidate matches the reviewed native SHA256");
     Check(File.Exists(Path.Combine(staged.Directory, "slithy-desktop.dll")) && oldHost.IsRunning, "real candidate archive stages while the old node runs");
     using (var cancel = new CancellationTokenSource())
     {
@@ -144,7 +149,7 @@ try
     Check(File.Exists(Path.Combine(previous, "slithy-desktop")), "previous version remains available");
     await File.WriteAllTextAsync(Path.Combine(results, "package-upgrade-result.json"), JsonSerializer.Serialize(new
     {
-        passed = checks, candidateSha256 = manifest.Sha256.ToLowerInvariant(),
+        passed = checks, candidateSha256 = manifest.Sha256.ToLowerInvariant(), previousVersion, expectedNativeSha256,
         boundary = "Production download/staging/activation and node ownership code; test process adapter adds --regtest to the actual unchanged GUI executable. Temporary signing key and in-memory HTTP fixture; no production trust changes."
     }, new JsonSerializerOptions { WriteIndented = true }));
     Console.WriteLine($"PASS: {checks} packaged GUI upgrade checks. No public-chain wallets or transactions.");

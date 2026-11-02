@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "57a28d7240de5e4fcb37128887c5b8b4ae976871e7e6661e01c056a081cd01bd"
+    "sha256": "14f92d891921ba66866fb7714003b8fd77d2cb2ded216f9b28b33712cd6c5eb8"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12413,15 +12413,19 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "218e2ae18ab46b8e8cbf295da86b77b5b43be5fb597156ae347d01b28202c772"
+    "sha256": "1940229f24c1831489771a2b43a014379e664ff1273a608a38547de875e03d87"
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "b13ae3addcf132f0f7bd5c62fca0fe3587d66b6086a5e40df9bb38b5b507373b"
+    "sha256": "58dce36887ab5097686296fac6a37c98c9e05a84bf99453097860f7629ef7942"
   },
   {
     "path": "tests/linux-gui/test_desktop_install.py",
     "sha256": "5af41450089ada8d993ff5fab9b48f7ac030db2ba50a71d437dfcfbdf4e4656b"
+  },
+  {
+    "path": "tests/linux-gui/test_session_cleanup.py",
+    "sha256": "43456fcb8d2252570e23a7006fe1bd07499041e31c52620fe485640ad06ff51f"
   },
   {
     "path": "tests/linux-gui/wayland-session.py",
@@ -12429,7 +12433,7 @@
   },
   {
     "path": "tests/linux-gui/xfce-session.py",
-    "sha256": "51473f1f0c7d6ef50ccfdc33a39634fcfbda62e1761210e3f2c3df7be9e1aca0"
+    "sha256": "7d6ff0ddeb2b8bdc5f03f9d6a37f0a805a1511fac2151cf5dacc5f3bbe06b522"
   },
   {
     "path": "tests/mining-settings/MiningSettingsTests.csproj",
@@ -12469,11 +12473,11 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/Program.cs",
-    "sha256": "b62d4de2aeddefaec1b0146bf47ec02cc192f724ce34af9595599b92a1c98da7"
+    "sha256": "a528036f190ce592e1819a7f92661bef3d3891fba0d2e1d536b028ab3076dedc"
   },
   {
     "path": "tests/security/linux-gui-package-update/README.md",
-    "sha256": "31873085fba296657cebe752814aee3a5077879cd3437e0c99ab791a885d498d"
+    "sha256": "64df2d3716830e0e1fb04b1bee7b8ffff00892d8a3e60c82790bfbea4403d0f0"
   },
   {
     "path": "tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj",

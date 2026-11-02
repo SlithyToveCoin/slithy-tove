@@ -19,6 +19,44 @@ def stop(process):
             process.wait(timeout=5)
 
 
+def live_group_members(group_id, proc_root=Path("/proc")):
+    members = []
+    for stat in proc_root.glob("[0-9]*/stat"):
+        try:
+            # Process names can contain spaces and parentheses.
+            fields = stat.read_text().rsplit(")", 1)[1].split()
+        except (FileNotFoundError, ProcessLookupError):
+            continue
+        if int(fields[2]) == group_id and fields[0] not in ("Z", "X"):
+            members.append(int(stat.parent.name))
+    return members
+
+
+def stop_group(process, grace=10, kill_grace=5):
+    """Wait for this wrapper's private process group before removing its home."""
+    if process.pid == os.getpgrp():
+        raise ValueError("Refusing to stop the current process group.")
+    for signum, timeout in ((signal.SIGTERM, grace), (signal.SIGKILL, kill_grace)):
+        try:
+            os.killpg(process.pid, signum)
+        except ProcessLookupError:
+            process.wait(timeout=kill_grace)
+            return
+        deadline = time.monotonic() + timeout
+        while True:
+            process.poll()
+            # dbus-run-session may have exited while xfconfd is still flushing
+            # its settings. Waiting for the launcher does not wait for that child.
+            members = live_group_members(process.pid)
+            if not members:
+                process.wait(timeout=kill_grace)
+                return
+            if time.monotonic() >= deadline:
+                break
+            time.sleep(0.05)
+    raise RuntimeError(f"Desktop test processes did not stop: {members}")
+
+
 def inside(args):
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -86,15 +124,7 @@ def main(args):
             return process.wait(timeout=args.timeout + 45)
         finally:
             # This process group was created by this wrapper, not by the user's desktop.
-            try:
-                os.killpg(process.pid, signal.SIGTERM)
-            except ProcessLookupError:
-                pass
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait(timeout=5)
+            stop_group(process)
 
 
 if __name__ == "__main__":
