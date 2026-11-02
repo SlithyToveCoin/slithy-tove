@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "14f92d891921ba66866fb7714003b8fd77d2cb2ded216f9b28b33712cd6c5eb8"
+    "sha256": "0ee4eb98e91833ee1b20db18690e8887180a0c290318e9e7dd842f20d20eb528"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12425,11 +12425,11 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "934ef376bb64c134e942adbecd08d862c0e09d3eeeb749ab9e6b9e56d86c71ac"
+    "sha256": "fa01583bf4b7bc41f80564c99e76bde1e379e75c2407aec2f4922b2dad935205"
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "58dce36887ab5097686296fac6a37c98c9e05a84bf99453097860f7629ef7942"
+    "sha256": "e01c03eaf9f24e6c572dd3be7bc0a64322937421c4c749fa7eca603874904308"
   },
   {
     "path": "tests/linux-gui/test_desktop_install.py",
@@ -12485,7 +12485,7 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/Program.cs",
-    "sha256": "a528036f190ce592e1819a7f92661bef3d3891fba0d2e1d536b028ab3076dedc"
+    "sha256": "77c6b744ee7a2088d1c723e23e557d2413b4472efa1fb10407e81c2de463c029"
   },
   {
     "path": "tests/security/linux-gui-package-update/README.md",
