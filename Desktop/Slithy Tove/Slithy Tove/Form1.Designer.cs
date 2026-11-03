@@ -1424,6 +1424,7 @@ partial class Form1
         // 
         // updatesTabPage
         // 
+        updatesTabPage.AutoScroll = true;
         updatesTabPage.BackColor = Color.FromArgb(246, 241, 232);
         updatesTabPage.Controls.Add(updatesCard);
         updatesTabPage.Location = new Point(8, 49);

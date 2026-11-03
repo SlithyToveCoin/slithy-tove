@@ -87,6 +87,9 @@ internal sealed partial class MainWindow : Window
         }
         _settings.Validate();
         _host = new LinuxNodeHost(_store, _settings, regtest);
+        _host.ConfirmOrphanRecoveryAsync = () => Dialogs.Confirm(this, "Reopen your local node?",
+            "A node from your previous Slithy session is still running. Stop it safely and reopen? Mining on that node will stop.",
+            "Stop node and reopen");
         Title = "Slithy Tove | Linux GUI beta";
         Icon = Branding.WindowIcon;
         Width = 980; Height = 720; MinWidth = 760; MinHeight = 620;
@@ -183,7 +186,7 @@ internal sealed partial class MainWindow : Window
         DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
         var tabs = new TabControl { Margin = new Thickness(8, 4, 8, 0) };
         tabs.Items.Add(Tab("Home", Home()));
-        tabs.Items.Add(Tab("Activity", new ScrollViewer { Content = new Border { Margin = new Thickness(16), Child = Card("Wallet activity", _activity) } }));
+        tabs.Items.Add(Tab("Activity", BuildActivity()));
         tabs.Items.Add(Tab("Settings", Settings()));
         root.Children.Add(tabs); return root;
     }
@@ -350,8 +353,7 @@ internal sealed partial class MainWindow : Window
             // The open UI session is separate from Core's short signing-key unlock.
             // Sending asks for the password again even when the wallet view stays open.
             _walletStatus.Text = _walletName + (_locked ? " | Locked for spending" : " | Open");
-            var transfers = await _wallet.GetTransfersAsync(_endpoint);
-            _activity.Text = transfers.Count == 0 ? "No transactions yet." : string.Join("\n\n", transfers.Select(t => $"{t.Timestamp?.ToLocalTime():g}  {t.Direction}  {t.Amount:N8} SLTHY\nTransaction: {t.TransactionHash}\nBlock: {t.Height}"));
+            await RefreshHistoryIfNeeded();
         }
         _miningTitle.Text = _mining.Active ? "Mining is on" : "Earn Slithy";
         _miningStatus.Text = MiningStatusText(_mining, _chain.Height);
@@ -382,9 +384,10 @@ internal sealed partial class MainWindow : Window
     {
         var choices = Dialogs.CreateWindow("Manage wallet", 420);
         var body = new StackPanel { Spacing = 10, Margin = new Thickness(20) }; choices.Content = WindowChrome.Wrap(choices, body);
-        foreach (string label in new[] { "Open wallet", "Create wallet", "Back up open wallet", "Restore recovery words", "Restore wallet file" })
+        foreach (string label in new[] { "Open wallet", "Create wallet", "Back up open wallet", "Check recovery words", "Combine mining rewards", "Restore recovery words", "Restore wallet file" })
         {
             var button = Dialogs.Button(label); button.HorizontalAlignment = HorizontalAlignment.Stretch;
+            if (label is "Back up open wallet" or "Check recovery words" or "Combine mining rewards") button.IsEnabled = _walletName.Length > 0;
             button.Click += (_, _) => choices.Close(label); body.Children.Add(button);
         }
         string? action = await choices.ShowDialog<string?>(this);
@@ -396,6 +399,8 @@ internal sealed partial class MainWindow : Window
     private async Task RunWalletAction(string action)
     {
         if (action == "Back up open wallet") { await Backup(); return; }
+        if (action == "Check recovery words") { await CheckWalletRecoveryWords(); return; }
+        if (action == "Combine mining rewards") { await Consolidate(); return; }
         if (action == "Restore wallet file") { await RestoreFile(); return; }
         var names = action == "Open wallet" ? await _wallet.ListWalletNamesAsync(_endpoint!) : null;
         var input = await Dialogs.Wallet(this, action, names, _settings.LastWalletName); if (input == null) return;
@@ -408,7 +413,8 @@ internal sealed partial class MainWindow : Window
         }
         else if (action == "Restore recovery words")
         {
-            await _wallet.RestoreWalletAsync(_endpoint!, input.Name, input.Password, input.Words, 0);
+            _status.Text = "Restoring your wallet from the start of the chain. A deeper address scan can take several minutes.";
+            await _wallet.RestoreWalletAsync(_endpoint!, input.Name, input.Password, input.Words, 0, input.RecoveryRangeEnd);
             await _wallet.LockWalletOnlyAsync(_endpoint!);
         }
         else await _wallet.OpenWalletAsync(_endpoint!, input.Name, input.Password, TimeSpan.FromMinutes(2));
@@ -424,7 +430,7 @@ internal sealed partial class MainWindow : Window
         await _wallet.LockWalletOnlyAsync(_endpoint!); await _wallet.CloseWalletAsync(_endpoint!);
         _walletName = ""; _locked = true; _snapshot = null;
         _balance.Text = "Open a wallet"; _walletStatus.Text = "No wallet open";
-        _available.Text = "Open a wallet to view its balance."; _activity.Text = "Open a wallet to see transactions.";
+        _available.Text = "Open a wallet to view its balance."; ResetHistory();
     }
 
     private async Task LockWallet()
@@ -446,22 +452,24 @@ internal sealed partial class MainWindow : Window
         }
         else
         {
-            var input = await Dialogs.Send(this); if (input == null) return;
+            var input = await Dialogs.Send(this, () => _wallet.GetSpendableOutputsAsync(_endpoint!)); if (input == null) return;
             var valid = await _wallet.ValidateAddressAsync(_endpoint!, input.Address); if (!valid.Valid) throw new InvalidOperationException("That address is not valid on this chain.");
             string? password = await Dialogs.Password(this); if (password == null) return;
             await _wallet.UnlockWalletAsync(_endpoint!, password, TimeSpan.FromMinutes(2));
             PreparedTransfer prepared;
-            try { prepared = await _wallet.PrepareTransferAsync(_endpoint!, input.Address, checked((ulong)(input.Amount * 100_000_000m))); }
+            try
+            {
+                ulong amount = checked((ulong)(input.Amount * 100_000_000m));
+                prepared = input.SelectedInputs is { Count: > 0 }
+                    ? await _wallet.PrepareTransferAsync(_endpoint!, input.Address, amount, input.SelectedInputs)
+                    : await _wallet.PrepareTransferAsync(_endpoint!, input.Address, amount);
+            }
             finally { await _wallet.LockWalletOnlyAsync(_endpoint!); _locked = true; }
-            if (!await Dialogs.Confirm(this, "Confirm payment", $"Send {input.Amount:N8} SLTHY\nTo: {input.Address}\nFee: {prepared.FeeAtomic / 100_000_000m:N8} SLTHY\nTotal: {input.Amount + prepared.FeeAtomic / 100_000_000m:N8} SLTHY", "Send payment")) return;
-            // A retry must refer to an approved payment that survived a restart.
-            _paymentBlocked = true;
-            SavePending(new PendingPayment(prepared, input.Address, input.Amount));
-            _pending = prepared; _pendingAmount = input.Amount; _pendingAddress = input.Address;
-            _paymentBlocked = false;
+            ValidatePreparedPayment(prepared);
+            if (!await Dialogs.Confirm(this, "Confirm payment", PaymentConfirmation(prepared), "Send payment")) return;
+            RememberApprovedPayment(prepared);
         }
-        var sent = await _wallet.RelayTransferAsync(_endpoint!, _pending!);
-        DeletePending(); await Dialogs.Message(this, "Payment submitted", "Transaction ID:\n" + sent.TransactionHash); await Refresh();
+        await RelayPendingPayment();
     }
 
     private string PendingPath => Path.Combine(_store.ConfigDirectory, "pending-" + (_regtest ? "regtest-" : "beta-") + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(_walletName))) + ".json");
@@ -503,6 +511,10 @@ internal sealed partial class MainWindow : Window
             string.IsNullOrWhiteSpace(pending.Address) || pending.Address.Length > 256 ||
             pending.Amount <= 0 || pending.Amount > 21_000_000_000m || decimal.Round(pending.Amount, 8) != pending.Amount)
             throw new InvalidDataException("The pending payment record is damaged. Check its transaction on the chain before sending again.");
+        if ((pending.Transfer.AmountAtomic != 0 && pending.Transfer.AmountAtomic / 100_000_000m != pending.Amount) ||
+            (!string.IsNullOrEmpty(pending.Transfer.RecipientAddress) && pending.Transfer.RecipientAddress != pending.Address) ||
+            pending.Transfer.InputCount < 0)
+            throw new InvalidDataException("The pending payment details do not agree. Check the transaction before sending again.");
         return pending;
     }
     internal static bool PendingRecordIsValid(string json)
@@ -510,22 +522,23 @@ internal sealed partial class MainWindow : Window
         try { ReadPendingPayment(json); return true; }
         catch (Exception ex) when (ex is JsonException or InvalidDataException) { return false; }
     }
-    private void DeletePending() { File.Delete(PendingPath); _pending = null; }
+    private void DeletePending()
+    {
+        File.Delete(PendingPath);
+        _pending = null; _pendingAddress = ""; _pendingAmount = 0; _paymentBlocked = false;
+    }
 
     private async Task Receive()
     {
         if (_snapshot == null) return;
-        var dialog = Dialogs.CreateWindow("Receive test SLTHY", 540);
-        var body = new StackPanel { Margin = new Thickness(24), Spacing = 16 }; dialog.Content = WindowChrome.Wrap(dialog, body);
-        body.Children.Add(Dialogs.Text("Your receiving address", 26));
-        using (var generator = new QRCoder.QRCodeGenerator())
-        using (var data = generator.CreateQrCode(_snapshot.Address, QRCoder.QRCodeGenerator.ECCLevel.Q))
-        using (var code = new QRCoder.PngByteQRCode(data))
-            body.Children.Add(new Image { Source = new Bitmap(new MemoryStream(code.GetGraphic(8))), Width = 230, Height = 230 });
-        body.Children.Add(new SelectableTextBlock { Text = _snapshot.Address, TextWrapping = TextWrapping.Wrap });
-        var copy = Dialogs.Button("Copy address"); copy.Click += async (_, _) => { if (Clipboard != null) await Clipboard.SetTextAsync(_snapshot.Address); copy.Content = "Copied"; };
-        body.Children.Add(copy); var close = Dialogs.Button("Close"); close.Click += (_, _) => dialog.Close(); body.Children.Add(close);
-        await dialog.ShowDialog(this);
+        var addresses = await _wallet.GetReceivingAddressesAsync(_endpoint!);
+        await Dialogs.ReceivingAddresses(this, _snapshot.Address, addresses, async label =>
+        {
+            var added = await _wallet.CreateReceivingAddressAsync(_endpoint!, label);
+            _snapshot = _snapshot with { Address = added.Address };
+            return added;
+        });
+        await Refresh();
     }
 
     private async Task Backup()
@@ -583,14 +596,15 @@ internal sealed partial class MainWindow : Window
     private void UpdateControls()
     {
         bool active = _mining?.Active == true;
-        _walletButton.IsEnabled = _ready && !_busy; _lockButton.IsEnabled = _ready && !_busy && _walletName.Length > 0 && !_locked;
-        _sendButton.IsEnabled = _ready && !_busy && !_paymentBlocked && _walletName.Length > 0; _receiveButton.IsEnabled = _snapshot != null && !_busy;
+        _walletButton.IsEnabled = _ready && !_busy && !_historyBusy; _lockButton.IsEnabled = _ready && !_busy && _walletName.Length > 0 && !_locked;
+        _sendButton.IsEnabled = _ready && !_busy && !_historyBusy && !_paymentBlocked && _walletName.Length > 0; _receiveButton.IsEnabled = _snapshot != null && !_busy && !_historyBusy;
         bool canStopDuringUpdate = _installingUpdate && _updateAllowsStop && active && !_stoppingMiningForUpdate;
         _miningButton.IsEnabled = _ready && (!_busy || canStopDuringUpdate);
         _miningButton.Content = canStopDuringUpdate ? "Stop mining" : _busy ? "Please wait..." : active ? "Stop mining" : "Start mining";
         _walletButton.Content = _walletName.Length == 0 ? "Open wallet" : "Manage wallet";
         _miningThreads.IsEnabled = !_busy && !_installingUpdate;
         _custom.IsEnabled = !active && !_busy; _miningAddress.IsEnabled = !active && !_busy;
+        UpdateHistoryControls();
     }
 
     private async Task Run(Func<Task> action)
@@ -658,7 +672,8 @@ internal sealed partial class MainWindow : Window
     {
         if (_busy || _closing) return;
         if (_mining?.Active == true && !await Dialogs.Confirm(this, "Quit Slithy?", "Quitting stops mining and closes the local node started by this app. Your wallet files stay on disk.", "Stop and quit")) return;
-        _closing = true; _timer.Stop();
+        _closing = true; _timer.Stop(); _historyCancellation?.Cancel();
+        while (_historyBusy) await Task.Delay(50);
         while (_polling) await Task.Delay(50);
         try { if (_walletName.Length > 0) await _wallet.LockWalletOnlyAsync(_endpoint!); }
         catch { Log("Wallet lock was not confirmed. Stopping the local node."); }
@@ -685,6 +700,8 @@ internal sealed partial class MainWindow : Window
         ToolTip.SetTip(_miningStatus, "Preview mining address: tslithy1qdwf9t7fmczdzajy9wc5hjykt2k3d9h4d5");
         _treasury.Text = "Literacy fund: preview data"; _network.Text = "Preview mode. No node or wallet is opened.";
         _storage.Text = "Node storage and free space appear here."; _sync.Value = 100;
+        var history = PreviewHistory(0); RenderHistory(history.Entries);
+        _activity.Text = "Preview transactions. Select one for its details."; _historyWallet = _walletName; _historyPageLabel.Text = "Page 1";
         UpdateControls();
     }
 }

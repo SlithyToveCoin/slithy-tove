@@ -11,6 +11,8 @@ internal static class Program
 {
     internal static bool Preview;
     internal static bool Regtest;
+    internal static bool Install;
+    internal static bool Uninstall;
     internal static string[] StartupArguments = Array.Empty<string>();
 
     [STAThread]
@@ -19,12 +21,19 @@ internal static class Program
         StartupArguments = args;
         Preview = args.Contains("--preview");
         Regtest = args.Contains("--regtest");
+        Install = args.Contains("--install") || Path.GetFileName(Environment.ProcessPath) == "slithy-install";
+        Uninstall = args.Contains("--uninstall") || Path.GetFileName(Environment.ProcessPath) == "slithy-uninstall";
         if (args.Contains("--update-test")) return LinuxGuiUpdateSelfTest.RunAsync().GetAwaiter().GetResult();
         if (args.Contains("--self-test"))
         {
             return LinuxRuntimeSelfTest.RunAsync().GetAwaiter().GetResult();
         }
         if (args.Contains("--integration-test")) return IntegrationSelfTest.RunAsync().GetAwaiter().GetResult();
+        if (args.Contains("--installer-ui-test"))
+        {
+            Build().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
+            return DesktopInstallUiSelfTest.Run(args);
+        }
         if (args.Contains("--ui-test"))
         {
             Preview = true;
@@ -56,7 +65,9 @@ internal sealed class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            desktop.MainWindow = new MainWindow(Program.Preview, Program.Regtest);
+            desktop.MainWindow = Program.Install || Program.Uninstall
+                ? new DesktopInstallWindow(Program.Uninstall, preview: Program.Preview)
+                : new MainWindow(Program.Preview, Program.Regtest);
         base.OnFrameworkInitializationCompleted();
     }
 }

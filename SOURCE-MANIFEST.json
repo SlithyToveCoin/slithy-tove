@@ -9,11 +9,11 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "3011551970973ec7c64e05eafa880698ef9bddbffd872a76ac187de6540b3759"
+    "sha256": "c7bf441f18c6db16e72f61a3c35fc3dbf57f11bcf6cfea0cfba4ff07022c88d4"
   },
   {
     "path": ".gitignore",
-    "sha256": "d87ebfce6c56f95ebb1d239cef5458bed2d4a482c6b10d2fc479b1497f76aab5"
+    "sha256": "74c87ed18e5b8a59777203cca823340cdc00e69240db0ad44ac6bd5b1ae4f836"
   },
   {
     "path": "CONTRIBUTING.md",
@@ -60,20 +60,32 @@
     "sha256": "cd5d17d635dc4e1132ca947c5b4959254ab5fe9b8c425046e42edaf39236cb11"
   },
   {
+    "path": "Desktop/Slithy Tove/Slithy Tove/CoinControlDialog.cs",
+    "sha256": "101a7c35a80355c4a0710a1cf5e428ed787dc0dfe4e5a8ca5e938eaf0aacaab0"
+  },
+  {
     "path": "Desktop/Slithy Tove/Slithy Tove/ExistingWalletOpenSelfTest.cs",
     "sha256": "8aa4c97eb12bda046409a5a16463a691d67abc0dfafff129f8d043bb9d1adae2"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.Designer.cs",
-    "sha256": "51ec075ced01431667515b39e23495fa040d19374f5a78082cbd10b2f0cc8545"
+    "sha256": "bdb64133af9c17620d635eba0fef42943679f62d927eee348c757df480c82374"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/Form1.History.cs",
+    "sha256": "f3f5e2efa696e5f7906cb6086f0e5913eaf1cb2559becf04ff88d9165dbce460"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/Form1.MiningLayout.cs",
+    "sha256": "3098cc99ece3ce90f12d673815d1dfec8bb76d9a0f1156f61b9b60f78562be30"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.MiningSettings.cs",
-    "sha256": "df47c2a83e8848dfa8b6948ed4d65e6ba958a4683589165f3580fd9113646db2"
+    "sha256": "43511c65da82a25a2e8bd979c82c80abf9fac16d29b77dd8b9ac902c035e2eb2"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.cs",
-    "sha256": "4f89f5fe3ca7f88a9710603dd4cfb06227f6a2c90485ca4cfba9aa739af18c26"
+    "sha256": "77d19700617ef5017dbd889f3ca7a5480542005a38c3d64e58aa96fad0891fa4"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.resx",
@@ -109,11 +121,15 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/ReceiveDialog.cs",
-    "sha256": "adedff568a150f8f383ba4b615383053f3ee4b37e0741bfb4f3a9433996bd18c"
+    "sha256": "d9b489bf27f1fb9be2b05564ab7aeeba9b3fed7a78acb408f1a35ae6d9d1c726"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/ReceiveDialog.resx",
     "sha256": "80c60f1b45d86e8e31165d8031fbf5398cb2c86c62d9f27cd1a74cb1b79ae269"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/RecoveryCheckDialog.cs",
+    "sha256": "94b5dcf8a3b6ea496f69a024b2d298ca12cb545077001231ed14f5d24c253e74"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/RecoveryWordsDialog.Designer.cs",
@@ -121,7 +137,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/RecoveryWordsDialog.cs",
-    "sha256": "d46a39456726da9923f6749abc3cd858231181a94d488d3149b803f5b0eb4d00"
+    "sha256": "e6933a1e68cf471a2f5b2b812ddb7de7189eebb85d535cc4e4ea41199b84ce90"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/ReleaseTrust.cs",
@@ -133,7 +149,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/RestoreWordsDialog.cs",
-    "sha256": "8b137fe9044521267a961feaee27731f58a3b34e371e62e8d2bfa435e3c89b56"
+    "sha256": "12336fc5d176f72c4502bd3529f44ac8130496372461e98b1db35265c5d600a4"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SeedWalletSelfTest.cs",
@@ -145,7 +161,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SendDialog.cs",
-    "sha256": "e6fc69fc68e9a1157d56a31a67d7714f64c7de26eb65ff7176fa70bee60edc60"
+    "sha256": "b20cf3630b6fe3b153544b90ee62e8fd83311d74156ec6ccf070a84c9dc3e330"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SendDialog.resx",
@@ -157,11 +173,11 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "6dcbfbe4de0429534a2d14c97058eb26361c85714849cf6fbe2cbd232977b5b3"
+    "sha256": "0373a2c3fc45b056e48ed6f53b28e64c5499ea48e48b68cb36544b857ec053b2"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
-    "sha256": "f3ec443b450730248cc940d060ad3290b53362c4e9e5a61c3287ae149b691c5e"
+    "sha256": "8eef9d5b265389431e5695f593bf4e55018c3b8a2790563f9dc3b6c62663d109"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SpendingPasswordDialog.cs",
@@ -185,7 +201,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/TransactionDetailsDialog.cs",
-    "sha256": "19cf6844b1ebe66e7e7a2aa8ed73fb168b68371ca137fe509ec1dd6a5196e574"
+    "sha256": "1ec978a5eef999f06e95599b4fed4e707667a4ca82da6b633df45352f3ec4905"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/TransactionDetailsDialog.resx",
@@ -221,7 +237,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletAccessDialog.cs",
-    "sha256": "3ba984a7a6489cbb34f906b424755da269d32d4d05eb6629b969d7ef78ce3551"
+    "sha256": "6657bbcac917a39538feddcee728900f35e09c93eaef89e58c647286780b6390"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletAccessDialog.resx",
@@ -236,16 +252,28 @@
     "sha256": "69dfcc185ed7389991ea9d1ae9cf1a67ebd703ce58e5ee55a215bf863e2285d2"
   },
   {
+    "path": "Desktop/Slithy Tove/Slithy Tove/WalletDialogLayout.cs",
+    "sha256": "856a7cee013bb2d16f3382538ab5d67c35a9f24a5834bb5a650316af8373556b"
+  },
+  {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletManageDialog.Designer.cs",
     "sha256": "65f0411f4267b3a7a951d8106f860c89fab41e76e834b80bf8ddd53e8ddb610b"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletManageDialog.cs",
-    "sha256": "358f67c020e19e9612f78aca0380aa21955ec4f513028357fb1c0ed568c5dd95"
+    "sha256": "3a7e5bbc8979c48d9802dc2093a99fcc0dcb46e87e7cd920d585ab0ac5076a4e"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.CoinControl.cs",
+    "sha256": "372759477707721d65d2697d7c025047f09182ffd7ec232c0b06f351c1f09df8"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.History.cs",
+    "sha256": "c9f072521f9d7f890abea5d50ccd2152efdd1cfefc41e89a6bf7fe63d07dbedb"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.cs",
-    "sha256": "1e0622b00e0a23ea401f7375d1bf0bf575d78cc3bb28efc047e05725ef2b62df"
+    "sha256": "7aa8e1a181383c54aaaf2aaf14245e8a035c75952faf8bcf1871defab7892544"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcTransportSelfTest.cs",
@@ -253,31 +281,55 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Branding.cs",
-    "sha256": "3e2ace460a892742fd2b3c9cffeb84b6ff3994079a0be46a01279062fea2d660"
+    "sha256": "a6e3465203c4e02bbb42dca1a8c5fb2bd3220e1279c7b2be21a315a5f5ec5e73"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/DesktopInstallService.cs",
+    "sha256": "4a7a0a20d8a7f95246ab2e84fd47ffd247ec357854b0826e7def76e107651cf2"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/DesktopInstallUiSelfTest.cs",
+    "sha256": "7d322b153ab6965611278549d3ab88def0c5b0986ca7b9d2adbdbbddb92a1071"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/DesktopInstallWindow.cs",
+    "sha256": "a47c343f82a732f17ecdb733d73cf87d699e396435713e887bae8fa5345de2c7"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/Dialogs.CoinControl.cs",
+    "sha256": "13c2d16215d656a8721e8cbf1760b6b41008b30844ba0336f6b0d04f270b747b"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/Dialogs.WalletDetails.cs",
+    "sha256": "edc721e872456acf39480ebee41ae9065dba2c478337eedcdd97a2a9faa55d98"
   },
   {
     "path": "Desktop/Slithy.Linux/Dialogs.cs",
-    "sha256": "1b63a4fdee68b57c2e7a8f424561d79798855fd74c52a177a04d577ee680183b"
+    "sha256": "087b806b461a13439ba6f7923fd31499fe44fadd77b6c611d77b7f2a8ed795b1"
   },
   {
     "path": "Desktop/Slithy.Linux/IntegrationSelfTest.cs",
-    "sha256": "a1ccda73c73a9bda37e245e85528878d58ff790cc83afffd8319d13dbb95c41c"
+    "sha256": "c40cad055f50b07036fcc3261f7fe416612771c941caeb0debf2afb823df9cc7"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateInstaller.cs",
-    "sha256": "ac80494935576812a5c8343b7012a1f80995f71bade5e91084ae2d5abbb1a5e2"
+    "sha256": "3cfd766a4473e68af13394317b5d24469d206b99176ae9507caa68387dc6fc42"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateSelfTest.cs",
-    "sha256": "8676a7740f96151b83632a8db63246473698ef84334f50bf06d67b1ca5b28ed1"
+    "sha256": "21d5432a45efc5d955c02cc6a4cdf53102ce042d6961e731d4e02dc81de32ef7"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateService.cs",
-    "sha256": "bfff5381611b3d8270f440a120aa50f9fad490d4ec9e37bddf78e69f15f62e2a"
+    "sha256": "b1cf33ee3a27ffaa1c2ec05bc7c8ddcd8466a6f32b6bf2aa8db3167d227aa65a"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/LinuxNodeHost.Recovery.cs",
+    "sha256": "a06769a39a13f69e8839442deca1d14f99789d1ba438bd663082e2d930a45308"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxNodeHost.cs",
-    "sha256": "49ed0e866011c182fd222931693035ed95a2fbdcd64aa695eef39c78e8bde6d4"
+    "sha256": "bb738b39d46cc5dbd58d427f27276f11bd70bfef1b0b90a110e796012239b0b1"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxRuntimeSelfTest.cs",
@@ -288,24 +340,36 @@
     "sha256": "8ed2aa8cd90fa105bd7121c3d47dab88821631d042faa2373d75e79115996bd4"
   },
   {
+    "path": "Desktop/Slithy.Linux/MainWindow.Activity.cs",
+    "sha256": "a74b71f0ea82a18042dc8bc4fb87971519fa4b6f3a4d02a2df86b34838f4ed54"
+  },
+  {
     "path": "Desktop/Slithy.Linux/MainWindow.Updates.cs",
-    "sha256": "b03d47cec8cf5821f9bd28f63b4749b032c9cb4a4e38d49985ce5fd887344855"
+    "sha256": "81392c478a49b3548058343192215ef8681f0a7e9bc8e318b92ec3d5d4bb96fb"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/MainWindow.Wallet.cs",
+    "sha256": "cc7c56683423b7b3356c12ebc312fa5b16e55b47fe69593e2e696f90ef308f9d"
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.cs",
-    "sha256": "333909d6d4494831852203e023d530d7086c0ae49dbcc82136fc8825ccb6fa1b"
+    "sha256": "b061efab6e9d7fc8e193409bd5507ccc84e5ee548e720918b9334b37958db300"
   },
   {
     "path": "Desktop/Slithy.Linux/Program.cs",
-    "sha256": "ef115f1bed147e234059888015ac6c97f400fec137157ec09323edf8a8afab3d"
+    "sha256": "93bc873eb6327bead2efa3a055bd9722d85a18c0503136e3ba8e8115f8d8f047"
   },
   {
     "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
-    "sha256": "83ba327a6666ee3ed01f96b48857263796317342050c8c9cc7b330167178bff6"
+    "sha256": "63455e52b7d99e2eaba15cb0b5d2fd5a68321c9b7efc40bdf1b2689a62f941c4"
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
-    "sha256": "217111d745323d5bcfb9cfbb0ba91856d85d4410b44633a62d06d108abfe2717"
+    "sha256": "da262f9efc2cd92df5635a396bf283e92b1ae1f183b204d9565fa772e7d2054c"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/UiWalletSelfTest.cs",
+    "sha256": "236a28507d3566e27d395ff70598535af011137a1c4246859217e85e786bfe69"
   },
   {
     "path": "Desktop/Slithy.Linux/WindowChrome.cs",
@@ -12053,7 +12117,7 @@
   },
   {
     "path": "docs/LINUX-GUI-PREVIEW.md",
-    "sha256": "1df7cd21363ead31f95a20b53f1a0b85ec0df24cc9083ebec10d78bc45595db9"
+    "sha256": "2698f9c75adc71d851af8650d844c353f78da819a52a3a3ff2549a0b6cbc8135"
   },
   {
     "path": "docs/NETWORK-TEST-COVERAGE.md",
@@ -12086,6 +12150,10 @@
   {
     "path": "docs/TERMS-ACCEPTANCE.md",
     "sha256": "0184fb29e2dbb496b70cc9e80ae09e84ffb326212170885005060cc54503a1f0"
+  },
+  {
+    "path": "docs/WALLET-TOOLS.md",
+    "sha256": "0094d44da6c8c02f816e20db5b6ddee05160eed3ea07d23d433009cea759d0f4"
   },
   {
     "path": "installer/BUILD-INSTALLER.md",
@@ -12305,11 +12373,11 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "787e4320e7fc83844640b41694d340b9ce5db9370be565173acd7aaefbc5592d"
+    "sha256": "764fc67126c4fe93de2ea367c86232f4bf3da3a626ec65b5d0d694b60a90f214"
   },
   {
     "path": "site/explorer.js",
-    "sha256": "aa3a242739d0a6add1d4449c8c133c20bbb8c960f8577c8e0005230dc58379ca"
+    "sha256": "5b86505ca19936463b9b9f9dc86f56028d7268cc5ea5bd83ce7b6284de6b5b9c"
   },
   {
     "path": "site/favicon.svg",
@@ -12440,8 +12508,24 @@
     "sha256": "fa01583bf4b7bc41f80564c99e76bde1e379e75c2407aec2f4922b2dad935205"
   },
   {
+    "path": "tests/linux-desktop-maintenance/LinuxDesktopMaintenance.Tests.csproj",
+    "sha256": "5abd9e809e014cbc99c5c8fc095854309c4d7a6e426cdce7bc43bd305e46ae31"
+  },
+  {
+    "path": "tests/linux-desktop-maintenance/Program.cs",
+    "sha256": "452ae17a7c6d9aa9eb6cd7c59749f658b0d13821fbd33194c442f15b681cf463"
+  },
+  {
+    "path": "tests/linux-desktop-maintenance/README.md",
+    "sha256": "dfae5027546bac7dda1a578412820bdcb176f7e0d58f3c65de08703353341ad1"
+  },
+  {
     "path": "tests/linux-gui/desktop_smoke.py",
     "sha256": "e01c03eaf9f24e6c572dd3be7bc0a64322937421c4c749fa7eca603874904308"
+  },
+  {
+    "path": "tests/linux-gui/graphical_install_smoke.py",
+    "sha256": "177e0cdb25aa508b61bcc3402e74e3f9b0e48945c367a6cff39d123cdfc2a991"
   },
   {
     "path": "tests/linux-gui/test_desktop_install.py",
@@ -12460,20 +12544,24 @@
     "sha256": "7d6ff0ddeb2b8bdc5f03f9d6a37f0a805a1511fac2151cf5dacc5f3bbe06b522"
   },
   {
+    "path": "tests/mining-settings/MiningCardLayoutTests.cs",
+    "sha256": "40af117845686f2e1463e3250a6164a972b7e11756230900d2b466c9c9706373"
+  },
+  {
     "path": "tests/mining-settings/MiningSettingsTests.csproj",
     "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
   },
   {
     "path": "tests/mining-settings/Program.cs",
-    "sha256": "1fe96f82b51b5fafb3c32ca5a42476e12f9df6e0da3ceb590f1b5dfc2c2380ee"
+    "sha256": "cbde7e38afb6d50d78dee9e5d66d75202cac36e0aac4cda1f64e7f1c06dd5f98"
   },
   {
     "path": "tests/security/Slithy.SecurityTests.csproj",
-    "sha256": "fbeb40e39ccc12831bd276d932e8fd43ddeae82efa11bde26505480dbe767bfa"
+    "sha256": "8a20d72c71554a0051e005505dc2f5535a28b92343a4da98b8afa60cb6f62941"
   },
   {
     "path": "tests/security/WalletSecurityTests.cs",
-    "sha256": "05a1a377ec53ba8d7723c0c28f092b5e6165f8e92835c750b27e1b53343ee796"
+    "sha256": "ed4d4fd49f84a8374261fcd23ea6b2b7d69ed2a5a226edc30c6a5ce34cf6e627"
   },
   {
     "path": "tests/security/beta-reset-integration.py",
@@ -12493,7 +12581,7 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/LinuxGuiPackageUpdate.Tests.csproj",
-    "sha256": "f4a8e8eccf53e6e6fac8bc6eaacc4d9a9c4daf3625a1377090b5a91d7619a61d"
+    "sha256": "583f590964efe3a25415627a41588042dc5f6883063375f35088c5ddb5dca8bc"
   },
   {
     "path": "tests/security/linux-gui-package-update/Program.cs",
@@ -12505,7 +12593,7 @@
   },
   {
     "path": "tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj",
-    "sha256": "1a01395c93c33d1a10a34f7310cb86e751ac709a4375566a9f988e990eeaad42"
+    "sha256": "3fadcf7c7bd494c4855ad6ac50c3f9311a76ef9968061a88297707750e681dd1"
   },
   {
     "path": "tests/security/linux-gui-update/Program.cs",
@@ -12560,6 +12648,10 @@
     "sha256": "290ec269900f37ce3abaa8dca61ff44d55da620b734f4a45bf026e393cbebf62"
   },
   {
+    "path": "tests/site/explorer-links.test.cjs",
+    "sha256": "15e0ac1bfda6881ef0df98a3f23775ad2506e449080ed7db67a5fe9c1742a8a5"
+  },
+  {
     "path": "tests/terms/Program.cs",
     "sha256": "eaf246dff738c677d853e5090d20a521623e19b9408e662f2d5aaf3ec412acf1"
   },
@@ -12570,6 +12662,38 @@
   {
     "path": "tests/terms/linux-terms-test.py",
     "sha256": "c0932762aad9bec3496cd2de17b68165d3b8a659f047a9c4ecfc921e71e6cc2e"
+  },
+  {
+    "path": "tests/wallet-features/Program.cs",
+    "sha256": "5b055d896bec291e6645152111de55a3e3fe7224a9e8857966806c5a2f992d68"
+  },
+  {
+    "path": "tests/wallet-features/README.md",
+    "sha256": "f253d7fa0f8ef38cc7568f2c7e4b39a4feffb6490034a6afb6a6b1bcb74ed09e"
+  },
+  {
+    "path": "tests/wallet-features/WalletFeatures.Tests.csproj",
+    "sha256": "18a5aa3ad5fb24374cab81285f3bc8145724952f5c2c838e384e5d7de3a49fff"
+  },
+  {
+    "path": "tests/wallet-features/WalletIntegration.cs",
+    "sha256": "add29721bd55d052b193c72acacc9246acc0cb0f1787cb79da72ce53a1536396"
+  },
+  {
+    "path": "tests/wallet-features/WalletInterop.cs",
+    "sha256": "32d7f36e4113550a383468c80c061fbf26ba81178c579664438a9159b4f6fcc1"
+  },
+  {
+    "path": "tests/wallet-features/WalletMockChecks.cs",
+    "sha256": "5d41ff67fbf282c2a8eac229e3920119f2ed8817c31d38053e99310a8ebfa770"
+  },
+  {
+    "path": "tests/wallet-features/WalletPaymentChecks.cs",
+    "sha256": "a422e9219980f4a5f1796106b5d34325f624466c6ffdb835abeb02e6bd904e99"
+  },
+  {
+    "path": "tests/wallet-features/WalletRecoveryChecks.cs",
+    "sha256": "f3ed913c694a67ad91a45bb23653d1d138eca16de5789099058e3342b75bd6d2"
   },
   {
     "path": "tests/wallet-timeout-ui/Program.cs",
@@ -12596,6 +12720,14 @@
     "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
   },
   {
+    "path": "tests/windows-wallet-tools/Program.cs",
+    "sha256": "5a364cf93d0a373de0bd59d7172bf7b9486ccc546d623ff2c1d87573c3e84aa6"
+  },
+  {
+    "path": "tests/windows-wallet-tools/WindowsWalletToolsTests.csproj",
+    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+  },
+  {
     "path": "tools/SlithySeedTool/Program.cs",
     "sha256": "58ac3f05f0d68aca8b9f3992ae2b0b01d7953dee4d9a4f139366e85c81b56d5f"
   },
@@ -12613,7 +12745,7 @@
   },
   {
     "path": "tools/build-linux-gui.sh",
-    "sha256": "99f0920516a1c23da3a86305a28a07c95fcc3da79eae89f4b8ecc908a74946c5"
+    "sha256": "45360e5f1da651d69be277d56010c7eae11ca5acaedfb0308a426ae056ebce72"
   },
   {
     "path": "tools/build-linux-release-tarball.sh",
@@ -12624,8 +12756,12 @@
     "sha256": "f475c069df3616bf5ba509502da1c635a7fd05917ce90e60fe7a65070654e575"
   },
   {
+    "path": "tools/linux-gui-install-inventory.py",
+    "sha256": "785a97659779118b13eee77f9ccb807bb49312cdf0796a0d6fe56bbc9d7004a4"
+  },
+  {
     "path": "tools/public-source.json",
-    "sha256": "07b5b4de35b03f22247f15e28936eca7a3ff739b29feed81698dc42431d6cb54"
+    "sha256": "61df3d1f58a330f24188f414f9585b699e669c950cd0e20314d84fb6bd4fdb61"
   },
   {
     "path": "tools/scan-source.py",

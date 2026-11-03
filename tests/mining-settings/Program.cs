@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text.Json;
 using Slithy_Tove;
 
-internal static class Program
+internal static partial class Program
 {
     private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
     private static int checks;
@@ -122,49 +122,159 @@ internal static class Program
                     Capture(form, Path.Combine(screenshots, "mining-settings-" + size.Width + ".png"));
                 }
             }
-            ((TabControl)Field(form, "mainTabControl")).SelectedIndex = 0;
-            Set(form, "_installingUpdate", true);
-            Control operation = (Control)Field(form, "_operationProgressPanel");
-            Control main = (Control)Field(form, "mainTabControl");
-            string balanceText = ((Label)Field(form, "availableBalanceLabel")).Text;
-            Call(form, "SetUpdateProgress", "Downloading update... 0%", 0);
-            Application.DoEvents();
-            Call(form, "SetUpdateProgress", "Downloading update... 12%", 12);
-            Check(((Control)Field(form, "_operationProgressFill")).Width == ((Control)Field(form, "_operationProgressTrack")).ClientSize.Width * 12 / 100,
-                "A 12 percent download fills 12 percent of the bar");
-            int operationIndex = form.Controls.GetChildIndex(operation);
-            int mainIndex = form.Controls.GetChildIndex(main);
-            int homeSizeChanges = 0;
-            main.SizeChanged += (_, _) => homeSizeChanges++;
-            for (int percent = 1; percent <= 100; percent++)
-                Call(form, "SetUpdateProgress", $"Downloading update... {percent}%", percent);
-            Check(homeSizeChanges == 0, "One hundred download reports do not resize the Home page");
-            Check(form.Controls.GetChildIndex(operation) == operationIndex && form.Controls.GetChildIndex(main) == mainIndex, "Download progress never reorders docked controls");
-            Check(((Label)Field(form, "availableBalanceLabel")).Text == balanceText, "Downloading does not overwrite the wallet balance caption");
-            Check(((Control)Field(form, "_operationProgressFill")).Width == ((Control)Field(form, "_operationProgressTrack")).ClientSize.Width,
-                "Download bar matches its percentage");
-            Type nodeInfo = App.GetType("Slithy_Tove.NodeInfo")!;
-            object info = Activator.CreateInstance(nodeInfo, [2797L, 1m, "test", false, "test", 0L, 1L, 3391L])!;
-            Call(form, "ShowChainProgress", info);
-            Application.DoEvents();
-            Check(((ProgressBar)Field(form, "chainSyncProgressBar")).Value == 82, "Native chain progress value matches its 82 percent caption");
-            Check(((Label)Field(form, "chainSyncLabel")).Text.StartsWith("Chain sync:"), "Chain progress is labeled separately from app download");
-            Check(!operation.Bounds.IntersectsWith(((Control)Field(form, "chainSyncPanel")).Bounds), "Download and sync rows do not overlap");
-            if (screenshots != null)
-            {
-                // Native progress bars animate toward the new value after WM_PAINT.
-                // Allow those frames before taking a still image.
-                DateTime frameDeadline = DateTime.UtcNow.AddSeconds(2);
-                while (DateTime.UtcNow < frameDeadline) { Application.DoEvents(); Thread.Sleep(20); }
-                Capture(form, Path.Combine(screenshots, "download-and-sync.png"));
-            }
-            Set(form, "_installingUpdate", false);
+            TestMiningCardLayout(form, screenshots);
+            TestUpdateProgress(form, screenshots);
             form.Hide();
 
             TestDownloadProgress(root);
             Console.WriteLine($"Passed {checks} checks. Disposable settings and simulated HTTP were used. No user wallet or public mining was touched.");
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+
+    private static void TestUpdateProgress(Form1 form, string? screenshots)
+    {
+        TabControl main = (TabControl)Field(form, "mainTabControl");
+        Control operation = (Control)Field(form, "_operationProgressPanel");
+        Label operationLabel = (Label)Field(form, "_operationProgressLabel");
+        Control operationFill = (Control)Field(form, "_operationProgressFill");
+        Control operationTrack = (Control)Field(form, "_operationProgressTrack");
+        Label balance = (Label)Field(form, "availableBalanceLabel");
+        Label updateStatus = (Label)Field(form, "updateStatusLabel");
+        Control updateFill = (Control)Field(form, "updateProgressFillPanel");
+        Control updateTrack = (Control)Field(form, "updateProgressTrackPanel");
+        Control chainPanel = (Control)Field(form, "chainSyncPanel");
+        ProgressBar chainProgress = (ProgressBar)Field(form, "chainSyncProgressBar");
+        main.SelectedIndex = 0;
+        chainPanel.Visible = false;
+
+        int feedRequests = 0;
+        ReplaceHttp(Field(form, "_updateService"), new Handler(_ =>
+        {
+            feedRequests++;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable));
+        }));
+        Call(form, "SetWalletBusy", true, "Opening the test wallet...", 37);
+        Application.DoEvents();
+        int walletProgressWidth = operationFill.Width;
+        Check(operation.Visible && walletProgressWidth == operationTrack.ClientSize.Width * 37 / 100,
+            "Wallet work still has its own footer progress");
+        Call(form, "SetUpdateProgress", "Checking for updates...", 15);
+        Run((Task)Call(form, "CheckForUpdatesAsync", false)!);
+        Check(feedRequests == 0, "A background feed check waits for the wallet operation");
+        Check((bool)Field(form, "_walletBusy") && form.UseWaitCursor && !((Control)Field(form, "walletButton")).Enabled,
+            "A feed check does not release busy wallet controls");
+        Check(operation.Visible && operationFill.Width == walletProgressWidth &&
+            operationLabel.Text == "Opening the test wallet..." && balance.Text == operationLabel.Text,
+            "Update status does not overwrite a separate wallet operation");
+        Call(form, "SetWalletBusy", false, null, -1);
+        Check(!operation.Visible && !form.UseWaitCursor && ((Control)Field(form, "walletButton")).Enabled,
+            "Completing wallet work hides its footer and restores the wallet button");
+
+        Set(form, "_installingUpdate", true);
+        Call(form, "SetWalletBusy", true, "Preparing the update. Your wallet files stay in place.", -1);
+        Call(form, "ShowUpdatePage");
+        Call(form, "SetUpdateProgress", "Downloading update... 0%", 0);
+        Application.DoEvents();
+        Check(main.SelectedTab == Field(form, "advancedTabPage") &&
+            ((TabControl)Field(form, "advancedTabControl")).SelectedTab == Field(form, "updatesTabPage"),
+            "Starting an update brings its large progress card into view");
+        Check((bool)Field(form, "_walletBusy") && form.UseWaitCursor &&
+            new[] { "walletButton", "lockWalletButton", "sendButton", "receiveButton", "miningToggleButton" }
+                .All(name => !((Control)Field(form, name)).Enabled),
+            "Installation starts with wallet controls protected");
+        Check(!operation.Visible && updateTrack.Visible && updateFill.Width == 0,
+            "A new download starts on the Updates card without a duplicate footer");
+        Call(form, "SetUpdateProgress", "Downloading update... 12%", 12);
+        Check(updateFill.Width == updateTrack.ClientSize.Width * 12 / 100,
+            "A 12 percent download fills 12 percent of the large card bar");
+
+        int operationIndex = form.Controls.GetChildIndex(operation);
+        int mainIndex = form.Controls.GetChildIndex(main);
+        int pageSizeChanges = 0, footerChanges = 0;
+        string balanceText = balance.Text;
+        int footerPercent = (int)Field(form, "_operationProgressPercent");
+        main.SizeChanged += (_, _) => pageSizeChanges++;
+        operation.VisibleChanged += (_, _) => footerChanges++;
+        operationLabel.TextChanged += (_, _) => footerChanges++;
+        operationFill.SizeChanged += (_, _) => footerChanges++;
+        for (int percent = 13; percent <= 87; percent++)
+            Call(form, "SetUpdateProgress", $"Downloading update... {percent}%", percent);
+        int repeatedTextChanges = 0, repeatedFillChanges = 0;
+        updateStatus.TextChanged += (_, _) => repeatedTextChanges++;
+        updateFill.SizeChanged += (_, _) => repeatedFillChanges++;
+        for (int repeat = 0; repeat < 30; repeat++)
+            Call(form, "SetUpdateProgress", "Downloading update... 87%", 87);
+        Application.DoEvents();
+        Check(repeatedTextChanges == 0 && repeatedFillChanges == 0,
+            "Repeated download reports leave the card text and bar unchanged");
+        Check(pageSizeChanges == 0 && footerChanges == 0 &&
+            (int)Field(form, "_operationProgressPercent") == footerPercent,
+            "Download reports neither resize the page nor rewrite the hidden footer");
+        Check(form.Controls.GetChildIndex(operation) == operationIndex && form.Controls.GetChildIndex(main) == mainIndex,
+            "Download progress never reorders docked controls");
+        Check(balance.Text == balanceText && (bool)Field(form, "_walletBusy") && !operation.Visible,
+            "Download progress leaves the wallet caption and busy state intact");
+        if (screenshots != null) Capture(form, Path.Combine(screenshots, "download-progress.png"));
+
+        Type nodeInfo = App.GetType("Slithy_Tove.NodeInfo")!;
+        object info = Activator.CreateInstance(nodeInfo, [2797L, 1m, "test", false, "test", 0L, 1L, 3391L])!;
+        Call(form, "ShowChainProgress", info);
+        Application.DoEvents();
+        Check(chainPanel.Visible && chainProgress.Value == 82, "Chain progress still reports 82 percent during an app download");
+        Check(((Label)Field(form, "chainSyncLabel")).Text.StartsWith("Chain sync:"),
+            "Chain progress is labeled separately from app download");
+        Check(updateFill.Width == updateTrack.ClientSize.Width * 87 / 100 && !operation.Visible,
+            "Chain progress does not replace the card's 87 percent download progress");
+        Check(!main.Bounds.IntersectsWith(chainPanel.Bounds), "The Updates page and chain-sync row do not overlap");
+        TabPage updatesPage = (TabPage)Field(form, "updatesTabPage");
+        Control updatesCard = (Control)Field(form, "updatesCard");
+        Control safetyLabel = (Control)Field(form, "updateSafetyLabel");
+        updatesPage.AutoScrollPosition = Point.Empty;
+        Application.DoEvents();
+        Rectangle safetyBounds = updatesPage.RectangleToClient(safetyLabel.RectangleToScreen(safetyLabel.ClientRectangle));
+        bool needsScrolling = safetyBounds.Bottom > updatesPage.ClientSize.Height;
+        Check(updatesPage.AutoScroll && updatesPage.DisplayRectangle.Bottom >= updatesCard.Bottom &&
+            updatesPage.DisplayRectangle.Bottom >= safetyBounds.Bottom,
+            "The Updates scroll area includes the full card and its safety note during chain sync");
+        updatesPage.ScrollControlIntoView(safetyLabel);
+        Application.DoEvents();
+        safetyBounds = updatesPage.RectangleToClient(safetyLabel.RectangleToScreen(safetyLabel.ClientRectangle));
+        Check(safetyBounds.Top >= 0 && safetyBounds.Bottom <= updatesPage.ClientSize.Height &&
+            (!needsScrolling || updatesPage.AutoScrollPosition.Y < 0),
+            "The bottom safety note can be brought fully into view during chain sync");
+        if (screenshots != null) Capture(form, Path.Combine(screenshots, "download-and-sync-bottom.png"));
+        updatesPage.AutoScrollPosition = Point.Empty;
+        Application.DoEvents();
+        Check(updatesPage.AutoScrollPosition.Y == 0, "The Updates page can return to the top of the card");
+        if (screenshots != null)
+        {
+            // Native progress bars need a few frames to reach their new value.
+            DateTime frameDeadline = DateTime.UtcNow.AddSeconds(2);
+            while (DateTime.UtcNow < frameDeadline) { Application.DoEvents(); Thread.Sleep(20); }
+            Capture(form, Path.Combine(screenshots, "download-and-sync.png"));
+        }
+        for (int percent = 88; percent <= 100; percent++)
+            Call(form, "SetUpdateProgress", $"Downloading update... {percent}%", percent);
+        Check(updateFill.Width == updateTrack.ClientSize.Width && chainProgress.Value == 82,
+            "The app download reaches 100 percent without changing chain progress");
+        Set(form, "_updateHandoffRequested", true);
+        Call(form, "SetUpdateProgress", "Preparing to restart with the update...", 100);
+        Check(!operation.Visible && (bool)Field(form, "_walletBusy") && !((Control)Field(form, "walletButton")).Enabled,
+            "The duplicate footer stays hidden and wallet controls stay protected through handoff");
+
+        // Exercise the cleanup used when installation cannot reach handoff.
+        Set(form, "_updateHandoffRequested", false);
+        Call(form, "SetWalletBusy", false, null, -1);
+        Call(form, "UpdateUpdateProgressFill", 0);
+        Set(form, "_installingUpdate", false);
+        Check(!(bool)Field(form, "_walletBusy") && !form.UseWaitCursor &&
+            ((Control)Field(form, "walletButton")).Enabled && !operation.Visible && updateFill.Width == 0,
+            "An interrupted update restores the wallet button and clears progress");
+        Call(form, "SetWalletBusy", true, "Backing up the test wallet...", 60);
+        Check(operation.Visible && operationFill.Width == operationTrack.ClientSize.Width * 60 / 100,
+            "Wallet progress remains available after update cleanup");
+        Call(form, "SetWalletBusy", false, null, -1);
     }
 
     private static void TestDownloadProgress(string root)

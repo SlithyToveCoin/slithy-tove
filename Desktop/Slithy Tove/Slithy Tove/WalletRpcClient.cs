@@ -30,7 +30,12 @@ internal sealed record WalletScanStatus(bool Scanning, decimal Progress, long La
 internal sealed record PreparedTransfer(
     string TransactionHash,
     ulong FeeAtomic,
-    string TransactionMetadata);
+    string TransactionMetadata,
+    string RecipientAddress = "",
+    ulong AmountAtomic = 0,
+    int InputCount = 0,
+    bool IsConsolidation = false,
+    bool ReusesChangeAddress = false);
 
 internal sealed record TransferResult(string TransactionHash, ulong FeeAtomic);
 
@@ -46,11 +51,28 @@ internal sealed record WalletTransfer(
     decimal Amount,
     decimal Fee,
     long Height,
-    DateTimeOffset? Timestamp);
+    DateTimeOffset? Timestamp,
+    string Address = "",
+    long Confirmations = 0,
+    string Category = "",
+    bool Abandoned = false,
+    int OutputIndex = -1);
+
+internal sealed record WalletHistoryPage(IReadOnlyList<WalletTransfer> Entries, int Page, int PageSize, bool HasMore, int ScannedEntries);
+internal sealed record WalletReceivingAddress(string Address, string Label, decimal ReceivedAmount, long Confirmations, bool Used);
+internal sealed record WalletOutpoint(string TransactionHash, int OutputIndex);
+internal sealed record WalletUnspentOutput(string TransactionHash, int OutputIndex, string Address, decimal Amount, long Confirmations, bool Spendable, bool Safe, string Label)
+{
+    public WalletOutpoint Outpoint => new(TransactionHash, OutputIndex);
+}
+internal sealed record WalletTransactionInput(string TransactionHash, int OutputIndex, bool Coinbase);
+internal sealed record WalletTransactionOutput(int OutputIndex, string Address, decimal Amount, bool IsMine);
+internal sealed record WalletTransactionDetails(string TransactionHash, long Confirmations, DateTimeOffset? Timestamp, decimal Fee, string BlockHash, bool Abandoned,
+    IReadOnlyList<WalletTransactionInput> Inputs, IReadOnlyList<WalletTransactionOutput> Outputs, IReadOnlyList<WalletTransfer> WalletEntries);
 
 // This class talks to the wallet RPC methods through the same node RPC transport.
 // It tracks which wallet is open so the UI does not have to pass that around.
-internal sealed class WalletRpcClient : IDisposable
+internal sealed partial class WalletRpcClient : IDisposable
 {
     private static readonly TimeSpan LongWalletOperationTimeout = TimeSpan.FromMinutes(3);
     private readonly NodeRpcClient _rpc = new();
@@ -170,11 +192,18 @@ internal sealed class WalletRpcClient : IDisposable
     public async Task LockWalletOnlyAsync(Uri endpoint)
     {
         EnsureWalletOpen();
+        string wallet = _walletName;
         if (!_walletEncrypted && !await IsWalletEncryptedAsync(endpoint))
         {
             return;
         }
-        await _rpc.CallAsync(endpoint, _walletName, "walletlock", Array.Empty<object>());
+        EnsureSameWallet(wallet);
+        await _rpc.CallAsync(endpoint, wallet, "walletlock", Array.Empty<object>(), LongWalletOperationTimeout);
+        EnsureSameWallet(wallet);
+        JsonElement locked = await _rpc.CallAsync(endpoint, wallet, "getwalletinfo", Array.Empty<object>(), LongWalletOperationTimeout);
+        EnsureSameWallet(wallet);
+        if (!locked.TryGetProperty("unlocked_until", out JsonElement until) || until.GetInt64() != 0)
+            throw new InvalidOperationException("Wallet spending lock could not be confirmed.");
         _walletEncrypted = true;
     }
 
@@ -202,7 +231,9 @@ internal sealed class WalletRpcClient : IDisposable
         string name,
         string password,
         string recoveryWords,
-        ulong restoreHeight)
+        ulong restoreHeight,
+        int recoveryRangeEnd = SlithySeedPhrase.DefaultRecoveryRangeEnd,
+        CancellationToken cancellationToken = default)
     {
         // Restore scans from the start of the test chain. The current chain is
         // still small, so this is safer than asking users for a restore height.
@@ -211,8 +242,10 @@ internal sealed class WalletRpcClient : IDisposable
             name,
             password,
             recoveryWords,
-            scanFromStart: restoreHeight == 0,
-            unlockFor: TimeSpan.FromMinutes(10));
+            scanFromStart: true,
+            unlockFor: TimeSpan.FromMinutes(10),
+            recoveryRangeEnd,
+            cancellationToken);
     }
 
     private async Task CreateWalletFromRecoveryWordsAsync(
@@ -221,8 +254,12 @@ internal sealed class WalletRpcClient : IDisposable
         string password,
         string recoveryWords,
         bool scanFromStart,
-        TimeSpan? unlockFor)
+        TimeSpan? unlockFor,
+        int recoveryRangeEnd = SlithySeedPhrase.DefaultRecoveryRangeEnd,
+        CancellationToken cancellationToken = default)
     {
+        SlithySeedPhrase.ValidateRecoveryRange(recoveryRangeEnd);
+        cancellationToken.ThrowIfCancellationRequested();
         JsonElement chain = await _rpc.CallAsync(endpoint, "", "getblockchaininfo", Array.Empty<object>());
         string network = chain.GetProperty("chain").GetString() ?? throw new InvalidOperationException("Node did not identify its network.");
         string[] descriptors = SlithySeedPhrase.BuildDescriptors(recoveryWords, network);
@@ -252,16 +289,28 @@ internal sealed class WalletRpcClient : IDisposable
 
         try
         {
-            JsonElement importResult = await _rpc.CallAsync(
+            Task<JsonElement> importTask = _rpc.CallAsync(
                 endpoint,
                 _walletName,
                 "importdescriptors",
                 new object[]
                 {
-                    SlithySeedPhrase.BuildImportRequests(checkedDescriptors, scanFromStart)
+                    SlithySeedPhrase.BuildImportRequests(checkedDescriptors, scanFromStart, recoveryRangeEnd)
                 },
-                LongWalletOperationTimeout);
+                TimeSpan.FromMinutes(15));
+            JsonElement importResult;
+            try { importResult = await importTask.WaitAsync(cancellationToken); }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                // Stop the scan, then let the import release its locks before locking spending.
+                try { await _rpc.CallAsync(endpoint, _walletName, "abortrescan", Array.Empty<object>(), TimeSpan.FromSeconds(15)); }
+                catch { /* The import may still be deriving keys or may already have finished. */ }
+                try { await importTask.WaitAsync(TimeSpan.FromSeconds(30)); }
+                catch { /* The outer failure path still attempts and verifies the wallet lock. */ }
+                throw;
+            }
             SlithySeedPhrase.ThrowIfImportFailed(importResult);
+            cancellationToken.ThrowIfCancellationRequested();
         }
         catch (Exception importError)
         {
@@ -271,7 +320,10 @@ internal sealed class WalletRpcClient : IDisposable
             {
                 throw new AggregateException("Wallet import failed, and locking could not be confirmed.", importError, lockError);
             }
-            throw;
+            const string recoveryMessage = "The wallet was created, but setup or its recovery scan did not finish. Spending is locked. Open this wallet again, check the scan and make a wallet-file backup before using it.";
+            if (importError is OperationCanceledException && cancellationToken.IsCancellationRequested)
+                throw new OperationCanceledException(recoveryMessage, importError, cancellationToken);
+            throw new InvalidOperationException(recoveryMessage, importError);
         }
     }
 
@@ -393,17 +445,29 @@ internal sealed class WalletRpcClient : IDisposable
 
     public async Task<WalletSnapshot> GetSnapshotAsync(Uri endpoint)
     {
-        // Get or create a receiving address, then read trusted, pending, and immature balances.
+        // Reuse a known receiving address so opening a restored wallet does not consume a key.
         EnsureWalletOpen();
+        string wallet = _walletName;
         if (string.IsNullOrWhiteSpace(_currentAddress))
         {
-            JsonElement addressResult = await _rpc.CallAsync(
-                endpoint, _walletName, "getnewaddress", Array.Empty<object>());
-            _currentAddress = addressResult.GetString() ?? "";
+            IReadOnlyList<WalletReceivingAddress> addresses = await GetReceivingAddressesAsync(endpoint);
+            EnsureSameWallet(wallet);
+            _currentAddress = addresses.FirstOrDefault()?.Address ?? "";
+            if (_currentAddress.Length == 0)
+            {
+                try { _currentAddress = (await CreateReceivingAddressAsync(endpoint)).Address; }
+                catch (RecoveryWindowExceededException)
+                {
+                    _currentAddress = await GetRecoverySafeReceivingAddressAsync(endpoint, wallet)
+                        ?? throw new InvalidOperationException("No receiving address is available. Back up this wallet file before changing its recovery range.");
+                }
+            }
+            EnsureSameWallet(wallet);
         }
 
         JsonElement balanceResult = await _rpc.CallAsync(
-            endpoint, _walletName, "getbalances", Array.Empty<object>());
+            endpoint, wallet, "getbalances", Array.Empty<object>());
+        EnsureSameWallet(wallet);
         JsonElement mine = balanceResult.GetProperty("mine");
         decimal trusted = ReadDecimal(mine, "trusted");
         decimal immature = ReadDecimal(mine, "immature");
@@ -442,20 +506,51 @@ internal sealed class WalletRpcClient : IDisposable
     {
         EnsureWalletOpen();
         if (amountAtomic == 0) throw new ArgumentOutOfRangeException(nameof(amountAtomic));
+        string wallet = _walletName;
+        JsonElement validation = await _rpc.CallAsync(endpoint, "", "validateaddress", new object[] { address });
+        EnsureSameWallet(wallet);
+        string recipientScript = ReadString(validation, "scriptPubKey");
+        if (!ReadBoolean(validation, "isvalid") || recipientScript.Length == 0)
+            throw new ArgumentException("Enter a valid address for this network.", nameof(address));
+        (Dictionary<string, object> options, bool reusedChange) = await FundingOptionsAsync(endpoint, wallet);
+        EnsureSameWallet(wallet);
         decimal amount = amountAtomic / 100_000_000m;
         JsonElement raw = await _rpc.CallAsync(endpoint, "", "createrawtransaction",
             new object[] { Array.Empty<object>(), new Dictionary<string, decimal> { [address] = amount } });
-        JsonElement funded = await _rpc.CallAsync(endpoint, _walletName, "fundrawtransaction",
-            new object[] { raw.GetString()!, new { lockUnspents = false, conf_target = 6, estimate_mode = "conservative" } });
+        EnsureSameWallet(wallet);
+        JsonElement funded = await _rpc.CallAsync(endpoint, wallet, "fundrawtransaction",
+            new object[] { raw.GetString()!, options });
+        EnsureSameWallet(wallet);
         decimal fee = funded.GetProperty("fee").GetDecimal();
-        if (fee < 0) throw new InvalidOperationException("The node returned an invalid transaction fee.");
-        JsonElement signed = await _rpc.CallAsync(endpoint, _walletName, "signrawtransactionwithwallet",
+        if (fee <= 0) throw new InvalidOperationException("The node returned an invalid transaction fee.");
+        JsonElement signed = await _rpc.CallAsync(endpoint, wallet, "signrawtransactionwithwallet",
             new object[] { funded.GetProperty("hex").GetString()! });
+        EnsureSameWallet(wallet);
         if (!signed.GetProperty("complete").GetBoolean())
             throw new InvalidOperationException("The wallet could not sign the complete transaction.");
         string hex = signed.GetProperty("hex").GetString()!;
         JsonElement decoded = await _rpc.CallAsync(endpoint, "", "decoderawtransaction", new object[] { hex });
-        return new PreparedTransfer(decoded.GetProperty("txid").GetString()!, ToAtomic(fee), hex);
+        EnsureSameWallet(wallet);
+        // Resolve amounts in one wallet call, including safe unconfirmed change.
+        JsonElement unspent = await _rpc.CallAsync(endpoint, wallet, "listunspent", new object[] { 0, 9999999, Array.Empty<string>(), false }, LongWalletOperationTimeout);
+        EnsureSameWallet(wallet);
+        Dictionary<string, decimal> available = unspent.EnumerateArray().Where(coin => ReadBoolean(coin, "spendable") && ReadBoolean(coin, "safe"))
+            .ToDictionary(coin => OutpointKey(new(ReadString(coin, "txid"), checked((int)ReadInt64(coin, "vout")))), coin => ReadDecimal(coin, "amount"), StringComparer.Ordinal);
+        JsonElement[] inputs = decoded.GetProperty("vin").EnumerateArray().ToArray();
+        HashSet<string> used = new(StringComparer.Ordinal);
+        decimal inputTotal = 0;
+        foreach (JsonElement input in inputs)
+        {
+            string key = OutpointKey(new(ReadString(input, "txid"), checked((int)ReadInt64(input, "vout"))));
+            if (!used.Add(key) || !available.TryGetValue(key, out decimal value) || value <= 0)
+                throw new InvalidOperationException("A prepared input is no longer available. Refresh the wallet and prepare the payment again.");
+            inputTotal += value;
+        }
+        if (inputs.Length == 0 || fee >= inputTotal) throw new InvalidOperationException("The prepared payment has invalid inputs or fees.");
+        await VerifyPreparedOutputsAsync(endpoint, wallet, decoded, recipientScript, amount, inputTotal, fee, false);
+        EnsureSameWallet(wallet);
+        return new PreparedTransfer(decoded.GetProperty("txid").GetString()!, ToAtomic(fee), hex,
+            address, amountAtomic, inputs.Length, false, reusedChange);
     }
 
     public async Task<bool> HasTransactionAsync(Uri endpoint, string transactionId)
@@ -528,23 +623,7 @@ internal sealed class WalletRpcClient : IDisposable
 
         foreach (JsonElement item in result.EnumerateArray())
         {
-            string category = ReadString(item, "category");
-            string direction = category.Equals("send", StringComparison.OrdinalIgnoreCase)
-                ? "Sent"
-                : category.Equals("generate", StringComparison.OrdinalIgnoreCase) ||
-                  category.Equals("immature", StringComparison.OrdinalIgnoreCase)
-                    ? "Mined"
-                    : "Received";
-            decimal amount = Math.Abs(ReadDecimal(item, "amount"));
-            decimal fee = Math.Abs(ReadDecimal(item, "fee"));
-            long time = ReadInt64(item, "time");
-            transfers.Add(new WalletTransfer(
-                ReadString(item, "txid"),
-                direction,
-                amount,
-                fee,
-                ReadInt64(item, "blockheight"),
-                time > 0 ? DateTimeOffset.FromUnixTimeSeconds(time) : null));
+            transfers.Add(ParseTransfer(item));
         }
 
         return transfers

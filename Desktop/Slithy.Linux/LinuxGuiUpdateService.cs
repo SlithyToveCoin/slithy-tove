@@ -227,6 +227,10 @@ internal readonly record struct LinuxGuiVersion(int Major, int Minor, int Patch,
 
 internal static class LinuxGuiUpdatePaths
 {
+    internal static string DesktopEntry(string directory) => "[Desktop Entry]\nType=Application\nName=Slithy Tove\nGenericName=Wallet and CPU miner\n" +
+        "Comment=Linux wallet and CPU miner for the Slithy test network\n" +
+        $"Exec=\"{directory}/slithy-desktop\"\nIcon=io.slithy.Tove\nStartupWMClass=io.slithy.Tove\nStartupNotify=true\nTerminal=false\nCategories=Office;Finance;\nActions=Uninstall;\n\n" +
+        $"[Desktop Action Uninstall]\nName=Uninstall Slithy Tove\nExec=\"{directory}/slithy-desktop\" --uninstall\n";
     internal const UnixFileMode PrivateDirectory = UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute;
     internal const UnixFileMode PrivateFile = UnixFileMode.UserRead | UnixFileMode.UserWrite;
     internal static string Home => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);

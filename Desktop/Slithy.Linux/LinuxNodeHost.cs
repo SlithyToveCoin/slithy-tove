@@ -9,7 +9,7 @@ namespace Slithy.Linux;
 internal sealed record LinuxStorageInfo(long FreeBytes, long NodeBytes, string Path);
 
 // The GUI owns its node. It never borrows a running server or installer service.
-internal sealed class LinuxNodeHost : IAsyncDisposable
+internal sealed partial class LinuxNodeHost : IAsyncDisposable
 {
     private readonly LinuxSettingsStore _store;
     private readonly LinuxSettings _settings;
@@ -32,6 +32,7 @@ internal sealed class LinuxNodeHost : IAsyncDisposable
     public string LogPath => Path.Combine(DataDirectory, "node.log");
     public bool IsRunning => _processStarted && _process != null && !_process.HasExited;
     public string PreferredNodeId => _peerOrder[0];
+    public Func<Task<bool>>? ConfirmOrphanRecoveryAsync { get; set; }
 
     public LinuxNodeHost(LinuxSettingsStore store, LinuxSettings settings, bool regtest = false, string? binaryPath = null)
     {
@@ -67,6 +68,7 @@ internal sealed class LinuxNodeHost : IAsyncDisposable
                 throw new InvalidOperationException("Another Slithy GUI may be using this data directory. Close it before opening a second copy.");
             }
             string binary = ResolveBinary();
+            await RecoverPreviousNodeAsync(binary, cancellationToken);
             EnsurePortAvailable(RpcPort);
             LinuxSettingsStore.RejectLink(CookiePath);
             LinuxSettingsStore.RejectLink(LogPath);
@@ -100,6 +102,7 @@ internal sealed class LinuxNodeHost : IAsyncDisposable
             _process.ErrorDataReceived += (_, e) => RecordStartupDiagnostic(e.Data);
             _processStarted = _process.Start();
             if (!_processStarted) throw new InvalidOperationException("The local Slithy node did not start.");
+            await RecordOwnershipAsync(binary, start.ArgumentList.ToArray(), cancellationToken);
             _process.BeginOutputReadLine();
             _process.BeginErrorReadLine();
             using CancellationTokenSource timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -287,6 +290,7 @@ internal sealed class LinuxNodeHost : IAsyncDisposable
                 throw new InvalidOperationException("The local node is still saving its data. Leave the app open and try closing it again. It has not been force-stopped.");
             }
         }
+        if (_processStarted && _process != null && _process.HasExited) RemoveOwnReceipt(_process.Id);
         _process?.Dispose();
         _process = null;
         _processStarted = false;

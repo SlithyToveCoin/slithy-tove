@@ -17,6 +17,7 @@ internal partial class WalletAccessDialog : Form
     private string _restoreWalletName = "";
     private string _restoreWords = "";
     private string _restoreWordsPassword = "";
+    private int _restoreRecoveryRangeEnd = SlithySeedPhrase.DefaultRecoveryRangeEnd;
 
     public WalletAccessDialog(
         string walletDirectory,
@@ -50,6 +51,7 @@ internal partial class WalletAccessDialog : Form
     };
     public string RestoreSourceDirectory => _restoreSourceDirectory;
     public string RestoreRecoveryWords => _restoreWords;
+    public int RestoreRecoveryRangeEnd => _restoreRecoveryRangeEnd;
     private void createButton_Click(object? sender, EventArgs e)
     {
         // Validate the wallet name and password before returning to Form1.
@@ -165,6 +167,7 @@ internal partial class WalletAccessDialog : Form
         _restoreWalletName = dialog.WalletName;
         _restoreWordsPassword = dialog.WalletPassword;
         _restoreWords = SlithySeedPhrase.NormalizeRecoveryWords(dialog.RecoveryWords);
+        _restoreRecoveryRangeEnd = dialog.RecoveryRangeEnd;
         AccessMode = WalletAccessMode.RestoreWords;
         DialogResult = DialogResult.OK;
     }

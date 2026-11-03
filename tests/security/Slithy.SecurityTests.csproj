@@ -11,6 +11,7 @@
     <Compile Include="../../shared/RecoveryWords.cs" Link="RecoveryWords.cs" />
     <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/NodeRpcClient.cs" Link="NodeRpcClient.cs" />
     <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.cs" Link="WalletRpcClient.cs" />
+    <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.*.cs" Link="%(Filename)%(Extension)" />
     <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs" Link="SlithySeedPhrase.cs" />
     <Compile Include="../../Desktop/Slithy Tove/Slithy Tove/TreasuryStatusCalculator.cs" Link="TreasuryStatusCalculator.cs" />
     <PackageReference Include="NBitcoin" Version="7.0.49" />

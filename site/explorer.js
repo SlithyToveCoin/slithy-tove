@@ -2,6 +2,8 @@
   'use strict';
   let blocks = [], busy = false;
   const search = document.querySelector('[data-transaction-search]');
+  const linkedTransaction = new URLSearchParams(window.location.search).get('tx');
+  if (linkedTransaction && /^[a-fA-F0-9]{64}$/.test(linkedTransaction)) search.value = linkedTransaction.toLowerCase();
   function set(selector, text) { const el = document.querySelector(selector); if (el) el.textContent = text; }
   function add(tag, text, parent, cls) { const el = document.createElement(tag); if (text !== undefined) el.textContent = text; if (cls) el.className = cls; parent.append(el); return el; }
   function time(value) { const d = new Date(typeof value === 'number' ? value * 1000 : value); return Number.isNaN(d.getTime()) ? 'Unknown' : d.toLocaleString(); }

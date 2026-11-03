@@ -21,6 +21,10 @@ install -m 0755 "$root/Desktop/Slithy.Linux/install-desktop.sh" "$output/install
 install -m 0644 "$root/Desktop/Slithy Tove/Slithy Tove/Assets/slithy-mark.png" "$output/Assets/slithy-mark.png"
 install -m 0644 "$root/Desktop/Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png" "$output/Assets/slithy-icon-256.png"
 install -m 0644 "$root/docs/LINUX-GUI-PREVIEW.md" "$output/README.md"
+install -m 0644 "$root/docs/WALLET-TOOLS.md" "$output/WALLET-TOOLS.md"
 chmod 0755 "$output/slithy-desktop"
+install -m 0755 "$output/slithy-desktop" "$output/slithy-install"
+install -m 0755 "$output/slithy-desktop" "$output/slithy-uninstall"
+python3 "$root/tools/linux-gui-install-inventory.py" "$output"
 printf 'Linux GUI package folder: %s\n' "$output"
 printf 'Test this folder before making a release archive.\n'

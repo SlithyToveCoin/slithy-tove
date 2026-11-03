@@ -15,6 +15,14 @@ namespace Slithy_Tove;
 internal static class SlithySeedPhrase
 {
     private const int ImportRangeEnd = 1000;
+    public const int DefaultRecoveryRangeEnd = 10_000;
+    public const int MaximumRecoveryRangeEnd = 100_000;
+
+    public static void ValidateRecoveryRange(int rangeEnd)
+    {
+        if (rangeEnd < DefaultRecoveryRangeEnd || rangeEnd > MaximumRecoveryRangeEnd)
+            throw new ArgumentOutOfRangeException(nameof(rangeEnd), "Recovery scan end must be between 10,000 and 100,000.");
+    }
 
     public static string CreateRecoveryWords()
     {
@@ -27,8 +35,11 @@ internal static class SlithySeedPhrase
     public static string[] BuildDescriptors(string words, string network = "testnet") =>
         Slithy.Cryptography.RecoveryWords.Descriptors(words, network);
 
-    public static object[] BuildImportRequests(string[] checkedDescriptors, bool scanFromStart)
+    public static object[] BuildImportRequests(string[] checkedDescriptors, bool scanFromStart, int recoveryRangeEnd = DefaultRecoveryRangeEnd)
     {
+        ValidateRecoveryRange(recoveryRangeEnd);
+        if (checkedDescriptors.Length != 2) throw new ArgumentException("Both receiving and change descriptors are required.", nameof(checkedDescriptors));
+        int rangeEnd = scanFromStart ? recoveryRangeEnd : ImportRangeEnd;
         string timestamp = scanFromStart ? "0" : "now";
         return
         [
@@ -36,7 +47,7 @@ internal static class SlithySeedPhrase
             {
                 ["desc"] = checkedDescriptors[0],
                 ["active"] = true,
-                ["range"] = new object[] { 0, ImportRangeEnd },
+                ["range"] = new object[] { 0, rangeEnd },
                 ["next_index"] = 0,
                 ["timestamp"] = scanFromStart ? 0 : timestamp,
                 ["internal"] = false
@@ -45,7 +56,7 @@ internal static class SlithySeedPhrase
             {
                 ["desc"] = checkedDescriptors[1],
                 ["active"] = true,
-                ["range"] = new object[] { 0, ImportRangeEnd },
+                ["range"] = new object[] { 0, rangeEnd },
                 ["next_index"] = 0,
                 ["timestamp"] = scanFromStart ? 0 : timestamp,
                 ["internal"] = true

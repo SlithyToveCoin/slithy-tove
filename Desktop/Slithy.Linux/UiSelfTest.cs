@@ -51,6 +51,7 @@ internal static class UiSelfTest
                 throw new InvalidOperationException("Payment record checks failed.");
             Console.WriteLine("PASS: pending payment records reject missing fields and malformed data.");
             CheckWalletPicker(output);
+            UiWalletSelfTest.Run(output);
             foreach (int width in new[] { 1200, 980, 760 })
             {
                 MainWindow window = new(preview: true) { Width = width, Height = 720 };
@@ -69,6 +70,7 @@ internal static class UiSelfTest
                     AvaloniaHeadlessPlatform.ForceRenderTimerTick();
                     using var image = window.CaptureRenderedFrame() ?? throw new InvalidOperationException("No rendered frame.");
                     image.Save(Path.Combine(output, $"linux-{width}-tab-{index}.png"));
+                    if (index == 1) UiWalletSelfTest.CheckActivity(window, output, width);
                     if (index == 0)
                     {
                         var home = window.GetVisualDescendants().OfType<Control>().ToArray();

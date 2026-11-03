@@ -13,17 +13,46 @@ internal partial class RestoreWordsDialog : Form
 {
     private readonly string _walletDirectory;
     private readonly IReadOnlyList<string>? _remoteWalletNames;
+    private readonly NumericUpDown _recoveryRange = new()
+    {
+        Minimum = SlithySeedPhrase.DefaultRecoveryRangeEnd,
+        Maximum = SlithySeedPhrase.MaximumRecoveryRangeEnd,
+        Value = SlithySeedPhrase.DefaultRecoveryRangeEnd,
+        Increment = 5000,
+        ThousandsSeparator = true,
+        AccessibleName = "Last address index to scan"
+    };
+    private readonly CheckBox _advancedRecovery = new() { Text = "Advanced recovery scan", AutoSize = true };
 
     public RestoreWordsDialog(string walletDirectory, IReadOnlyList<string>? remoteWalletNames)
     {
         InitializeComponent();
         _walletDirectory = walletDirectory;
         _remoteWalletNames = remoteWalletNames;
+        Controls.Clear();
+        headingLabel.Dispose();
+        var page = WalletDialogLayout.Page(this, "Restore recovery words", 760, 760);
+        descriptionLabel.Text = "Enter your words in order. Slithy scans the chain from the beginning to find this wallet's transactions. A large wallet can take several minutes to restore.";
+        WalletDialogLayout.Add(page, descriptionLabel);
+        foreach (Control control in new Control[] { walletNameLabel, walletNameTextBox, passwordLabel, passwordTextBox, confirmPasswordLabel, confirmPasswordTextBox, wordsLabel, wordsTextBox })
+            WalletDialogLayout.Add(page, control);
+        wordsTextBox.Height = 100;
+        WalletDialogLayout.Add(page, _advancedRecovery);
+        var advanced = new TableLayoutPanel { AutoSize = true, ColumnCount = 1, Visible = false };
+        advanced.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        WalletDialogLayout.Add(advanced, WalletDialogLayout.Note("Last address index to scan"));
+        WalletDialogLayout.Add(advanced, _recoveryRange);
+        WalletDialogLayout.Add(advanced, WalletDialogLayout.Note("The usual range ends at index 10,000. Raise this if you created addresses beyond that point. Higher values take longer. This changes the address search range, not your recovery words or the first block scanned."));
+        _advancedRecovery.CheckedChanged += (_, _) => advanced.Visible = _advancedRecovery.Checked;
+        WalletDialogLayout.Add(page, advanced);
+        WalletDialogLayout.Add(page, WalletDialogLayout.Actions(restoreButton, cancelButton));
+        Disposed += (_, _) => { wordsTextBox.Clear(); passwordTextBox.Clear(); confirmPasswordTextBox.Clear(); };
     }
 
     public string WalletName => walletNameTextBox.Text.Trim();
     public string WalletPassword => passwordTextBox.Text;
     public string RecoveryWords => wordsTextBox.Text;
+    public int RecoveryRangeEnd => _advancedRecovery.Checked ? (int)_recoveryRange.Value : SlithySeedPhrase.DefaultRecoveryRangeEnd;
 
     private void restoreButton_Click(object? sender, EventArgs e)
     {

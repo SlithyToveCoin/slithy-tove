@@ -93,6 +93,7 @@ public partial class Form1 : Form
         InitializeActivityViews();
         InitializeMiningAnimation();
         InitializeResponsiveHome();
+        InitializeMiningCardLayout();
         InitializeWebsiteLinks();
         InitializeVersionLabel();
         InitializeOperationProgress();
@@ -118,9 +119,19 @@ public partial class Form1 : Form
         // The progress bar is laid out in the designer. This syncs the fill.
         _operationProgressTrack.Resize += (_, _) => UpdateOperationProgressFill();
         updateProgressTrackPanel.Resize += (_, _) => UpdateUpdateProgressFill(_updateProgressPercent);
+        updatesCard.SizeChanged += (_, _) => UpdateUpdatesScrollArea();
+        UpdateUpdatesScrollArea();
 
         _operationProgressPanel.BringToFront();
         mainTabControl.BringToFront();
+    }
+
+    private void UpdateUpdatesScrollArea()
+    {
+        // The anchored card needs an explicit scroll height when chain sync takes a row.
+        int topMargin = Math.Max(0, updatesCard.Top - updatesTabPage.AutoScrollPosition.Y);
+        Size scrollSize = new(0, updatesCard.Height + topMargin * 2);
+        if (updatesTabPage.AutoScrollMinSize != scrollSize) updatesTabPage.AutoScrollMinSize = scrollSize;
     }
 
     private void InitializeActivityViews()
@@ -133,6 +144,7 @@ public partial class Form1 : Form
 
         ApplyRoundedRegion(_activityCard, 20);
         _activityCard.Resize += (_, _) => ApplyRoundedRegion(_activityCard, 20);
+        InitializeWalletHistory();
     }
 
     private void InitializeVersionLabel()
@@ -326,18 +338,22 @@ public partial class Form1 : Form
 
     private void ResizeActivityColumns()
     {
-        if (_walletActivityListView.Columns.Count != 3)
+        if (_walletActivityListView.Columns.Count != 5)
         {
             return;
         }
 
         int width = Math.Max(420, _walletActivityListView.ClientSize.Width -
                                   SystemInformation.VerticalScrollBarWidth - 6);
-        _walletActivityListView.Columns[0].Width = (int)(width * .34);
-        _walletActivityListView.Columns[1].Width = (int)(width * .28);
-        _walletActivityListView.Columns[2].Width =
-            width - _walletActivityListView.Columns[0].Width -
-            _walletActivityListView.Columns[1].Width;
+        string[] samples = ["Received", "+100,000.00000000", "12/31/2026 12:00 PM", "Confirmations"];
+        int used = 0;
+        for (int i = 0; i < samples.Length; i++)
+        {
+            int columnWidth = TextRenderer.MeasureText(samples[i], _walletActivityListView.Font).Width + 20;
+            _walletActivityListView.Columns[i].Width = columnWidth;
+            used += columnWidth;
+        }
+        _walletActivityListView.Columns[4].Width = Math.Max(360, width - used);
     }
 
     private async void Form1_Shown(object? sender, EventArgs e)
@@ -558,7 +574,7 @@ public partial class Form1 : Form
         }
 
         using WalletManageDialog dialog = new(_openWalletName);
-        if (dialog.ShowDialog(this) != DialogResult.OK)
+        if (ShowWalletDialog(dialog) != DialogResult.OK)
         {
             return;
         }
@@ -567,6 +583,10 @@ public partial class Form1 : Form
         {
             case WalletManageAction.Backup:
                 await BackUpOpenWalletAsync();
+                break;
+            case WalletManageAction.CheckRecoveryWords:
+                using (var check = new RecoveryCheckDialog(_walletRpcClient, WalletRpcUri))
+                    ShowWalletDialog(check);
                 break;
             case WalletManageAction.Restore:
                 ImportWalletBackup();
@@ -666,7 +686,8 @@ public partial class Form1 : Form
                     dialog.WalletName,
                     dialog.WalletPassword,
                     dialog.RestoreRecoveryWords,
-                    0);
+                    0,
+                    dialog.RestoreRecoveryRangeEnd);
                 WalletCompatibilityTools.MarkSeedWallet(GetTransparentWalletDirectory(), dialog.WalletName);
                 AppendLog($"Restored wallet {dialog.WalletName} from recovery words.");
             }
@@ -774,25 +795,25 @@ public partial class Form1 : Form
             finally { SetWalletBusy(false); }
             return;
         }
-        using SendDialog dialog = new(_walletSnapshot.UnlockedBalance);
-        if (dialog.ShowDialog(this) != DialogResult.OK)
+        using SendDialog dialog = new(_walletSnapshot.UnlockedBalance, _walletRpcClient, WalletRpcUri);
+        if (ShowWalletDialog(dialog) != DialogResult.OK)
         {
             return;
         }
         bool submitted = false;
         try
         {
+            SetWalletBusy(true, "Preparing your transfer...", 20);
             await ReconcilePendingSendAsync();
             if (!string.IsNullOrEmpty(_settings.PendingSendTransactionId))
                 throw new InvalidOperationException($"Check previous payment {_settings.PendingSendTransactionId} before sending again.");
             decimal atomic = dialog.Amount * 100_000_000m;
-            if (atomic <= 0 || atomic != decimal.Truncate(atomic))
+            if (!dialog.IsConsolidation && (atomic <= 0 || atomic != decimal.Truncate(atomic)))
                 throw new InvalidOperationException("Enter a positive amount with at most eight decimal places.");
             ulong amountAtomic = checked((ulong)atomic);
             SetWalletBusy(true, "Checking address and network fee...", 30);
-            AddressValidation validation = await _walletRpcClient.ValidateAddressAsync(
-                WalletRpcUri, dialog.DestinationAddress);
-            if (!validation.Valid)
+            if (!dialog.IsConsolidation && !(await _walletRpcClient.ValidateAddressAsync(
+                WalletRpcUri, dialog.DestinationAddress)).Valid)
             {
                 MessageBox.Show(this,
                     "That is not a valid address for the current Slithy network.",
@@ -805,12 +826,14 @@ public partial class Form1 : Form
                 if (passwordDialog.ShowDialog(this) != DialogResult.OK) return;
                 await _walletRpcClient.UnlockWalletAsync(WalletRpcUri, passwordDialog.Password, TimeSpan.FromMinutes(1));
             }
-            PreparedTransfer prepared = await _walletRpcClient.PrepareTransferAsync(
-                WalletRpcUri, dialog.DestinationAddress, amountAtomic);
-            decimal fee = prepared.FeeAtomic / 100_000_000m;
+            PreparedTransfer prepared = dialog.IsConsolidation
+                ? await _walletRpcClient.PrepareConsolidationAsync(WalletRpcUri, dialog.SelectedInputs!)
+                : dialog.SelectedInputs is not null
+                    ? await _walletRpcClient.PrepareTransferAsync(WalletRpcUri, dialog.DestinationAddress, amountAtomic, dialog.SelectedInputs)
+                    : await _walletRpcClient.PrepareTransferAsync(WalletRpcUri, dialog.DestinationAddress, amountAtomic);
             DialogResult confirmation = MessageBox.Show(this,
-                $"Send {dialog.Amount:N8} SLTHY to\n{dialog.DestinationAddress}?\n\nNetwork fee: {fee:N8} SLTHY\nTotal: {dialog.Amount + fee:N8} SLTHY",
-                "Confirm transfer", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                PreparedTransferConfirmation(prepared),
+                prepared.IsConsolidation ? "Confirm consolidation" : "Confirm transfer", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
             if (confirmation != DialogResult.Yes)
             {
                 AppendLog("Prepared transfer was not relayed.");
@@ -1022,15 +1045,16 @@ public partial class Form1 : Form
         }
     }
 
-    private void receiveButton_Click(object? sender, EventArgs e)
+    private async void receiveButton_Click(object? sender, EventArgs e)
     {
         if (_walletSnapshot is null)
         {
             walletButton.PerformClick();
             return;
         }
-        using ReceiveDialog dialog = new(_walletSnapshot.Address);
-        dialog.ShowDialog(this);
+        using ReceiveDialog dialog = new(_walletSnapshot.Address, _walletRpcClient, WalletRpcUri);
+        ShowWalletDialog(dialog);
+        await RefreshWalletAsync(forceRefresh: true);
     }
 
     private async void miningToggleButton_Click(object? sender, EventArgs e)
@@ -1398,6 +1422,7 @@ public partial class Form1 : Form
             {
                 _installingUpdate = true;
                 SetWalletBusy(true, "Preparing the update. Your wallet files stay in place.");
+                ShowUpdatePage();
                 SetUpdateProgress($"Downloading Slithy {manifest.Version}...", 0);
                 bool downloading = true;
                 Progress<int> progress = new(percent =>
@@ -1897,11 +1922,9 @@ public partial class Form1 : Form
 
     private void PopulateRecentActivity(IReadOnlyList<WalletTransfer> transfers)
     {
-        // Fills the Activity tab. The newest transactions are shown at the top.
-        PopulateActivityList(_walletActivityListView, transfers);
-        _activityEmptyLabel.Visible = transfers.Count == 0;
-        _walletActivityListView.Visible = transfers.Count > 0;
+        // The full history has its own paging and search. Home shows the latest entry.
         UpdateLatestActivity(transfers.FirstOrDefault());
+        RefreshVisibleHistory();
     }
 
     private void UpdateLatestActivity(WalletTransfer? transfer)
@@ -1968,7 +1991,7 @@ public partial class Form1 : Form
         {
             using TransactionDetailsDialog dialog = new(
                 _walletRpcClient, WalletRpcUri, transfer);
-            dialog.ShowDialog(this);
+            ShowWalletDialog(dialog);
         }
     }
 
@@ -2003,15 +2026,15 @@ public partial class Form1 : Form
             _operationProgressPercent = 0;
         }
         UpdateOperationProgressFill();
-        _operationProgressPanel.Visible = busy;
+        // Update progress belongs to the Updates card. The footer is for wallet work.
+        _operationProgressPanel.Visible = busy && !_installingUpdate;
         // The dock order is set at startup. Reordering it on each download chunk
         // resized and repainted the entire Home page.
     }
 
     private void SetUpdateProgress(string message, int progressPercent)
     {
-        if (_installingUpdate) SetWalletBusy(true, message, progressPercent);
-        updateStatusLabel.Text = message;
+        if (updateStatusLabel.Text != message) updateStatusLabel.Text = message;
         UpdateUpdateProgressFill(progressPercent);
     }
 
@@ -2019,7 +2042,8 @@ public partial class Form1 : Form
     {
         _updateProgressPercent = Math.Clamp(progressPercent, 0, 100);
         int availableWidth = Math.Max(0, updateProgressTrackPanel.ClientSize.Width);
-        updateProgressFillPanel.Width = availableWidth * _updateProgressPercent / 100;
+        int fillWidth = availableWidth * _updateProgressPercent / 100;
+        if (updateProgressFillPanel.Width != fillWidth) updateProgressFillPanel.Width = fillWidth;
     }
 
     private void UpdateOperationProgressFill()
@@ -2049,6 +2073,7 @@ public partial class Form1 : Form
         if (_miningStartedByApp) miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         recentActivityListView.Items.Clear();
         _walletActivityListView.Items.Clear();
+        ResetWalletHistory();
         _activityEmptyLabel.Visible = true;
         _walletActivityListView.Visible = false;
         UpdateLatestActivity(null);
@@ -2658,12 +2683,6 @@ public partial class Form1 : Form
         miningAddressTextBox.Enabled = custom;
         miningAddressLabel.Visible = custom;
         miningAddressTextBox.Visible = custom;
-        int Scale(int value) => (int)Math.Round(value * DeviceDpi / 192d);
-        mineToAddressCheckBox.Top = Scale(218);
-        miningAddressLabel.Top = Scale(258);
-        miningAddressTextBox.Top = Scale(293);
-        miningToggleButton.Top = Scale(custom ? 335 : 264);
-        miningStatusLineLabel.Top = miningToggleButton.Bottom + Scale(8);
         if (!_miningStartedByApp)
         {
             ShowMiningStopped();
@@ -2673,6 +2692,7 @@ public partial class Form1 : Form
             miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         }
         miningToggleButton.Enabled = CanMine();
+        LayoutMiningCard();
     }
 
     private void SetBusy(bool busy)

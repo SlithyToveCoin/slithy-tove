@@ -47,11 +47,11 @@ public partial class Form1
             Dock = DockStyle.Top, Height = Scale(32), AutoSize = false, BackColor = paper,
             Margin = new Padding(0, 0, 0, Scale(8)), TabIndex = 0,
             AccessibleName = "CPU mining threads",
-            AccessibleDescription = "Choose an exact thread count. Use the arrow keys to change by one. Changes apply the next time you start mining."
+            AccessibleDescription = "Choose how many CPU threads to use. Changes apply the next time you start mining."
         };
         miningThreadsTrackBar.ValueChanged += MiningThreadsChanged;
         AddRow(miningThreadsTrackBar);
-        AddRow(TextRow($"1 thread to {Math.Max(1, Environment.ProcessorCount)} supported by this computer. Use the arrow keys to change by one.", 9));
+        AddRow(TextRow($"1 to {Math.Max(1, Environment.ProcessorCount)} threads available.", 9));
         miningThreadsHintLabel = TextRow("Changes apply the next time you start mining.", 10);
         miningThreadsHintLabel.Name = "miningThreadsHintLabel";
         AddRow(miningThreadsHintLabel);

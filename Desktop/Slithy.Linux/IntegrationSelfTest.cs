@@ -55,6 +55,38 @@ internal static class IntegrationSelfTest
             Check(sent.TransactionHash == prepared.TransactionHash, "confirmed send broadcasts the prepared transaction");
             await rpc.GenerateBlocksAsync(endpoint, initial.Address, 1);
             Check((await second.GetSnapshotAsync(endpoint)).Balance == 1, "recipient sees one SLTHY");
+            phase = "wallet history and address tools";
+            await second.LockWalletOnlyAsync(endpoint);
+            Check(await second.CheckRecoveryWordsAsync(endpoint, words), "written recovery words match the locked wallet");
+            Check(await second.NeedsSpendingPasswordAsync(endpoint), "recovery check leaves spending locked");
+            var issued = await second.CreateReceivingAddressAsync(endpoint, "Second receiving address");
+            Check(issued.Address != receiver.Address && (await second.GetSnapshotAsync(endpoint)).Address == issued.Address,
+                "new receiving address becomes the default without spending");
+            var addresses = await second.GetReceivingAddressesAsync(endpoint);
+            Check(addresses.Any(item => item.Address == receiver.Address && item.Used) && addresses.Any(item => item.Address == issued.Address && !item.Used),
+                "receiving history includes used and unused addresses");
+            var history = await first.GetHistoryPageAsync(endpoint, pageSize: 25);
+            Check(history.Entries.Count == 25 && history.HasMore, "wallet history pages beyond the old recent-entry limit");
+            var sentPage = await first.GetHistoryPageAsync(endpoint, search: prepared.TransactionHash, direction: "out", status: "confirmed");
+            Check(sentPage.Entries.Any(item => item.TransactionHash == prepared.TransactionHash && item.Address == receiver.Address),
+                "history filters find the confirmed payment and recipient");
+            var details = await first.GetTransactionDetailsAsync(endpoint, prepared.TransactionHash);
+            Check(details.Confirmations > 0 && details.Inputs.Count == prepared.InputCount &&
+                details.Outputs.Any(item => item.Address == receiver.Address && item.Amount == 1m), "transaction details expose outputs and input outpoints");
+            string csv = await first.ExportHistoryCsvAsync(endpoint, search: prepared.TransactionHash);
+            Check(csv.Contains(prepared.TransactionHash) && csv.Contains(receiver.Address), "filtered CSV includes full transaction and address");
+            phase = "selected-input consolidation";
+            var selected = (await first.GetSpendableOutputsAsync(endpoint)).Where(Dialogs.CanSelectCoin).Take(2).Select(item => item.Outpoint).ToArray();
+            Check(selected.Length == 2, "consolidation fixture has two mature outputs");
+            await first.UnlockWalletAsync(endpoint, password, TimeSpan.FromMinutes(1));
+            var consolidation = await first.PrepareConsolidationAsync(endpoint, selected);
+            await first.LockWalletOnlyAsync(endpoint);
+            MainWindow.ValidatePreparedPayment(consolidation);
+            Check(consolidation.IsConsolidation && consolidation.InputCount == 2 && consolidation.FeeAtomic > 0,
+                "consolidation prepares the exact inputs and fee before confirmation");
+            var combined = await first.RelayTransferAsync(endpoint, consolidation);
+            Check(combined.TransactionHash == consolidation.TransactionHash, "confirmed consolidation broadcasts the same signed transaction");
+            await rpc.GenerateBlocksAsync(endpoint, initial.Address, 1);
             phase = "backup and recovery";
             string backup = Path.Combine(host.DataDirectory, "receiver-backup.dat");
             await second.BackupWalletAsync(endpoint, backup);
@@ -63,6 +95,8 @@ internal static class IntegrationSelfTest
             await second.RestoreWalletAsync(endpoint, "restored-test", password, words, 0);
             var restoredAddress = await rpc.CallAsync(endpoint, "restored-test", "getaddressinfo", new object[] { receiver.Address });
             Check(restoredAddress.GetProperty("ismine").GetBoolean(), "recovery words restore control of the original address");
+            Check((await rpc.CallAsync(endpoint, "restored-test", "getaddressinfo", new object[] { issued.Address })).GetProperty("ismine").GetBoolean(),
+                "recovery words restore an additional issued address");
             Check((await second.GetSnapshotAsync(endpoint)).Balance == 1, "recovery finds the payment");
             await second.CloseWalletAsync(endpoint);
             await rpc.CallAsync(endpoint, "", "restorewallet", new object[] { "file-restored-test", backup, false });
@@ -81,6 +115,13 @@ internal static class IntegrationSelfTest
                 await rpc.StartMiningAsync(endpoint, initial.Address, requestedThreads);
                 var mining = await rpc.GetMiningInfoAsync(endpoint);
                 Check(mining.Active && mining.Threads == requestedThreads, "locked wallet mines with the saved thread count, cycle " + cycle);
+                if (cycle == 1)
+                {
+                    await first.CreateReceivingAddressAsync(endpoint, "New address during mining");
+                    var afterAddress = await rpc.GetMiningInfoAsync(endpoint);
+                    Check(afterAddress.Active && afterAddress.Address == mining.Address && afterAddress.Threads == mining.Threads,
+                        "creating a receiving address does not restart mining or change its payout");
+                }
                 settings.MiningThreads = requestedThreads == 1 ? Math.Min(2, Environment.ProcessorCount) : 1;
                 store.Save(settings);
                 Check((await rpc.GetMiningInfoAsync(endpoint)).Threads == requestedThreads, "saving next-start threads does not change the active miner");

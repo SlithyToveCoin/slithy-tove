@@ -1,12 +1,14 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.46-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.47-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
 
 The terminal app remains available. Installing this GUI does not replace it, and the terminal updater does not update the GUI.
 
 ## Run the test package
 
-Use a Linux x64 desktop with an X11 session or XWayland. ARM computers and headless servers are not supported by this package. Extract the archive into a folder you own, then run:
+Use a Linux x64 desktop with an X11 session or XWayland. ARM computers and headless servers are not supported by this package. Extract the archive into a folder you own, open **slithy-install**, then choose **Install for my account**. It checks the package files and puts the program in `~/.local/opt/slithy-tove/<version>/`. Open **Slithy Tove** from your application menu afterward. You can then remove the extracted download folder.
+
+To try the app without installing it, open **slithy-desktop** from the extracted folder. If your file manager does not launch executables, you can run it from a terminal:
 
 ```bash
 chmod +x slithy-desktop Binaries/slithyd
@@ -25,7 +27,9 @@ such as ICU and OpenSSL. On Ubuntu 24.04, the relevant packages include
 installed on a full desktop. A headless server is not a desktop test
 environment. Older distributions may need a build made for their libraries.
 
-To add a launcher to your application menu, run `bash install-desktop.sh` from the extracted folder. It adds Slithy Tove and its green app icon for your Linux account. Leave that folder in place so the launcher can find it. Running the script for a newer package updates the launcher without changing your wallets.
+The older `install-desktop.sh` script remains available for a portable installation. It creates a menu shortcut pointing to the extracted folder, so leave that folder in place if you use the script. The graphical installer copies the program to its managed installation folder instead.
+
+To remove a graphical installation, close Slithy, then right-click its application-menu entry and choose **Uninstall Slithy Tove**. You can also open **slithy-uninstall** in its installed version folder. Removal leaves your wallets, settings and blockchain data in place. Older program versions and any extra files you placed beside the program are left alone.
 
 The main window and dialogs use the Slithy logo. The application menu and taskbar use the same application ID. Some desktops may ask you to unpin an older shortcut and pin the new Slithy Tove launcher after updating. If an old private preview shortcut still opens an earlier build, use the Slithy Tove entry installed by the current package instead.
 
@@ -52,6 +56,10 @@ For testing, use a separate wallet first. Avoid sending from two copies of the s
 
 Opening or restoring a wallet can show a fresh receiving address. Previously used addresses still belong to that wallet. Check that the restored wallet finds your transactions and balance.
 
+Under **Receive**, you can create another address or copy a previous one. This does not change the destination of mining that is already running. **Manage wallet > Check recovery words** checks your written words against the open wallet without creating another wallet or sending the words to a public node.
+
+Recovery-word restores scan the chain from the beginning and check receiving and change addresses through index 10,000 by default. This may take several minutes. If another wallet program used a later address, expand the restore dialog's advanced options and increase the last address index, up to 100,000. A wallet-file backup is preferable when you are unsure how that wallet generated its addresses. See [Wallet tools](WALLET-TOOLS.md) for transaction history, coin control and recovery details.
+
 ## What to test
 
 Create a wallet and record its recovery words privately. Confirm that the node catches up, then start mining. Check the total and spendable balances as rewards arrive.
@@ -72,7 +80,9 @@ The GUI starts its own bundled `slithyd` on the beta chain. It uses cookie-authe
 
 Quiet beta periods use the same old-tip allowance as the Windows app. This does not disable block validation, header checks or chain-work checks. The shared mining checks still require a usable peer connection and a synchronized local chain.
 
-If the GUI crashes and leaves its native node running, a later launch refuses to take over the occupied RPC port. It does not kill or attach to an unknown process. Check the node log and ask for help before stopping a process manually.
+If the GUI crashes and leaves its native node running, the next launch checks the saved process record, executable and local authentication. When they match this app and its data folder, it offers to stop that node safely and reopen it. Agreeing stops any mining on the old node. The app waits for the node to save its data before starting a replacement.
+
+A missing or mismatched recovery record, a different native build or an unknown process is refused. Slithy does not force-stop that process. An older build that did not write a recovery record needs a normal shutdown before you open this version. Ask for help if you cannot identify the running node.
 
 The native tools must match the reviewed Slithy beta. The GUI checks the beta genesis hash at startup. For development, `SLITHY_NODE_BIN` can point to an absolute filename for a reviewed Linux `slithyd` binary.
 
@@ -96,7 +106,7 @@ Updates install into `~/.local/opt/slithy-tove/<version>/`. The application-menu
 
 ### Upgrading from 0.1.43-beta.1 or earlier
 
-Older GUI packages cannot install an update themselves. They need one manual upgrade to gain the new updater. Obtain the newer test package, close the GUI, and extract it into a separate folder. Run its `install-desktop.sh` to update your launcher, then open **Slithy Tove** from the application menu. Your wallet files and settings stay in place. After that, published GUI updates can be installed from Settings.
+Older GUI packages cannot install an update themselves. They need one manual upgrade to gain the new updater. Obtain the newer test package, close the GUI, and extract it into a separate folder. Open **slithy-install**, then open **Slithy Tove** from the application menu after installation. Your wallet files and settings stay in place. After that, published GUI updates can be installed from Settings.
 
 For published packages, use [slithy.io/downloads.html](https://slithy.io/downloads.html) and compare the supplied checksum and signed release information. A checksum detects a different or damaged download; the release signature verifies it against the project's release key.
 
@@ -120,6 +130,7 @@ From the packaged folder:
 ./slithy-desktop --integration-test
 ./slithy-desktop --update-test
 ./slithy-desktop --ui-test --screenshots /tmp/slithy-gui-screenshots
+./slithy-desktop --installer-ui-test --screenshots /tmp/slithy-installer-screenshots
 ```
 
 The self-test checks settings and startup safeguards. The integration test starts a fresh disconnected regtest node, creates temporary wallets and exercises payments and recovery. It does not transact on the public beta. Test directories are separate from the GUI's normal beta wallets.

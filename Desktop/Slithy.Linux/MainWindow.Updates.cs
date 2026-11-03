@@ -171,7 +171,7 @@ internal sealed partial class MainWindow
     private async Task ReviewUpdate()
     {
         if (_availableUpdate == null || _installingUpdate || _closing) return;
-        if (_busy) { _updateStatus.Text = "Finish the open wallet action, then choose Review update."; return; }
+        if (_busy || _historyBusy) { _updateStatus.Text = "Finish or cancel the open wallet action, then choose Review update."; return; }
         if (_pending != null || !_paymentBlocked && _pendingAddress.Length > 0)
         { await Dialogs.Message(this, "Payment still open", "Finish or cancel the payment before updating."); return; }
         if (_preview || _regtest) return;

@@ -65,7 +65,11 @@ jobs:
           build/linux-gui/slithy-desktop --integration-test
           build/linux-gui/slithy-desktop --update-test
           build/linux-gui/slithy-desktop --ui-test --screenshots "$PWD/build/gui-screenshots"
+          build/linux-gui/slithy-desktop --installer-ui-test --screenshots "$PWD/build/installer-screenshots"
+          dotnet run --project tests/wallet-features/WalletFeatures.Tests.csproj -c Release
+          dotnet run --project tests/linux-desktop-maintenance/LinuxDesktopMaintenance.Tests.csproj -c Release -- "$PWD/build/native/linux/bin/slithyd"
           dotnet run --project tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj -c Release
+          node tests/site/explorer-links.test.cjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: matrix.target == 'windows'
         with:
@@ -106,6 +110,10 @@ jobs:
           dotnet build 'Desktop/Slithy Tove/Slithy Tove.sln' -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet run --project tests/security/Slithy.SecurityTests.csproj
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project tests/wallet-features/WalletFeatures.Tests.csproj -c Release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project tests/windows-wallet-tools/WindowsWalletToolsTests.csproj -c Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           dotnet run --project tests/terms/TermsTests.csproj
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

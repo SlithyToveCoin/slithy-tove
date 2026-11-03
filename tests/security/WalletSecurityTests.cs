@@ -112,12 +112,19 @@ sealed class FixtureRpc : HttpMessageHandler
         object result = method switch
         {
             "getnewaddress" => "fixture-address",
+            "listreceivedbyaddress" => Array.Empty<object>(),
+            "listlabels" => Array.Empty<string>(),
+            "listdescriptors" => new { descriptors = Array.Empty<object>() },
             "getwalletinfo" => new { unlocked_until = UnlockedUntil },
             "getbalances" => new { mine = new { trusted = 1, untrusted_pending = 2, immature = 9 } },
+            "validateaddress" => new { isvalid = true, scriptPubKey = "fixture-script" },
+            "listunspent" => new[] { new { txid = "fixture-input", vout = 0, amount = 1.00001234m, spendable = true, safe = true } },
             "createrawtransaction" => "fixture-unsigned",
             "fundrawtransaction" => new { hex = "fixture-funded", fee = 0.00001234m },
             "signrawtransactionwithwallet" => new { hex = "fixture-signed", complete = true },
-            "decoderawtransaction" or "gettransaction" => new { txid = "fixture-txid" },
+            "decoderawtransaction" => new { txid = "fixture-txid", vin = new[] { new { txid = "fixture-input", vout = 0 } },
+                vout = new[] { new { value = 1m, scriptPubKey = new { hex = "fixture-script", address = "fixture-destination" } } } },
+            "gettransaction" => new { txid = "fixture-txid" },
             _ => throw new Exception("Unexpected fixture RPC: " + method)
         };
         return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(JsonSerializer.Serialize(new { result, error = (object?)null, id = 1 }), Encoding.UTF8, "application/json") };

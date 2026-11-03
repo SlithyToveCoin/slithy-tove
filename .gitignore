@@ -29,6 +29,7 @@ review/
 site/updates/windows/packages/
 site/updates/linux-x64/packages/
 site/downloads/windows/*.exe
+site/downloads/linux/*.tar.gz
 
 # Private project material
 critical-backups/

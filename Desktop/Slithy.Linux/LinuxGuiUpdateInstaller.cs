@@ -32,7 +32,7 @@ internal sealed class LinuxGuiUpdateInstaller
     private readonly Func<string, long> _availableBytes;
     private static readonly HashSet<string> Executables = new(StringComparer.Ordinal)
     {
-        "slithy-desktop", "Binaries/slithyd", "install-desktop.sh", "createdump"
+        "slithy-desktop", "Binaries/slithyd", "install-desktop.sh", "createdump", "slithy-install", "slithy-uninstall"
     };
     private static readonly string[] Required =
     {
@@ -181,9 +181,7 @@ internal sealed class LinuxGuiUpdateInstaller
                 throw new InvalidOperationException("A different application owns the Slithy shortcut. It was not replaced.");
         }
         byte[] iconBytes = await File.ReadAllBytesAsync(Path.Combine(directory, "Assets/slithy-icon-256.png"), cancellationToken);
-        string entry = "[Desktop Entry]\nType=Application\nName=Slithy Tove\nGenericName=Wallet and CPU miner\n" +
-            "Comment=Linux wallet and CPU miner for the Slithy test network\n" +
-            $"Exec=\"{directory}/slithy-desktop\"\nIcon=io.slithy.Tove\nStartupWMClass=io.slithy.Tove\nStartupNotify=true\nTerminal=false\nCategories=Office;Finance;\n";
+        string entry = LinuxGuiUpdatePaths.DesktopEntry(directory);
         cancellationToken.ThrowIfCancellationRequested();
         // The caller stops polling and awaits its own node. It must not force-stop an unrelated process.
         await stopOwnedNode();

@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>slithy-desktop</AssemblyName>
     <RootNamespace>Slithy.Linux</RootNamespace>
-    <Version>0.1.46</Version>
-    <InformationalVersion>0.1.46-beta.1</InformationalVersion>
+    <Version>0.1.47</Version>
+    <InformationalVersion>0.1.47-beta.1</InformationalVersion>
     <Product>Slithy Tove Linux GUI Beta</Product>
     <Company>CS Idea Labs LLC</Company>
     <Description>Linux wallet and CPU miner for the Slithy test network.</Description>
@@ -24,6 +24,7 @@
     <Compile Include="../Slithy Tove/Slithy Tove/NodeRpcClient.cs" Link="Core/NodeRpcClient.cs" />
     <Compile Include="../Slithy Tove/Slithy Tove/ReleaseTrust.cs" Link="Core/ReleaseTrust.cs" />
     <Compile Include="../Slithy Tove/Slithy Tove/WalletRpcClient.cs" Link="Core/WalletRpcClient.cs" />
+    <Compile Include="../Slithy Tove/Slithy Tove/WalletRpcClient.*.cs" Link="Core/%(Filename)%(Extension)" />
     <Compile Include="../Slithy Tove/Slithy Tove/SlithySeedPhrase.cs" Link="Core/SlithySeedPhrase.cs" />
     <Compile Include="../Slithy Tove/Slithy Tove/TreasuryStatusService.cs" Link="Core/TreasuryStatusService.cs" />
     <Compile Include="../Slithy Tove/Slithy Tove/TreasuryStatusCalculator.cs" Link="Core/TreasuryStatusCalculator.cs" />
