@@ -53,8 +53,12 @@ function Set-Phase([string]$Name) {
 
 function Call-App($Client, [string]$Method, [object[]]$Values, [int]$DeadlineSeconds = 185) {
     $instance = $Client.PSObject.BaseObject
-    $methodInfo = $instance.GetType().GetMethod($Method, [Reflection.BindingFlags]'Public,Instance')
-    if ($null -eq $methodInfo) { throw "Installed app method is missing: $Method" }
+    # Coin selection adds an overload. Match the argument count used by this test.
+    $methods = @($instance.GetType().GetMethods([Reflection.BindingFlags]'Public,Instance') | Where-Object {
+        $_.Name -ceq $Method -and $_.GetParameters().Length -eq $Values.Count
+    })
+    if ($methods.Count -ne 1) { throw "Expected one installed app method: $Method with $($Values.Count) arguments." }
+    $methodInfo = $methods[0]
     # Reflection needs the CLR objects, not PowerShell's wrappers around records.
     $arguments = [object[]]::new($Values.Count)
     for ($i = 0; $i -lt $Values.Count; $i++) {

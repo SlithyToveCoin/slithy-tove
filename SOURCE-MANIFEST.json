@@ -12501,7 +12501,7 @@
   },
   {
     "path": "tests/installer/Test-InstalledWalletTransactions.ps1",
-    "sha256": "55943136345cc058d8b064bc67b20c3b1a96af10e13650486a6e47237deff6ee"
+    "sha256": "8699dc46f371c2934d5db0be0fa971a703560943047f5ae585d9c0b22845d7cb"
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
