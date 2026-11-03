@@ -12337,11 +12337,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "c7f781d668875090ad79919b12e19ecf02b11fc527817a2db73fdecd1a2a253a"
+    "sha256": "1660cd7991436bdfe717b2ed06af796b35d93a6b675e30d8e555b4dee2ec5260"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "d14e8ff6872e30531bf3e85984891b1349b74385d9fd328cd511a5acfb835e45"
+    "sha256": "7ed78ea97e13af58b4710ec4535998a31e5e30219c51bb5dfc792e66272e2dd9"
   },
   {
     "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.45-beta.1-manifest.json",
@@ -12360,12 +12360,28 @@
     "sha256": "bec6b67ce431d122571083e4f38221d56816225dfd608dba47ed1078f86657fc"
   },
   {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-manifest.json",
+    "sha256": "2350806bcf0f624ee7738a94615f3f8441e2ad49e6503b56749fc247b11dd0e8"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-x64.tar.gz.sha256",
+    "sha256": "f3cc96e8d6f444e78b15d63a770935fc0d5229d75f99b02a2822bae33a1df911"
+  },
+  {
+    "path": "site/downloads/source/Slithy-Tove-0.1.47-source.tar.gz.sha256",
+    "sha256": "2be917917a0e1d91e3aa119649a30faf0d224b986b9206d4a1203e95c81b7afa"
+  },
+  {
     "path": "site/downloads/windows/Slithy-Tove-0.1.45-manifest.json",
     "sha256": "397fea7d29d960a3187bb5398ca4abfd5894c23c9d73a4992c133dd9b59c7197"
   },
   {
     "path": "site/downloads/windows/Slithy-Tove-0.1.46-manifest.json",
     "sha256": "932d30a214885f3a06b94b2a79461ad51909adaaecfae1773c7cbaf779802e94"
+  },
+  {
+    "path": "site/downloads/windows/Slithy-Tove-0.1.47-manifest.json",
+    "sha256": "f93a748f53c77e11e553ad381f0c3f714e3e62961d2c7670416795e00ff0836b"
   },
   {
     "path": "site/explorer-transactions.css",
@@ -12385,7 +12401,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "0910e20850bb488db7d8e04f68c24d5abcf0d37ba4f595e09468f3cea47c9350"
+    "sha256": "d0661e20e74f5b0ffc0fd0bf207d6f377160dd095e3dcbe09d553ca5dd735ac5"
   },
   {
     "path": "site/home-full.html",
@@ -12469,7 +12485,7 @@
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
-    "sha256": "b3b06079646bee3b995b07b5c81160d5319fccf50f0f8f6be7a64ab9f4157cd5"
+    "sha256": "2350806bcf0f624ee7738a94615f3f8441e2ad49e6503b56749fc247b11dd0e8"
   },
   {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
@@ -12481,11 +12497,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "932d30a214885f3a06b94b2a79461ad51909adaaecfae1773c7cbaf779802e94"
+    "sha256": "f93a748f53c77e11e553ad381f0c3f714e3e62961d2c7670416795e00ff0836b"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "932d30a214885f3a06b94b2a79461ad51909adaaecfae1773c7cbaf779802e94"
+    "sha256": "f93a748f53c77e11e553ad381f0c3f714e3e62961d2c7670416795e00ff0836b"
   },
   {
     "path": "site/whitepaper.html",
