@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "0ee4eb98e91833ee1b20db18690e8887180a0c290318e9e7dd842f20d20eb528"
+    "sha256": "6b488fee9bed6fce3b7eab9f18d786c0dd8c05a9a985b360eb25ebfaf2611d10"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12505,7 +12505,7 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "fa01583bf4b7bc41f80564c99e76bde1e379e75c2407aec2f4922b2dad935205"
+    "sha256": "c471ae626a75ed2878838d94d81e80bbd0cc8856268491efd4421d84920ee40c"
   },
   {
     "path": "tests/linux-desktop-maintenance/LinuxDesktopMaintenance.Tests.csproj",
@@ -12521,7 +12521,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "e01c03eaf9f24e6c572dd3be7bc0a64322937421c4c749fa7eca603874904308"
+    "sha256": "2968210ee8b6f1847262ef41df809cdeea846d4c0c8ea9275a39e4b4437290aa"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",

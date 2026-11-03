@@ -16,10 +16,10 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$version = '0.1.46'
-$installerUri = 'https://slithy.io/downloads/windows/Slithy-Tove-Setup-0.1.46.exe'
-$installerHash = 'F0A4FF4289BFD4E0EC09191322703DD3F04F49D581B972C6897A8FE333CE5438'
-$assemblyHash = '617BCDED58A2E1E49FD857DE8ABFFFE23C2A839AA5CBB1151F071BBE757B3F0A'
+$version = '0.1.47'
+$installerUri = 'https://slithy.io/downloads/windows/Slithy-Tove-Setup-0.1.47.exe'
+$installerHash = '7747006815E042DD363DEC0C45A65B6EB25AB596FEA24160DA071E1391599E38'
+$assemblyHash = 'B1EAD006F062C2DC1EC8531AAECCC071D138368D40AB332B426C6BBF3B1CE210'
 $appId = '{B6358ED9-8389-4851-85D2-76236D2D1FCB}_is1'
 $uninstallRoot = 'Software\Microsoft\Windows\CurrentVersion\Uninstall'
 
@@ -214,7 +214,7 @@ function Check-Canaries($Before) {
 }
 
 try {
-    $installer = Join-Path $resultsRoot 'Slithy-Tove-Setup-0.1.46.exe'
+    $installer = Join-Path $resultsRoot 'Slithy-Tove-Setup-0.1.47.exe'
     $handler = [Net.Http.HttpClientHandler]::new()
     $handler.AllowAutoRedirect = $false
     $client = [Net.Http.HttpClient]::new($handler)

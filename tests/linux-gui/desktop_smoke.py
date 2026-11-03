@@ -23,7 +23,7 @@ import time
 import urllib.request
 import zlib
 
-ARCHIVE_SHA256 = "ae04b0874749c1e77a089cbafb3335e1b5a75e5ad7c0eec52225ad725e9f31d2"
+ARCHIVE_SHA256 = "e43194baeb14ae0f9286895ac7d6e2f419f822604a8457a35157ed3145364e38"
 TITLE = "Slithy Tove | Linux GUI beta"
 _X_ERRORS = []
 _X_ERROR_HANDLER = c.CFUNCTYPE(c.c_int, c.c_void_p, c.c_void_p)(lambda display, error: _X_ERRORS.append("X11 request failed") or 0)
