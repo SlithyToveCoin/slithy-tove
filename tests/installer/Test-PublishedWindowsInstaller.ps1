@@ -17,6 +17,8 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $version = '0.1.48'
+$sourceCommit = 'fdbd90d108053269f343e2febd6871ec8ece3e0b'
+$productVersion = "$version+$sourceCommit"
 $installerUri = 'https://slithy.io/downloads/windows/Slithy-Tove-Setup-0.1.48.exe'
 $installerHash = '2B68CED5C62ED2471675BC891E62BDBD99F7F7A49D67F156DDA0C6EEFE5C6127'
 $assemblyHash = 'F7C2133923F9E75CA650EECFB1614C7684439DDCE104E33285E558ACCA470680'
@@ -239,7 +241,9 @@ try {
     Run-Program $installer ($setupFlags + @('/TASKS=', ('/LOG=' + (Join-Path $resultsRoot 'install.log')))) 'fresh-install' 300
     Check-Registration
     $app = Join-Path $installRoot 'Slithy Tove.exe'
-    Assert-Check ((Get-Item -LiteralPath $app).VersionInfo.ProductVersion -eq $version) 'The installed application version is wrong.'
+    Assert-Check ((Get-Item -LiteralPath $app).VersionInfo.ProductVersion -eq $productVersion) 'The installed application version or source commit is wrong.'
+    $assemblyVersion = [System.Reflection.AssemblyName]::GetAssemblyName((Join-Path $installRoot 'Slithy Tove.dll')).Version
+    Assert-Check ($assemblyVersion -eq [version]"$version.0") 'The installed assembly version is wrong.'
     foreach ($relative in @('Slithy Tove.exe', 'Slithy Tove.dll', 'Binaries/slithyd.exe', 'Binaries/slithy-cli.exe', 'Binaries/slithy-wallet.exe', 'Binaries/slithy-tx.exe')) {
         Check-Signature (Join-Path $installRoot $relative) $relative
     }

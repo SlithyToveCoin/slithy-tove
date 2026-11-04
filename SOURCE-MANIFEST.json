@@ -12541,7 +12541,7 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "3c7834b5083ce5d9ecd021ec11b1f97ef05b793f393a9080d15c8d719c3da77b"
+    "sha256": "0edfa3a361fcad365298645dfc89d7847c922fd285c67d4f881df1849da39a8d"
   },
   {
     "path": "tests/linux-desktop-maintenance/LinuxDesktopMaintenance.Tests.csproj",
