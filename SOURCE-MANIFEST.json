@@ -12337,11 +12337,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "12b1bc9b7ca7f35264fc70891da9fea28587bd33a76ca9d288faa200315e5847"
+    "sha256": "38e864d1f66a1bc19b121646ccf72339e59ddc1dec2c867150fa0abba93a8b9c"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "7ed78ea97e13af58b4710ec4535998a31e5e30219c51bb5dfc792e66272e2dd9"
+    "sha256": "716b587d605a421fa4649530a7ef82719bfd0b5cd29f258e260f4c6027d30de2"
   },
   {
     "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.45-beta.1-manifest.json",
@@ -12366,6 +12366,14 @@
   {
     "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-x64.tar.gz.sha256",
     "sha256": "f3cc96e8d6f444e78b15d63a770935fc0d5229d75f99b02a2822bae33a1df911"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.48-beta.1-manifest.json",
+    "sha256": "3953bcc078aacb74b39f9e89bd0ae89392ea321a4cea5aec4ecc41f05481f438"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.48-beta.1-x64.tar.gz.sha256",
+    "sha256": "8f31360dd64bd78e933987394a747bb303e4408ef03cbf1322ccb855526be939"
   },
   {
     "path": "site/downloads/source/Slithy-Tove-0.1.47-source.tar.gz.sha256",
@@ -12401,7 +12409,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "259bf9275c9cde6698a31aacb06b341c0c6e0289fd7ac686ea3371c19a7dc9cf"
+    "sha256": "7eace7c22a80553d4c342e27455ab55ae9b85aeb6888544f1f1b3fd4d42b6930"
   },
   {
     "path": "site/home-full.html",
@@ -12485,7 +12493,7 @@
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
-    "sha256": "2350806bcf0f624ee7738a94615f3f8441e2ad49e6503b56749fc247b11dd0e8"
+    "sha256": "3953bcc078aacb74b39f9e89bd0ae89392ea321a4cea5aec4ecc41f05481f438"
   },
   {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
