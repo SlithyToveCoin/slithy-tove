@@ -281,7 +281,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Branding.cs",
-    "sha256": "a6e3465203c4e02bbb42dca1a8c5fb2bd3220e1279c7b2be21a315a5f5ec5e73"
+    "sha256": "93a17b8d0ab6667d91fc1d0e95ab4f9a926599b4b352a84515d218b6a66269f6"
   },
   {
     "path": "Desktop/Slithy.Linux/DesktopInstallService.cs",
@@ -365,7 +365,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
-    "sha256": "9857c6df859b8448ef664d6ff5f2c9c45c9dd0cbe467f69199b10ccdc99ea0b6"
+    "sha256": "fd3e749a01bb153d9c3433bc8947295b0f14b70604304b4b981ac8b7354e6298"
   },
   {
     "path": "Desktop/Slithy.Linux/UiWalletSelfTest.cs",

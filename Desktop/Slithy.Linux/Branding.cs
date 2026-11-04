@@ -8,7 +8,9 @@ internal static class Branding
 {
     // This ID also belongs to the Linux application-menu entry.
     internal const string DesktopId = "io.slithy.Tove";
-    internal const string Release = "0.1.47-beta.1";
+    internal static readonly string Release = Assembly.GetExecutingAssembly()
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0]
+        ?? throw new InvalidOperationException("The application release version is missing.");
     private static readonly Lazy<Bitmap> AppImage = new(() => LoadImage("Slithy.AppIcon"));
     private static readonly Lazy<Bitmap> MarkImage = new(() => LoadImage("Slithy.HeaderMark"));
     private static readonly Lazy<WindowIcon> IconImage = new(() =>

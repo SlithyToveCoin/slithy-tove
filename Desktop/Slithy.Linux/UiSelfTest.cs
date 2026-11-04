@@ -18,6 +18,12 @@ internal static class UiSelfTest
         Directory.CreateDirectory(output);
         try
         {
+            string release = typeof(MainWindow).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+                .InformationalVersion.Split('+')[0];
+            if (Branding.Release != release || Branding.Release.Contains('+'))
+                throw new InvalidOperationException("The displayed and update-check release must match the running assembly version without build metadata.");
+            _ = LinuxGuiVersion.Parse(Branding.Release);
+            Console.WriteLine("PASS: displayed and update-check release matches the running assembly version: " + release);
             if (Branding.ApplicationImage.PixelSize != new Avalonia.PixelSize(256, 256) || Branding.WindowIcon == null)
                 throw new InvalidOperationException("The application icon was not loaded from the embedded artwork.");
             Branding.ApplicationImage.Save(Path.Combine(output, "application-icon.png"));
@@ -60,6 +66,8 @@ internal static class UiSelfTest
                 if (!ReferenceEquals(window.Icon, Branding.WindowIcon)) throw new InvalidOperationException("Main window icon missing.");
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
+                if (!window.GetVisualDescendants().OfType<TextBlock>().Any(c => c.Text == "Linux GUI " + release))
+                    throw new InvalidOperationException("The Home header must show the running assembly release.");
                 CheckStartupOnce(window);
                 var logo = window.GetVisualDescendants().OfType<Image>().Single(c => c.Name == "SlithyHeaderLogo");
                 if (!ReferenceEquals(logo.Source, Branding.HeaderMark)) throw new InvalidOperationException("Header artwork missing.");
@@ -127,7 +135,7 @@ internal static class UiSelfTest
             store.Save(new LinuxSettings { MiningThreads = selected });
             byte[] original = File.ReadAllBytes(store.SettingsPath);
             window = new MainWindow(store: store) { Width = 760, Height = 620 };
-            // Load real settings, but do not start any node, update check or wallet session.
+            // Load preferences without starting a node or opening a wallet.
             typeof(MainWindow).GetField("_startupStarted", flags)!.SetValue(window, true);
             window.Show();
             Dispatcher.UIThread.RunJobs();
@@ -399,9 +407,11 @@ internal static class UiSelfTest
             "https://slithy.io/downloads/slithy-linux-gui-test-fixture.tar.gz", new string('a', 64),
             "UI fixture", DateTimeOffset.UtcNow, LinuxGuiUpdateService.Platform,
             LinuxGuiUpdateService.Network, LinuxGuiUpdateService.Genesis);
-        window.ApplyUpdateNotice(update with { Version = Branding.Release });
+        string installedRelease = typeof(MainWindow).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!
+            .InformationalVersion.Split('+')[0];
+        window.ApplyUpdateNotice(update with { Version = installedRelease });
         if (badge.IsVisible || notice.IsVisible)
-            throw new InvalidOperationException("The current release must not show an update notice.");
+            throw new InvalidOperationException("The running assembly's release must not offer itself as an update.");
         window.ApplyUpdateNotice(update);
         Dispatcher.UIThread.RunJobs();
         var updateCard = automatic.GetVisualAncestors().OfType<Border>().First();
