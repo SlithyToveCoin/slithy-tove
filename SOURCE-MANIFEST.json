@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "6b488fee9bed6fce3b7eab9f18d786c0dd8c05a9a985b360eb25ebfaf2611d10"
+    "sha256": "8d9543067f9e9c4ff431d7212c68383cc6067e1ba83425e218ec75067ffa0b7e"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12537,7 +12537,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "2968210ee8b6f1847262ef41df809cdeea846d4c0c8ea9275a39e4b4437290aa"
+    "sha256": "f295f1fee3bb9c01287aceb2f6c41542b0cd25e057bf51cb93dc95d2c0bc2f4f"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",
