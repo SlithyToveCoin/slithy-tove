@@ -16,13 +16,11 @@ rights and preserve wallet data on uninstall. Use disposable test profiles.
 
 ## For release maintainers
 
-You do not need Azure to install Slithy or build an unsigned installer. Maintainers
-preparing a signed release need an active Azure Artifact Signing profile and
-permission to sign. Copy the sample metadata
+Signing a release requires an active Azure Artifact Signing profile and
+permission to sign with it. Copy the sample metadata
 to the ignored `installer/azure-signing-metadata.json` and configure your own
-account, endpoint and profile. The sample endpoint is for East US. It is not a
-credential, and the sample does not grant signing access. Contributor builds
-must use their own signing identity. Never commit authentication material.
+account, endpoint and profile. The sample endpoint is for East US. Sign contributor
+builds with your own publisher identity. Never commit authentication material.
 
 ```powershell
 ./installer/prepare-signing-tools.ps1

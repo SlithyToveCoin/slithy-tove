@@ -7,9 +7,10 @@ const script = fs.readFileSync(path.join(__dirname, '../../site/explorer.js'), '
 function searchValue(query) {
   const search = { value: '', addEventListener() {} };
   vm.runInNewContext(script, {
-    document: { querySelector: () => search },
+    document: { querySelector: () => search, addEventListener() {} },
     window: { location: { search: query } },
     URLSearchParams, AbortController,
+    SlithyFeed: { read: () => new Promise(() => {}), fresh: () => true },
     fetch: () => new Promise(() => {}),
     setTimeout: () => 0, clearTimeout() {}, setInterval() {}
   });

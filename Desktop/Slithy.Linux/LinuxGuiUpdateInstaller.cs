@@ -242,6 +242,8 @@ internal sealed class LinuxGuiUpdateInstaller
 
     private async Task ExtractAsync(string archivePath, string destination, string version, CancellationToken cancellationToken)
     {
+        // A valid signature identifies the publisher. It does not make archive
+        // paths safe, so extraction still refuses links and unexpected folders.
         string prefix = "slithy-tove-linux-gui-" + version;
         var files = new HashSet<string>(StringComparer.Ordinal);
         var directories = new HashSet<string>(StringComparer.Ordinal);

@@ -163,13 +163,14 @@ PY
 
 openssl dgst -sha256 -verify "$PUBLIC_KEY" -signature "$SIGNATURE_DER" "$PAYLOAD" >/dev/null
 
-VERSION="$(python3 -c "import json; print(json.load(open('$PAYLOAD'))['version'])")"
-PACKAGE_URL="$(python3 -c "import json; print(json.load(open('$PAYLOAD'))['packageUrl'])")"
-SHA256_EXPECTED="$(python3 -c "import json; print(json.load(open('$PAYLOAD'))['sha256'].lower())")"
-RELEASE_NOTES="$(python3 -c "import json; print(json.load(open('$PAYLOAD')).get('releaseNotes',''))")"
-REQUIRED="$(python3 -c "import json; print(str(json.load(open('$PAYLOAD')).get('required', False)).lower())")"
-UPDATE_LEVEL="$(python3 -c "import json; data=json.load(open('$PAYLOAD')); level=data.get('updateLevel') or ('required' if data.get('required', False) else 'normal'); print(level)")"
-RESTART_REQUIRED="$(python3 -c "import json; print(str(json.load(open('$PAYLOAD')).get('restartRequired', True)).lower())")"
+# TMPDIR can contain quotes. Pass filenames as arguments, never as Python source.
+VERSION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$PAYLOAD")"
+PACKAGE_URL="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["packageUrl"])' "$PAYLOAD")"
+SHA256_EXPECTED="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["sha256"].lower())' "$PAYLOAD")"
+RELEASE_NOTES="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("releaseNotes",""))' "$PAYLOAD")"
+REQUIRED="$(python3 -c 'import json,sys; print(str(json.load(open(sys.argv[1])).get("required", False)).lower())' "$PAYLOAD")"
+UPDATE_LEVEL="$(python3 -c 'import json,sys; data=json.load(open(sys.argv[1])); level=data.get("updateLevel") or ("required" if data.get("required", False) else "normal"); print(level)' "$PAYLOAD")"
+RESTART_REQUIRED="$(python3 -c 'import json,sys; print(str(json.load(open(sys.argv[1])).get("restartRequired", True)).lower())' "$PAYLOAD")"
 
 echo "Slithy update feed verified."
 echo "Version: $VERSION"

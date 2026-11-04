@@ -109,7 +109,7 @@ internal partial class RestoreWordsDialog : Form
             error = "Wallet names must be between 1 and 50 characters.";
             return false;
         }
-        if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
+        if (name is "." or ".." || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0 ||
             name.Contains('/') || name.Contains('\\'))
         {
             error = "Wallet names cannot contain path or special filename characters.";

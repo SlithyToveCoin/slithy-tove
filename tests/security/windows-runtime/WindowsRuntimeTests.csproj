@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/NodeRpcClient.cs" Link="NodeRpcClient.cs" />
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/UpdateInstaller.cs" Link="UpdateInstaller.cs" />
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/SafeDirectoryCopy.cs" Link="SafeDirectoryCopy.cs" />
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/WalletBackupTools.cs" Link="WalletBackupTools.cs" />
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/WalletCompatibilityTools.cs" Link="WalletCompatibilityTools.cs" />
+  </ItemGroup>
+</Project>

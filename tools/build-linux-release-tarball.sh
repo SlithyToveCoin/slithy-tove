@@ -89,10 +89,17 @@ After install:
   slithy-node
   slithy doctor
 
-This package uses beta-20260909. It does not join the previous beta chain.
-Test coins have no live-network value. Create a new beta wallet after migration.
-For an existing installation, follow the coordinated beta migration guide.
-The web installer may still offer an earlier public version during preparation.
+This package uses beta-20260909. Updating an existing installation on that
+network preserves your wallets and balances. Use the update option in the
+terminal menu; the installer will not overwrite an existing installation.
+
+The live-network target is December 1, 2026, subject to testing. Test coins
+have no monetary value and will not convert to live coins. The test chain
+and balances will reset before the live launch.
+
+The full beta terms are included in bin/slithy-terms.txt. If those terms
+change, the terminal asks for your agreement again before wallet or mining
+actions. You can still view wallet paths or stop mining without agreeing.
 README
 
 (

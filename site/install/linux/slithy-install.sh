@@ -130,10 +130,11 @@ PY
 
 openssl dgst -sha256 -verify "$PUBLIC_KEY" -signature "$SIGNATURE_DER" "$PAYLOAD" >/dev/null
 
-VERSION="$(python3 -c "import json; print(json.load(open('$PAYLOAD'))['version'])")"
-PACKAGE_URL="$(python3 -c "import json; print(json.load(open('$PAYLOAD'))['packageUrl'])")"
-SHA256_EXPECTED="$(python3 -c "import json; print(json.load(open('$PAYLOAD'))['sha256'].lower())")"
-RELEASE_NOTES="$(python3 -c "import json; print(json.load(open('$PAYLOAD')).get('releaseNotes',''))")"
+# TMPDIR can contain quotes. Pass filenames as arguments, never as Python source.
+VERSION="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$PAYLOAD")"
+PACKAGE_URL="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["packageUrl"])' "$PAYLOAD")"
+SHA256_EXPECTED="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["sha256"].lower())' "$PAYLOAD")"
+RELEASE_NOTES="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("releaseNotes",""))' "$PAYLOAD")"
 
 echo "Release feed verified."
 echo "Version: $VERSION"

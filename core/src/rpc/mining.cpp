@@ -434,7 +434,7 @@ static int SlithyCpuThreadsAvailable()
 static RPCHelpMan startcpumining()
 {
     return RPCHelpMan{"startcpumining",
-        "Start Slithy CPU mining in this node process. This is local nonce hashing, not developer block generation.",
+        "Start Slithy CPU mining in this node process.",
         {
             {"address", RPCArg::Type::STR, RPCArg::Optional::NO, "The address to receive miner rewards."},
             {"threads", RPCArg::Type::NUM, RPCArg::Default{1}, "Number of CPU mining threads, clamped from 1 to the available logical CPU count."},
@@ -982,7 +982,7 @@ static RPCHelpMan getblocktemplate()
                     {RPCResult::Type::STR_HEX, "key", "values must be in the coinbase (keys may be ignored)"},
                 }},
                 {RPCResult::Type::NUM, "coinbasevalue", "maximum allowable input to coinbase transaction, including the generation award and transaction fees (in satoshis)"},
-                {RPCResult::Type::OBJ, "slithy_treasury", "mandatory treasury output that must be included unchanged in the coinbase transaction",
+                {RPCResult::Type::OBJ, "slithy_treasury", "required coinbase treasury payment; the output may be omitted when its value is zero",
                 {
                     {RPCResult::Type::NUM, "value", "required treasury amount in satoshis"},
                     {RPCResult::Type::STR_HEX, "scriptPubKey", "required treasury output script"},
@@ -1311,10 +1311,15 @@ static RPCHelpMan getblocktemplate()
         block.vtx[0]->vout.begin(),
         block.vtx[0]->vout.end(),
         [&](const CTxOut& output) { return output.scriptPubKey == treasury_script; });
-    CHECK_NONFATAL(treasury_output != block.vtx[0]->vout.end());
+    const CAmount treasury_value{consensusParams.treasury_script_pub_key.empty() ? 0 :
+        GetBlockSubsidy(pindexPrev->nHeight + 1, consensusParams) * consensusParams.treasury_percent / 100};
+    // Late halvings round the treasury share to zero, so the template has no
+    // treasury output. Pools still need the script and the zero amount.
+    CHECK_NONFATAL(treasury_value == 0 ||
+        (treasury_output != block.vtx[0]->vout.end() && treasury_output->nValue == treasury_value));
     UniValue treasury(UniValue::VOBJ);
-    treasury.pushKV("value", treasury_output->nValue);
-    treasury.pushKV("scriptPubKey", HexStr(treasury_output->scriptPubKey));
+    treasury.pushKV("value", treasury_value);
+    treasury.pushKV("scriptPubKey", HexStr(treasury_script));
     treasury.pushKV("percent", consensusParams.treasury_percent);
     result.pushKV("slithy_treasury", std::move(treasury));
     result.pushKV("longpollid", tip.GetHex() + ToString(nTransactionsUpdatedLast));

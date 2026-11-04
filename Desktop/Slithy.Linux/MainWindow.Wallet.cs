@@ -55,6 +55,7 @@ internal sealed partial class MainWindow
     private void RememberApprovedPayment(PreparedTransfer prepared)
     {
         // Store the approved signed transaction before attempting the network call.
+        // After a timeout, retry this transaction instead of creating a second payment.
         _paymentBlocked = true;
         decimal amount = prepared.AmountAtomic / 100_000_000m;
         SavePending(new PendingPayment(prepared, prepared.RecipientAddress, amount));

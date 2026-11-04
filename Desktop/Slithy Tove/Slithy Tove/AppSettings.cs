@@ -67,7 +67,8 @@ internal sealed class AppSettings
     internal static int ClampMiningThreads(int threads, int processors) =>
         Math.Clamp(threads, 1, Math.Max(1, processors));
 
-    // Updates are considered safe when the URL is allowed and the signing key exists.
+    // This checks setup, not trust. UpdateService verifies each signed manifest
+    // and the downloaded package hash before installation is offered.
     public bool UpdatesConfigured =>
         Uri.TryCreate(UpdateManifestUrl, UriKind.Absolute, out Uri? uri) &&
         UpdateService.IsAllowedUpdateUri(uri) &&
@@ -77,8 +78,7 @@ internal sealed class AppSettings
     [
     ];
 
-    // Reserved wallet RPC nodes stay out of the active list until RPC is
-    // intentionally exposed tested. P2P seed nodes are separate.
+    // Hosted nodes provide P2P connections. Wallet RPC stays on this computer.
     public static IReadOnlyList<string> ReservedOfficialNodeAddresses =>
     [
     ];

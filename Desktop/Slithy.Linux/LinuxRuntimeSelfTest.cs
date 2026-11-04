@@ -59,6 +59,7 @@ internal static class LinuxRuntimeSelfTest
             {
                 Check(File.GetUnixFileMode(store.SettingsPath) == LinuxSettingsStore.PrivateFile, "Private settings permissions");
                 Check(File.GetUnixFileMode(store.ConfigDirectory) == LinuxSettingsStore.PrivateDirectory, "Private directory permissions");
+                CheckLinkedPaths(root);
             }
             await using LinuxNodeHost host = new(store, settings, regtest: true);
             IReadOnlyList<string> args = host.BuildArguments(Path.Combine(root, "node.conf"));
@@ -104,5 +105,38 @@ internal static class LinuxRuntimeSelfTest
     private static void Check(bool condition, string name)
     {
         if (!condition) throw new InvalidOperationException("Runtime self-test failed: " + name);
+    }
+
+    [System.Runtime.Versioning.SupportedOSPlatform("linux")]
+    private static void CheckLinkedPaths(string root)
+    {
+        string outside = Path.Combine(root, "link-target");
+        Directory.CreateDirectory(outside);
+        File.SetUnixFileMode(outside, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute | UnixFileMode.GroupRead);
+        UnixFileMode originalMode = File.GetUnixFileMode(outside);
+        string linkedParent = Path.Combine(root, "linked-parent");
+        Directory.CreateSymbolicLink(linkedParent, outside);
+        var linkedStore = new LinuxSettingsStore(linkedParent);
+        Refuses(() => linkedStore.Load(), "Settings load refuses a linked parent even when the file is absent");
+        Refuses(() => linkedStore.Save(new()), "Settings save refuses a linked parent");
+        Refuses(() => LinuxSettingsStore.EnsurePrivateDirectory(linkedParent), "Private directory creation does not chmod a link target");
+        Check(!Directory.EnumerateFileSystemEntries(outside).Any(), "Linked target receives no settings or directories");
+        Check(File.GetUnixFileMode(outside) == originalMode, "Linked target permissions remain unchanged");
+
+        var danglingStore = new LinuxSettingsStore(Path.Combine(root, "dangling-test"));
+        LinuxSettingsStore.EnsurePrivateDirectory(danglingStore.ConfigDirectory);
+        string absent = Path.Combine(outside, "absent-settings.json");
+        File.CreateSymbolicLink(danglingStore.SettingsPath, absent);
+        Refuses(() => danglingStore.Load(), "Dangling settings links are not treated as missing settings");
+        Refuses(() => danglingStore.Save(new()), "Settings save refuses a dangling link");
+        Check(!File.Exists(absent), "Dangling link target was not created");
+
+        static void Refuses(Action action, string name)
+        {
+            bool refused = false;
+            try { action(); }
+            catch (InvalidOperationException) { refused = true; }
+            Check(refused, name);
+        }
     }
 }

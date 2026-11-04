@@ -13,17 +13,28 @@ spec.loader.exec_module(feed)
 
 class PublicationTests(unittest.TestCase):
     def snapshot(self):
-        return dict(network="slithy-testnet", treasuryAddress="dummy-address", chainHeight=120,
+        return dict(network="slithy-testnet", chain="test", bestBlockHash="a" * 64,
+                    treasuryAddress="dummy-address", chainHeight=120,
                     updatedAt=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                     currentBalance="3.00000001", unlockedBalance="1.00000001",
                     immatureBalance="2.00000000", accruedRewards="4.00000000", totalSpent="1.00000000")
 
     def test_rejects_wrong_identity_stale_and_inconsistent_balances(self):
         for changes in ({"network": "main"}, {"treasuryAddress": "different"},
+                        {"chain": "main"}, {"bestBlockHash": "invalid"},
                         {"updatedAt": "2020-01-01T00:00:00Z"}, {"currentBalance": "NaN"},
+                        {"updatedAt": "2026-01-01T00:00:00"}, {"chainHeight": True},
                         {"currentBalance": "9"}, {"totalSpent": "0.000000001"}):
             with self.subTest(changes=changes), self.assertRaises(ValueError):
                 feed.validate(self.snapshot() | changes, "slithy-testnet", "dummy-address")
+
+    def test_publication_drops_unrecognized_fields(self):
+        snapshot = self.snapshot() | {"rpcPassword": "fixture-not-a-password",
+                                      "privateConfig": {"keyFile": "/private/fixture"},
+                                      "mining": {"privateField": "fixture"}}
+        clean = feed.validate(snapshot, "slithy-testnet", "dummy-address")
+        self.assertEqual(clean, self.snapshot() | {"updatedAt": snapshot["updatedAt"]})
+        self.assertIn("privateConfig", snapshot)
 
     def test_failed_validation_preserves_previous_publication(self):
         with tempfile.TemporaryDirectory() as directory:

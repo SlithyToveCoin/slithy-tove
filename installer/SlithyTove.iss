@@ -56,7 +56,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Messages]
 WelcomeLabel1=Welcome to Slithy Tove
-WelcomeLabel2=This installs Slithy Tove for the new beta test network. Your previous wallet files stay on this computer. Old test balances do not carry over.
+WelcomeLabel2=This installs the Slithy Tove beta wallet and miner. Your existing wallet files stay on this computer. Test coins will not carry over to the live network.
 FinishedHeadingLabel=Slithy Tove is installed
 FinishedLabel=You can open the wallet now. Keep your recovery words private and never send them to support.
 

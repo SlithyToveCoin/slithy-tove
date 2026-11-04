@@ -1016,11 +1016,11 @@ public partial class Form1 : Form
                 $"Imported {walletName}. Use Wallet to open it.",
                 "Wallet imported", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-        catch (IOException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
             MessageBox.Show(this,
-                "A wallet with that name already exists. Rename the backup folder before importing.",
-                "Wallet already exists", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                ex.Message,
+                "Could not import backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 
@@ -1028,21 +1028,6 @@ public partial class Form1 : Form
     {
         Directory.CreateDirectory(_settingsStore.WalletDirectory);
         return _settingsStore.WalletDirectory;
-    }
-
-    private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
-    {
-        Directory.CreateDirectory(destinationDirectory);
-        foreach (string directory in Directory.EnumerateDirectories(sourceDirectory, "*", SearchOption.AllDirectories))
-        {
-            string relative = Path.GetRelativePath(sourceDirectory, directory);
-            Directory.CreateDirectory(Path.Combine(destinationDirectory, relative));
-        }
-        foreach (string file in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
-        {
-            string relative = Path.GetRelativePath(sourceDirectory, file);
-            File.Copy(file, Path.Combine(destinationDirectory, relative), overwrite: false);
-        }
     }
 
     private async void receiveButton_Click(object? sender, EventArgs e)

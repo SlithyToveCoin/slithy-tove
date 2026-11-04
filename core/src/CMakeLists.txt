@@ -403,8 +403,8 @@ if(BUILD_UTIL)
   install_binary_component(bitcoin-util HAS_MANPAGE)
 endif()
 
-# Maintainer utility for reproducibly mining Slithy's yespower mainnet
-# genesis header. It is not installed with end-user release packages.
+# Recreate the beta genesis header for development checks.
+# This utility is not installed with wallet packages.
 add_executable(slithy-genesis genesis-miner.cpp)
 target_link_libraries(slithy-genesis
   core_interface

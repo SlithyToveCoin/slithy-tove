@@ -265,6 +265,10 @@ def build_status():
     treasury = treasury_status(height)
     if treasury:
         payload.update(treasury)
+    # A reorg during the treasury scan must not pair new balances with the
+    # previous branch's block hash.
+    if cli("getblockhash", str(height)) != payload["bestBlockHash"]:
+        raise RuntimeError("Chain changed during status collection")
     return payload
 
 

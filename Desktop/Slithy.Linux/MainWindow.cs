@@ -528,8 +528,8 @@ internal sealed partial class MainWindow : Window
     private void LoadPending()
     {
         _pending = null; _paymentBlocked = true;
-        if (!File.Exists(PendingPath)) { _paymentBlocked = false; return; }
         LinuxSettingsStore.RejectLink(PendingPath);
+        if (!File.Exists(PendingPath)) { _paymentBlocked = false; return; }
         if (new FileInfo(PendingPath).Length > 2_000_000) throw new InvalidDataException("The pending payment record is too large. Check the transaction before sending again.");
         var pending = ReadPendingPayment(File.ReadAllText(PendingPath));
         _pending = pending.Transfer; _pendingAddress = pending.Address; _pendingAmount = pending.Amount; _paymentBlocked = false;

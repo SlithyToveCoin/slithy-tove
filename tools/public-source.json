@@ -1,10 +1,12 @@
 {
   "files": [
     ".gitignore", ".gitattributes", "README.md", "LICENSE", "NOTICE", "SECURITY.md", "CONTRIBUTING.md",
-    "docs/BUILDING.md", "docs/SOURCE-PROVENANCE.md", "docs/ARTWORK.md",
+    "docs/BUILDING.md", "docs/SOURCE-PROVENANCE.md", "docs/ARTWORK.md", "docs/NETWORK-TEST-COVERAGE.md",
     "docs/TERMS-ACCEPTANCE.md", "docs/LINUX-GUI-PREVIEW.md", "docs/RELEASE-TESTING.md", "docs/WALLET-TOOLS.md",
+    "docs/RELEASE-0.1.42.md", "docs/RELEASE-0.1.43.md", "docs/RELEASE-0.1.44.md", "docs/RELEASE-0.1.48.md", "docs/SUPPLY-SCHEDULE.md",
     "installer/SlithyTove.iss", "installer/build-installer.ps1", "installer/prepare-signing-tools.ps1",
     "installer/azure-signing-metadata.sample.json", "installer/BUILD-INSTALLER.md", "installer/README.md",
+    "installer/WEB-INSTALLER.md", "installer/build-web-installer.ps1", "installer/new-installer-manifest.ps1",
     "tools/build-core.sh", "tools/build-linux-release-tarball.sh", "tools/build-linux-gui.sh", "tools/build-linux-gui-preview.ps1",
     "tools/linux-gui-install-inventory.py",
     "tools/verify_update_manifest.py", "tools/verify-update-manifest.ps1",
@@ -13,6 +15,7 @@
   "directories": ["core", "Desktop/Slithy Tove", "Desktop/Slithy.Linux", "shared", "licenses", "tests", "services", "tools/SlithySeedTool", "installer/assets", "installer/WebInstaller", "site", ".github"],
   "excludedDirectories": ["site/internal", "site/scripts", "site/updates/windows/packages", "site/updates/linux-x64/packages", "site/downloads/windows"],
   "excludedFiles": ["site/update-treasury-status.ps1"],
-  "excludedDirectoryNames": [".git", ".vs", "bin", "obj", "__pycache__", "build", "work", "built", "sources"],
-  "excludedExtensions": [".pyc", ".log", ".tmp", ".bak", ".user", ".suo", ".exe", ".dll", ".zip", ".gz", ".pem", ".pfx", ".ppk", ".wallet"]
+  "sourceDirectoryChildren": { "core/depends": ["builders", "hosts", "packages", "patches"] },
+  "excludedDirectoryNames": [".git", ".vs", "bin", "obj", "__pycache__", "build", "work", "built", "sources", ".ssh", ".azure", ".aws", ".gnupg", "wallets", "node-data", "critical-backups", "daemon-backups", "private", "secrets", "publication", "review"],
+  "excludedExtensions": [".pyc", ".log", ".tmp", ".bak", ".user", ".suo", ".exe", ".dll", ".zip", ".gz", ".pem", ".key", ".p12", ".pfx", ".ppk", ".kdbx", ".wallet", ".sqlite", ".sqlite3", ".db", ".ldb", ".sst", ".a"]
 }

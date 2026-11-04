@@ -168,7 +168,7 @@ internal sealed partial class LinuxNodeHost : IAsyncDisposable
         string? path = _binaryPath ?? Environment.GetEnvironmentVariable("SLITHY_NODE_BIN");
         path ??= Path.Combine(AppContext.BaseDirectory, "Binaries", "slithyd");
         if (!Path.IsPathFullyQualified(path) || !File.Exists(path))
-            throw new FileNotFoundException("Slithyd was not found. Place the reviewed Linux binary in Binaries/slithyd, or set SLITHY_NODE_BIN to its absolute filename.");
+            throw new FileNotFoundException("The bundled node is missing. Extract the complete Linux GUI download again.");
         return path;
     }
 

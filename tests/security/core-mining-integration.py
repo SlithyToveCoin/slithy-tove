@@ -92,6 +92,8 @@ def main():
     parser.add_argument("--status-server", type=Path)
     parser.add_argument("--core-source", type=Path,
                         help="Matching core source with test/functional/test_framework")
+    parser.add_argument("--treasury-halvings", action="store_true",
+                        help="Also check pool templates through regtest subsidy exhaustion")
     args = parser.parse_args()
     for name in ("bin", "work", "seed_tool", "linux_menu", "status_server", "core_source"):
         value = getattr(args, name)
@@ -105,6 +107,7 @@ def main():
         nodes.append(a)
         b = Node(daemon, root / "b")
         nodes.append(b)
+        rpc_auth_test(a)
         for node in nodes:
             node.call("createwallet", "fixture")
         addresses = [n.call("getnewaddress", wallet="fixture") for n in nodes]
@@ -169,6 +172,8 @@ def main():
             recovery_test(a, args.seed_tool, root, args.bin, args.linux_menu)
         if args.status_server:
             status_test(a, args.status_server, args.bin, root, treasury_script, treasury_address)
+        if args.treasury_halvings:
+            treasury_template_halving_test(a, treasury_script)
         shutdown_threads = min(2, maximum)
         a.call("startcpumining", addresses[0], shutdown_threads)
         wait(lambda: a.call("getcpumininginfo")["threads"] == shutdown_threads)
@@ -227,6 +232,52 @@ def treasury_rejection_test(node, peer, address, script, core):
         node.call("setnetworkactive", True)
         node.call("addnode", f"127.0.0.1:{peer.p2pport}", "onetry")
         wait(lambda: node.call("getbestblockhash") == peer.call("getbestblockhash"))
+
+
+def rpc_auth_test(node):
+    for authorization in (None, "Basic " + base64.b64encode(b"fixture:incorrect").decode()):
+        connection = http.client.HTTPConnection("127.0.0.1", node.rpcport, timeout=5)
+        try:
+            headers = {"Content-Type": "application/json"}
+            if authorization is not None:
+                headers["Authorization"] = authorization
+            connection.request("POST", "/", json.dumps(dict(jsonrpc="2.0", id=1,
+                               method="startcpumining", params=["invalid", 1])), headers)
+            response = connection.getresponse()
+            response.read()
+            assert response.status == 401
+        finally:
+            connection.close()
+    assert node.call("getcpumininginfo")["active"] is False
+    if os.name != "nt":
+        assert (node.root / "regtest/.cookie").stat().st_mode & 0o077 == 0
+    assert node.cookie not in (node.root / "regtest/debug.log").read_text()
+    print("PASS: unauthenticated mining RPC is rejected and cookie credentials stay private", flush=True)
+
+
+def treasury_template_halving_test(node, script):
+    # Regtest halves every 150 blocks. Check the last positive share, its
+    # first rounded-zero share, and the end of the subsidy.
+    # Use an unowned script so this long chain does not fill the fixture wallet
+    # with thousands of rewards and database writes.
+    descriptor = node.call("getdescriptorinfo", "raw(51)")["descriptor"]
+    for next_height in (3900, 4050, 4500):
+        while node.call("getblockcount") < next_height - 1:
+            remaining = next_height - 1 - node.call("getblockcount")
+            node.call("generatetodescriptor", min(25, remaining), descriptor)
+        template = node.call("getblocktemplate", {"rules": ["segwit"]})
+        subsidy = 1_000_000_000 >> (next_height // 150)
+        assert template["height"] == next_height
+        assert template["coinbasevalue"] == subsidy
+        assert template["slithy_treasury"] == dict(value=subsidy // 10, scriptPubKey=script, percent=10)
+        block_hash = node.call("generatetodescriptor", 1, descriptor)[0]
+        coinbase = node.call("getblock", block_hash, 2)["tx"][0]
+        treasury_outputs = [out for out in coinbase["vout"] if out["scriptPubKey"]["hex"] == script]
+        if subsidy // 10:
+            assert len(treasury_outputs) == 1
+        else:
+            assert treasury_outputs == []
+        print(f"PASS: pool template at height {next_height} reports {subsidy // 10} treasury atoms", flush=True)
 
 
 def status_test(node, server, binaries, root, script, address):

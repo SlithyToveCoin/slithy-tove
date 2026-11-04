@@ -11,8 +11,9 @@ namespace Slithy_Tove;
 // Public key used to verify update manifests before the app trusts them.
 internal static class ReleaseTrust
 {
-    // Release update key. Replace this with the offline production
-    // release key before wide public distribution.
+    // Public key used to verify signed release manifests. The matching private
+    // key is not part of this project. Changing this key needs a migration plan
+    // so installed apps can still verify their next update.
     public const string UpdatePublicKeyPem =
         """
         -----BEGIN PUBLIC KEY-----

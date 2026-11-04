@@ -1,8 +1,5 @@
 using System.Text.Json;
 using NBitcoin;
-
-
-
 try
 {
     int networkIndex = Array.IndexOf(args, "--network");
@@ -44,6 +41,8 @@ static string CreateRecoveryWords()
 
 static string ReadWords(string[] args)
 {
+    // Process arguments are visible to other tools. The terminal passes words
+    // through a pipe and handles the returned private descriptors the same way.
     if (args.Contains("--words")) throw new ArgumentException("Pass recovery words through standard input, not command arguments.");
 
     string stdin = Console.In.ReadToEnd();
@@ -86,5 +85,8 @@ Usage:
   slithy-seed-tool create
   slithy-seed-tool descriptors --network testnet < protected-words-file
   slithy-seed-tool check < protected-words-file
+
+Create and descriptors print recovery words and private wallet descriptors.
+Do not copy that output into a bug report or shared log.
 """);
 }

@@ -48,12 +48,18 @@ internal static class WalletBackupTools
         string destinationDirectory,
         string walletName)
     {
+        if (string.IsNullOrWhiteSpace(walletName) || walletName is "." or ".." ||
+            walletName != Path.GetFileName(walletName) || walletName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            throw new ArgumentException("Choose a wallet name without path characters.", nameof(walletName));
+        string destination = Path.Combine(destinationDirectory, walletName);
+        SafeDirectoryCopy.RejectLinksInPath(destination);
+        if (Directory.Exists(destination) || File.Exists(destination))
+            throw new IOException("A wallet with that name already exists. It will not be overwritten.");
         if (!File.Exists(Path.Combine(sourceWalletDirectory, "wallet.dat")))
         {
             throw new FileNotFoundException("wallet.dat was not found in the backup folder.");
         }
-        Directory.CreateDirectory(destinationDirectory);
-        CopyDirectory(sourceWalletDirectory, Path.Combine(destinationDirectory, walletName));
+        SafeDirectoryCopy.Copy(sourceWalletDirectory, destination, overwrite: false);
     }
 
     public static bool RunSelfTest()
@@ -101,18 +107,4 @@ internal static class WalletBackupTools
         }
     }
 
-    private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
-    {
-        Directory.CreateDirectory(destinationDirectory);
-        foreach (string directory in Directory.EnumerateDirectories(sourceDirectory, "*", SearchOption.AllDirectories))
-        {
-            string relative = Path.GetRelativePath(sourceDirectory, directory);
-            Directory.CreateDirectory(Path.Combine(destinationDirectory, relative));
-        }
-        foreach (string file in Directory.EnumerateFiles(sourceDirectory, "*", SearchOption.AllDirectories))
-        {
-            string relative = Path.GetRelativePath(sourceDirectory, file);
-            File.Copy(file, Path.Combine(destinationDirectory, relative), overwrite: false);
-        }
-    }
 }

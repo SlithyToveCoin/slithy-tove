@@ -1,6 +1,7 @@
 """Disposable fixtures for the public status index and Linux extraction rules."""
 import importlib.util
 import io
+from contextlib import redirect_stdout
 import pathlib
 import re
 import subprocess
@@ -8,6 +9,7 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location("status", ROOT / "services/slithy-node-status-server.py")
@@ -83,6 +85,53 @@ class ExplorerTests(unittest.TestCase):
         self.assertIsNone(result['outputs'][0]['address'])
         tx['vin'] = [{'txid': 'c'*64, 'vout': 1}]
         self.assertIsNone(status.transaction_summary(tx)['inputs'][0]['address'])
+
+
+class StatusCollectionTests(unittest.TestCase):
+    def test_collector_errors_do_not_print_private_rpc_messages(self):
+        output = io.StringIO()
+        with patch.object(status, "build_status", side_effect=RuntimeError("fixture-private-diagnostic")), \
+             patch.object(status, "build_explorer", side_effect=RuntimeError("fixture-private-diagnostic")), \
+             patch.object(status.time, "sleep", side_effect=InterruptedError), redirect_stdout(output):
+            with self.assertRaises(InterruptedError):
+                status.collect_snapshots()
+        self.assertNotIn("fixture-private-diagnostic", output.getvalue())
+        self.assertIn("RuntimeError", output.getvalue())
+
+    def test_http_routes_cannot_select_rpc_methods_and_stale_data_is_rejected(self):
+        handler = object.__new__(status.Handler)
+        replies = []
+        handler.send_payload = lambda code, payload: replies.append(code)
+        now = status.time.monotonic()
+        with patch.object(status, "cli", side_effect=AssertionError("HTTP called RPC")), \
+             patch.dict(status._snapshots, {"status": (now, {"height": 2})}, clear=True):
+            for path, expected in (("/status.json?method=stop", 200), ("/rpc", 404),
+                                   ("/../slithy.conf", 404), ("/" + "a" * 2048, 414),
+                                   ("/treasury.json", 503)):
+                handler.path = path
+                handler.do_GET()
+                self.assertEqual(replies[-1], expected)
+            status._snapshots["status"] = (now - 121, {"height": 2})
+            handler.path = "/status.json"
+            handler.do_GET()
+            self.assertEqual(replies[-1], 503)
+
+    def test_reorg_during_collection_does_not_publish_mixed_chain_data(self):
+        replies = {"getblockchaininfo": {"chain": "regtest", "blocks": 2, "headers": 2,
+                                        "bestblockhash": "a" * 64},
+                   "getnetworkinfo": {"subversion": "/fixture/"}, "getpeerinfo": [],
+                   "getcpumininginfo": {"active": False}}
+        with patch.object(status, "cli_json", side_effect=lambda name: replies[name]), \
+             patch.object(status, "treasury_status", return_value={"currentBalance": "1.00000000"}), \
+             patch.object(status, "cli", return_value="b" * 64):
+            with self.assertRaisesRegex(RuntimeError, "Chain changed"):
+                status.build_status()
+        with patch.object(status, "cli_json", side_effect=lambda name: replies[name]), \
+             patch.object(status, "treasury_status", return_value={"currentBalance": "1.00000000"}), \
+             patch.object(status, "cli", return_value="a" * 64):
+            snapshot = status.build_status()
+            self.assertEqual(snapshot["bestBlockHash"], "a" * 64)
+            self.assertEqual(snapshot["currentBalance"], "1.00000000")
 
 
 class ArchiveTests(unittest.TestCase):

@@ -1,6 +1,6 @@
-Cherry-picked from a14ff91254f40cf36e0fee199e26fb11260fab49.
+Adapted from a14ff91254f40cf36e0fee199e26fb11260fab49 for libevent 2.1.13.
 
-move _WIN32_WINNT defintions before first #include
+Move _WIN32_WINNT definitions before the first #include.
 
 _WIN32_WINNT and WIN32_LEAN_AND_MEAN need to be defined
 before the windows.h is included for the first time.
@@ -67,8 +67,8 @@ index 9817f086..8537ffe8 100644
  
 +#ifdef _WIN32
 +#ifndef _WIN32_WINNT
-+/* For structs needed by GetAdaptersAddresses */
-+#define _WIN32_WINNT 0x0501
++/* For structs needed by GetAdaptersAddresses and AI_NUMERICSERV */
++#define _WIN32_WINNT 0x0600
 +#endif
 +#define WIN32_LEAN_AND_MEAN
 +#endif
@@ -76,19 +76,20 @@ index 9817f086..8537ffe8 100644
  #include "event2/event-config.h"
  #include "evconfig-private.h"
  
-@@ -31,15 +39,10 @@
+@@ -31,16 +39,10 @@
  #include <winsock2.h>
  #include <winerror.h>
  #include <ws2tcpip.h>
+-#ifndef _WIN32_WINNT
+-/* For structs needed by GetAdaptersAddresses and AI_NUMERICSERV */
+-#define _WIN32_WINNT 0x0600
+-#endif
 -#define WIN32_LEAN_AND_MEAN
  #include <windows.h>
 -#undef WIN32_LEAN_AND_MEAN
  #include <io.h>
  #include <tchar.h>
  #include <process.h>
--#undef _WIN32_WINNT
--/* For structs needed by GetAdaptersAddresses */
--#define _WIN32_WINNT 0x0501
  #include <iphlpapi.h>
  #include <netioapi.h>
  #endif

@@ -678,8 +678,8 @@ create_wallet_from_seed_json() {
     return 1
   fi
 
-  checked_external="$(descriptor_with_checksum "$external_descriptor")"
-  checked_internal="$(descriptor_with_checksum "$internal_descriptor")"
+  checked_external="$(descriptor_with_checksum "$external_descriptor")" || return 1
+  checked_internal="$(descriptor_with_checksum "$internal_descriptor")" || return 1
 
   call_cli createwallet "$name" false true "$passphrase" false true false >/dev/null
   WALLET_NAME="$name"
@@ -699,10 +699,11 @@ timestamp=0 if mode=="0" else "now",internal=branch)
 for desc,branch in [(external,False),(internal,True)]],separators=(",",":")))
 ')"
 
-  call_wallet_cli importdescriptors "$import_json" >"$SLITHY_TMP/slithy-importdescriptors.$$" 2>"$SLITHY_TMP/slithy-importdescriptors-error.$$" || {
+  call_wallet_cli importdescriptors "$import_json" >"$SLITHY_TMP/slithy-importdescriptors.$$" 2>/dev/null || {
     relock_wallet || true
-    cat "$SLITHY_TMP/slithy-importdescriptors-error.$$"
-    rm -f "$SLITHY_TMP/slithy-importdescriptors.$$" "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+    # RPC errors can repeat the private descriptor that was supplied.
+    echo "The node could not import the recovery addresses. Nothing was marked as restored." >&2
+    rm -f "$SLITHY_TMP/slithy-importdescriptors.$$"
     return 1
   }
 
@@ -712,18 +713,18 @@ import sys
 
 with open(sys.argv[1], "r", encoding="utf-8") as handle:
     result = json.load(handle)
-if not isinstance(result, list) or not all(item.get("success") is True for item in result):
-    print(json.dumps(result, indent=2))
+if not isinstance(result, list) or len(result) != 2 or not all(isinstance(item, dict) and item.get("success") is True for item in result):
+    print("The node did not confirm both recovery address branches.", file=sys.stderr)
     raise SystemExit(1)
 PY
   then
-    rm -f "$SLITHY_TMP/slithy-importdescriptors.$$" "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+    rm -f "$SLITHY_TMP/slithy-importdescriptors.$$"
     relock_wallet || true
     echo "Recovery-word descriptors were not imported."
     return 1
   fi
 
-  rm -f "$SLITHY_TMP/slithy-importdescriptors.$$" "$SLITHY_TMP/slithy-importdescriptors-error.$$"
+  rm -f "$SLITHY_TMP/slithy-importdescriptors.$$"
   relock_wallet || return 1
   mark_seed_wallet "$name"
 }
@@ -732,7 +733,12 @@ descriptor_with_checksum() {
   local descriptor="$1"
   local info checksum
 
-  info="$(call_cli getdescriptorinfo "$descriptor")"
+  # Invalid-descriptor diagnostics may contain private keys. Report the failed
+  # operation here without copying the node's error into terminal scrollback.
+  if ! info="$(call_cli getdescriptorinfo "$descriptor" 2>/dev/null)"; then
+    echo "The node could not check the recovery descriptor." >&2
+    return 1
+  fi
   checksum="$(printf '%s' "$info" | json_value checksum)"
   if [[ -z "$checksum" ]]; then
     echo "$descriptor"

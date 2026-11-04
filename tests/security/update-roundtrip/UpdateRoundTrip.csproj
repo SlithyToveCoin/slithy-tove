@@ -9,5 +9,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/UpdateInstaller.cs" Link="UpdateInstaller.cs" />
+    <Compile Include="../../../Desktop/Slithy Tove/Slithy Tove/SafeDirectoryCopy.cs" Link="SafeDirectoryCopy.cs" />
   </ItemGroup>
 </Project>

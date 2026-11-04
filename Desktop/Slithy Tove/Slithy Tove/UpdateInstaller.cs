@@ -40,6 +40,8 @@ internal static class UpdateInstaller
             throw new IOException("Invalid update executable name.");
         if (Directory.Exists(destination))
             throw new IOException("The update helper directory already exists.");
+        SafeDirectoryCopy.RejectLinksInPath(source);
+        SafeDirectoryCopy.RejectLinksInPath(destination);
         CopyRuntime(new DirectoryInfo(source), destination, true);
         return Path.Combine(destination, executableName);
     }
@@ -149,12 +151,9 @@ internal static class UpdateInstaller
             Path.GetDirectoryName(pendingPath)!,
             "update-install.log");
 
-        using (FileStream package = File.OpenRead(packagePath))
-        {
-            string actual = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(package));
-            if (!actual.Equals(pending.PackageSha256, StringComparison.OrdinalIgnoreCase))
-                throw new InvalidDataException("The downloaded package changed before installation. No application files were replaced.");
-        }
+        // Hold the verified file open until installation finishes. On Windows,
+        // read sharing prevents replacement or writes between hashing and execution.
+        using FileStream package = OpenVerifiedPackage(packagePath, pending.PackageSha256);
 
         AppendLog(logPath, $"Update helper started for {pending.PreviousVersion} to {pending.TargetVersion}.");
         File.WriteAllText(pendingPath + ".ready", pending.HealthToken);
@@ -206,6 +205,20 @@ internal static class UpdateInstaller
         {
             return null;
         }
+    }
+
+    internal static FileStream OpenVerifiedPackage(string packagePath, string expectedHash)
+    {
+        FileStream package = new(packagePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        try
+        {
+            string actual = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(package));
+            if (!actual.Equals(expectedHash, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidDataException("The downloaded package changed before installation. No application files were replaced.");
+            package.Position = 0;
+            return package;
+        }
+        catch { package.Dispose(); throw; }
     }
 
     internal static bool RunRollbackSelfTest()
@@ -398,25 +411,8 @@ internal static class UpdateInstaller
             ?? throw new InvalidDataException("The update ZIP layout is invalid.");
     }
 
-    private static void CopyDirectory(string sourceDirectory, string destinationDirectory)
-    {
-        // Copy every folder and file from source into destination, replacing old files.
-        Directory.CreateDirectory(destinationDirectory);
-        foreach (string directory in Directory.EnumerateDirectories(
-                     sourceDirectory, "*", SearchOption.AllDirectories))
-        {
-            string relative = Path.GetRelativePath(sourceDirectory, directory);
-            Directory.CreateDirectory(Path.Combine(destinationDirectory, relative));
-        }
-        foreach (string file in Directory.EnumerateFiles(
-                     sourceDirectory, "*", SearchOption.AllDirectories))
-        {
-            string relative = Path.GetRelativePath(sourceDirectory, file);
-            string destination = Path.Combine(destinationDirectory, relative);
-            Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
-            File.Copy(file, destination, overwrite: true);
-        }
-    }
+    private static void CopyDirectory(string sourceDirectory, string destinationDirectory) =>
+        SafeDirectoryCopy.Copy(sourceDirectory, destinationDirectory, overwrite: true);
 
     private static Process StartApplication(string executable, string argument)
     {

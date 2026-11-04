@@ -76,13 +76,13 @@ internal sealed class LinuxSettingsStore
 
     public LinuxSettings Load()
     {
+        RejectLink(SettingsPath);
         if (!File.Exists(SettingsPath))
         {
             LinuxSettings defaults = new();
             defaults.Validate();
             return defaults;
         }
-        RejectLink(SettingsPath);
         if (new FileInfo(SettingsPath).Length > 65536) throw new InvalidOperationException("The settings file is too large. Move it aside before starting Slithy.");
         try
         {
@@ -111,6 +111,7 @@ internal sealed class LinuxSettingsStore
                 JsonSerializer.Serialize(stream, settings, JsonOptions);
                 stream.Flush(true);
             }
+            RejectLink(SettingsPath);
             File.Move(temporary, SettingsPath, overwrite: true);
         }
         finally { if (File.Exists(temporary)) File.Delete(temporary); }
@@ -118,8 +119,17 @@ internal sealed class LinuxSettingsStore
 
     internal static void RejectLink(string path)
     {
-        if ((File.Exists(path) || Directory.Exists(path)) && (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
-            throw new InvalidOperationException("The GUI data and settings paths must not be symbolic links.");
+        // Check every component, including dangling links. A regular filename
+        // beneath a linked folder still points outside the chosen data location.
+        string full = Path.GetFullPath(path);
+        string current = Path.GetPathRoot(full)!;
+        foreach (string part in full[current.Length..].Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries))
+        {
+            current = Path.Combine(current, part);
+            FileSystemInfo info = Directory.Exists(current) ? new DirectoryInfo(current) : new FileInfo(current);
+            if (info.LinkTarget != null || (info.Exists && (info.Attributes & FileAttributes.ReparsePoint) != 0))
+                throw new InvalidOperationException("The GUI data and settings paths must not contain symbolic links.");
+        }
     }
 
     internal static void EnsurePrivateDirectory(string path)
@@ -128,8 +138,10 @@ internal sealed class LinuxSettingsStore
         if (OperatingSystem.IsLinux())
         {
             Directory.CreateDirectory(path, PrivateDirectory);
+            RejectLink(path);
             File.SetUnixFileMode(path, PrivateDirectory);
         }
         else Directory.CreateDirectory(path);
+        RejectLink(path);
     }
 }

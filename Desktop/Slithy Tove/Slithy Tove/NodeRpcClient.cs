@@ -9,6 +9,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Slithy_Tove;
 
@@ -51,7 +52,9 @@ internal sealed class NodeRpcClient : IDisposable
         peers.Connections > 0 && peers.HasKnownPeerHeight && peers.HighestKnownPeerHeight == 0 &&
         peers.PeersAtOrAboveHeight == peers.Connections;
 
-    private readonly HttpClient _httpClient = new()
+    // RPC bodies can contain wallet passwords and private descriptors. A redirect
+    // must never replay those bodies at a different address.
+    private readonly HttpClient _httpClient = new(new HttpClientHandler { AllowAutoRedirect = false })
     {
         Timeout = Timeout.InfiniteTimeSpan
     };
@@ -284,6 +287,8 @@ internal sealed class NodeRpcClient : IDisposable
 
         using CancellationTokenSource cancellation = new(timeout ?? TimeSpan.FromSeconds(30));
         using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellation.Token);
+        if ((int)response.StatusCode is >= 300 and < 400)
+            throw new HttpRequestException("The node returned a redirect. RPC requests must use the configured node address.");
         string responseJson = await response.Content.ReadAsStringAsync();
         if (string.IsNullOrWhiteSpace(responseJson))
         {
@@ -299,7 +304,7 @@ internal sealed class NodeRpcClient : IDisposable
             string message = error.TryGetProperty("message", out JsonElement value)
                 ? value.GetString() ?? "RPC operation failed."
                 : "RPC operation failed.";
-            throw new InvalidOperationException(message);
+            throw new InvalidOperationException(RedactRpcError(message, method, parameters));
         }
         response.EnsureSuccessStatusCode();
 
@@ -308,6 +313,38 @@ internal sealed class NodeRpcClient : IDisposable
 
     private async Task CallWithoutResultAsync(Uri nodeUri, string walletName, string method, object parameters)
         => _ = await CallAsync(nodeUri, walletName, method, parameters);
+
+    internal static string RedactRpcError(string message, string method, object parameters)
+    {
+        // Core normally returns short errors, but invalid arguments can be quoted
+        // back. Do not carry a password or private descriptor into a log or dialog.
+        JsonElement args = JsonSerializer.SerializeToElement(parameters);
+        List<string> secrets = [];
+        if (args.ValueKind == JsonValueKind.Array)
+        {
+            int[] positions = method switch
+            {
+                "walletpassphrase" or "encryptwallet" or "getdescriptorinfo" => [0],
+                "walletpassphrasechange" => [0, 1],
+                "createwallet" => [3],
+                _ => []
+            };
+            foreach (int index in positions)
+                if (index < args.GetArrayLength() && args[index].ValueKind == JsonValueKind.String &&
+                    args[index].GetString() is { Length: > 0 } secret) secrets.Add(secret);
+            if (method == "importdescriptors" && args.GetArrayLength() > 0 && args[0].ValueKind == JsonValueKind.Array)
+                foreach (JsonElement descriptor in args[0].EnumerateArray())
+                    if (descriptor.TryGetProperty("desc", out JsonElement expression) &&
+                        expression.GetString() is { Length: > 0 } secret) secrets.Add(secret);
+        }
+        foreach (string secret in secrets.OrderByDescending(value => value.Length))
+            message = message.Replace(secret, "[redacted]", StringComparison.Ordinal);
+        return RedactPrivateKeys(message);
+    }
+
+    internal static string RedactPrivateKeys(string message) => Regex.Replace(message,
+        @"\b[xt]prv[1-9A-HJ-NP-Za-km-z]+", "[private key redacted]", RegexOptions.CultureInvariant,
+        TimeSpan.FromMilliseconds(100));
 
     private async Task<string> FindHeaderHashAtHeightAsync(Uri nodeUri, long height)
     {

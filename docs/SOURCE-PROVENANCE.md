@@ -3,6 +3,8 @@
 The native source is a Slithy-modified Bitcoin Core v31.0 tree. Its upstream base
 is commit `6574cb40869b96b9ffc79c19dc8f4e467d60f321` from Bitcoin Core.
 
+## Initial source publication
+
 The initial source snapshot comes from the beta build tree recorded on
 September 10, 2026. Dependency recipes come from the upstream commit above.
 
@@ -27,6 +29,12 @@ byte-for-byte match with the downloads. Signing, compiler versions and embedded
 build information can change binary hashes. Changes made here after September 10
 are not part of those earlier downloads.
 
-For each new release, the release notes should identify its source commit,
-compiler versions, dependencies and package hashes. Beta and live-network
-releases use separate tags.
+## Matching a download to its source
+
+The version numbers above describe that September snapshot, not the latest
+downloads. Each current download has a source link on the downloads page.
+Check its release record for the commit and file hashes.
+
+For a new release, record the public commit, compiler versions, dependency
+inputs and package hashes together. Build from the reviewed source commit.
+Use separate release records for the beta and live networks.

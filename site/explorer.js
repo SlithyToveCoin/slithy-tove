@@ -1,6 +1,33 @@
 (function () {
   'use strict';
-  let blocks = [], busy = false;
+  const integer = n => Number.isSafeInteger(n) && n >= 0;
+  const hash = value => typeof value === 'string' && /^[a-f0-9]{64}$/i.test(value);
+  const amount = value => typeof value === 'string' && /^\d{1,15}(\.\d{1,8})?$/.test(value);
+  const address = value => value === null || (typeof value === 'string' && value.length <= 128);
+  function validate(data) {
+    if (!data || !SlithyFeed.fresh(data) || data.chain !== 'test' ||
+        !integer(data.height) || !integer(data.peerCount) || !hash(data.bestBlockHash) ||
+        !Array.isArray(data.blocks) || data.blocks.length > 25) return false;
+    // Match the snapshot's display limits before building DOM elements from it.
+    return data.blocks.every(block => block && integer(block.height) && block.height <= data.height &&
+      hash(block.hash) && integer(block.time) && integer(block.confirmations) &&
+      integer(block.transactionCount) && Number.isFinite(block.difficulty) && block.difficulty >= 0 &&
+      amount(block.minerSubsidyEstimate) && amount(block.treasurySubsidyEstimate) &&
+      Array.isArray(block.transactions) && block.transactions.length <= 8 &&
+      block.transactions.every(tx => tx && hash(tx.txid) && typeof tx.coinbase === 'boolean' &&
+        integer(tx.inputCount) && integer(tx.outputCount) &&
+        Array.isArray(tx.inputs) && tx.inputs.length <= 16 && tx.inputCount >= tx.inputs.length &&
+        Array.isArray(tx.outputs) && tx.outputs.length <= 16 && tx.outputCount >= tx.outputs.length &&
+        tx.inputs.every(input => input && (input.coinbase === true ||
+          (hash(input.txid) && integer(input.vout) && address(input.address) &&
+           (input.value === null || amount(input.value))))) &&
+        tx.outputs.every(output => output && integer(output.n) && address(output.address) &&
+          typeof output.type === 'string' && output.type.length <= 80 && amount(output.value) &&
+          typeof output.treasury === 'boolean')));
+  }
+  if (typeof module !== 'undefined' && module.exports) module.exports = { validate };
+  if (typeof document === 'undefined') return;
+  let blocks = [], busy = false, snapshot = null;
   const search = document.querySelector('[data-transaction-search]');
   const linkedTransaction = new URLSearchParams(window.location.search).get('tx');
   if (linkedTransaction && /^[a-fA-F0-9]{64}$/.test(linkedTransaction)) search.value = linkedTransaction.toLowerCase();
@@ -53,16 +80,20 @@
     }
     renderTransactions();
   }
+  function markUnavailable() {
+    set('[data-explorer-notice]', 'The explorer could not refresh. Details below may be out of date.');
+    set('[data-explorer-height]', 'Unavailable'); set('[data-explorer-peers]', 'Unknown'); set('[data-explorer-mining]', 'Unknown');
+  }
+  function expire() {
+    if (snapshot && !SlithyFeed.fresh(snapshot)) { snapshot = null; markUnavailable(); }
+  }
   async function refresh() {
     if (busy) return;
     busy = true;
-    const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 10000);
     try {
-      const response = await fetch('/data/explorer.json', {cache:'no-store',signal:controller.signal});
-      if (!response.ok) throw Error('Feed unavailable');
-      const data = await response.json(), age = Date.now() - Date.parse(data.updatedAt);
-      if (!Number.isFinite(age) || age > 120000 || age < -30000 || data.chain !== 'test') throw Error('Stale feed');
-      blocks = Array.isArray(data.blocks) ? data.blocks : [];
+      const data = await SlithyFeed.read('/data/explorer.json', 4194304);
+      if (!validate(data)) throw Error('Invalid or stale feed');
+      blocks = data.blocks;
       set('[data-explorer-height]', data.height);
       set('[data-explorer-peers]', data.peerCount);
       set('[data-explorer-mining]', data.mining?.active === true ? 'On' : data.mining?.active === false ? 'Off' : 'Unknown');
@@ -70,11 +101,14 @@
       set('[data-explorer-best]', data.bestBlockHash);
       set('[data-explorer-notice]', 'Recent confirmed transactions. Pending transactions are not included.');
       renderBlocks();
+      snapshot = data;
     } catch (_) {
-      set('[data-explorer-notice]', 'The explorer could not refresh. Details below may be out of date.');
-      set('[data-explorer-height]', 'Unavailable'); set('[data-explorer-peers]', 'Unknown'); set('[data-explorer-mining]', 'Unknown');
-    } finally {clearTimeout(timer);busy=false;}
+      snapshot = null;
+      markUnavailable();
+    } finally {busy=false;}
   }
   search.addEventListener('input', renderTransactions);
   refresh(); setInterval(refresh, 60000);
+  setInterval(expire, 5000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { expire(); refresh(); } });
 })();

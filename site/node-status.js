@@ -33,18 +33,10 @@
     async function refresh() {
       if (busy) return;
       busy = true;
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
       try {
-        const response = await fetch('/data/nodes/' + name + '.json', {
-          cache: 'no-store', signal: controller.signal, redirect: 'error'
-        });
-        if (!response.ok) throw new Error('No node report');
-        const text = await response.text();
-        if (text.length > 131072) throw new Error('Report too large');
-        snapshot = JSON.parse(text);
+        snapshot = await SlithyFeed.read('/data/nodes/' + name + '.json');
       } catch (_) { snapshot = null; }
-      finally { clearTimeout(timeout); busy = false; paint(); }
+      finally { busy = false; paint(); }
     }
     refresh();
     setInterval(refresh, 60000);

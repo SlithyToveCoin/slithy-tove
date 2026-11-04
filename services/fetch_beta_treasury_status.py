@@ -6,16 +6,27 @@ from decimal import Decimal, InvalidOperation
 import json
 import os
 from pathlib import Path
+import re
 import tempfile
 
 
 def validate(status, network, address):
+    if not isinstance(status, dict):
+        raise ValueError("Treasury snapshot must be an object")
     if status.get("network") != network or status.get("treasuryAddress") != address:
         raise ValueError("Treasury network or address does not match the operator configuration")
+    expected_chain = {"slithy-testnet": "test", "slithy-mainnet": "main", "regtest": "regtest"}.get(network)
+    if expected_chain is None or status.get("chain") != expected_chain:
+        raise ValueError("Treasury chain does not match its network")
+    block_hash = status.get("bestBlockHash")
+    if not isinstance(block_hash, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", block_hash):
+        raise ValueError("Treasury snapshot has an invalid block hash")
     height = status.get("chainHeight")
     if type(height) is not int or height < 0:
         raise ValueError("Invalid chain height")
     updated = datetime.datetime.fromisoformat(status["updatedAt"].replace("Z", "+00:00"))
+    if updated.tzinfo is None:
+        raise ValueError("Treasury timestamp must include its time zone")
     age = (datetime.datetime.now(datetime.timezone.utc) - updated).total_seconds()
     if not -120 <= age <= 120:
         raise ValueError("Treasury snapshot is stale")
@@ -30,7 +41,16 @@ def validate(status, network, address):
         amounts[key] = value
     if amounts["currentBalance"] != amounts["unlockedBalance"] + amounts["immatureBalance"]:
         raise ValueError("Treasury balances do not add up")
-    return status
+    # Publish balances and their identity, never arbitrary collector fields.
+    return {
+        "network": network,
+        "chain": expected_chain,
+        "bestBlockHash": block_hash,
+        "treasuryAddress": address,
+        "chainHeight": height,
+        "updatedAt": status["updatedAt"],
+        **{key: f"{value:.8f}" for key, value in amounts.items()},
+    }
 
 
 def publish(source, output, network, address):

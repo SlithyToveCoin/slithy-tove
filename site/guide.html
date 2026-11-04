@@ -92,7 +92,7 @@
         <h2>What is mining?</h2>
         <p>Your computer builds a candidate block from the latest accepted block and pending transactions. It changes a number in the block header and calculates a hash, then tries again. Most attempts fail.</p>
         <p>To succeed, the hash must be at or below the network's current target. Your miner sends a successful block to its peers, which check it before accepting it. Calculating those hashes uses your CPU.</p>
-        <p>A faster CPU can make more attempts, but there is no guaranteed time to a reward. Difficulty and other miners affect how often your computer finds a block.</p>
+        <p>A faster CPU can make more attempts. It still cannot guarantee a reward. Difficulty and other miners affect how often your computer finds a block.</p>
       </section>
 
       <section>
@@ -105,7 +105,7 @@
         <h2>How Slithy splits the block reward</h2>
         <p>The subsidy is the new SLTHY created with a block. Ninety percent goes to the miner and ten percent goes to the literacy treasury. Nodes reject blocks that skip the required treasury payment.</p>
         <p>When you send a transaction, your wallet includes a fee. The miner who includes that transaction receives the fee in addition to their share of the subsidy.</p>
-        <p>A new mining reward needs confirmations before you can spend it. During that wait, the wallet shows it as an immature or locked balance. It is included in your total balance, but you cannot send it yet.</p>
+        <p>A new mining reward needs confirmations before you can spend it. The wallet includes immature rewards in your total balance and shows how much is ready to send. This waiting period is separate from locking your wallet with a password.</p>
       </section>
 
       <section>

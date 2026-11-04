@@ -51,6 +51,6 @@ Mining:
 
 Wallets created through the menu ask for a password. If the password is left blank, the menu asks for confirmation before creating an unencrypted test wallet.
 
-Current note:
-
-The public build is still testnet until mainnet genesis and the production treasury wallet are final.
+This release uses the test network. Test coins have no monetary value and do
+not convert to live coins. The test chain and balances will reset before the
+live launch.

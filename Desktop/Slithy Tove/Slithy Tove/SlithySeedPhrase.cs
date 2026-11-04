@@ -83,7 +83,8 @@ internal static class SlithySeedPhrase
             if (item.TryGetProperty("error", out JsonElement error) &&
                 error.TryGetProperty("message", out JsonElement message))
             {
-                throw new InvalidOperationException(message.GetString() ?? "Recovery-word import failed.");
+                throw new InvalidOperationException(NodeRpcClient.RedactPrivateKeys(
+                    message.GetString() ?? "Recovery-word import failed."));
             }
 
             throw new InvalidOperationException("Recovery-word import failed.");
