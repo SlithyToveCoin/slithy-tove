@@ -57,6 +57,20 @@ internal sealed partial class MainWindow : Window
     private readonly Button _sendButton = Dialogs.Button("Send");
     private readonly Button _receiveButton = Dialogs.Button("Receive");
     private readonly Button _miningButton = Dialogs.Button("Start mining");
+    private readonly TextBlock _miningSettingsText = new()
+    {
+        Foreground = Dialogs.Ink, TextWrapping = TextWrapping.Wrap,
+        TextDecorations = TextDecorations.Underline, FontSize = 13
+    };
+    private readonly Button _miningSettingsLink = new()
+    {
+        Name = "MiningSettingsLink", Background = Brushes.Transparent, BorderThickness = new Thickness(0),
+        Padding = new Thickness(0, 4), MinHeight = 30, HorizontalAlignment = HorizontalAlignment.Stretch,
+        HorizontalContentAlignment = HorizontalAlignment.Left, Cursor = new Cursor(StandardCursorType.Hand)
+    };
+    private readonly TabControl _mainTabs = new() { Margin = new Thickness(8, 4, 8, 0) };
+    private TabItem _settingsTab = null!;
+    private Border _miningSettingsCard = null!;
     private readonly Slider _miningThreads = new()
     {
         Name = "MiningThreads", Minimum = 1, Maximum = Math.Max(1, Environment.ProcessorCount),
@@ -103,6 +117,10 @@ internal sealed partial class MainWindow : Window
         _walletButton.Name = "ManageWallet"; _miningButton.Name = "MiningToggle";
         _balance.Name = "WalletBalance"; _status.Name = "NetworkStatus";
         _miningStatus.Name = "MiningDetails";
+        _miningSettingsLink.Content = _miningSettingsText;
+        AutomationProperties.SetName(_miningSettingsLink, "Change CPU mining threads in Settings");
+        AutomationProperties.SetHelpText(_miningSettingsLink, "Open the CPU mining slider. Changes apply the next time you start mining.");
+        _miningSettingsLink.Click += (_, _) => ShowMiningSettings();
         _autoLock.Name = "AutoLockEnabled"; _minutes.Name = "AutoLockMinutes";
         Content = WindowChrome.Wrap(this, BuildLayout(), mainWindow: true);
         AddHandler(PointerPressedEvent, (_, _) => _lastInput = DateTimeOffset.UtcNow, RoutingStrategies.Tunnel, true);
@@ -184,11 +202,11 @@ internal sealed partial class MainWindow : Window
         var footer = new StackPanel { Spacing = 6, Margin = new Thickness(18, 6, 18, 10) };
         footer.Children.Add(_sync); footer.Children.Add(Dialogs.Text("Beta test coins have no monetary value. Balances will reset before the live launch.", 12));
         DockPanel.SetDock(footer, Dock.Bottom); root.Children.Add(footer);
-        var tabs = new TabControl { Margin = new Thickness(8, 4, 8, 0) };
-        tabs.Items.Add(Tab("Home", Home()));
-        tabs.Items.Add(Tab("Activity", BuildActivity()));
-        tabs.Items.Add(Tab("Settings", Settings()));
-        root.Children.Add(tabs); return root;
+        _mainTabs.Items.Add(Tab("Home", Home()));
+        _mainTabs.Items.Add(Tab("Activity", BuildActivity()));
+        _settingsTab = Tab("Settings", Settings());
+        _mainTabs.Items.Add(_settingsTab);
+        root.Children.Add(_mainTabs); return root;
     }
 
     private static TabItem Tab(string title, Control content) => new()
@@ -218,6 +236,7 @@ internal sealed partial class MainWindow : Window
         var mine = new StackPanel { Spacing = 10 };
         mine.Children.Add(_miningTitle); mine.Children.Add(_miningStatus); mine.Children.Add(_custom);
         mine.Children.Add(_miningAddress); mine.Children.Add(_miningButton);
+        mine.Children.Add(_miningSettingsLink);
         var mineCard = Card(null, mine); Grid.SetColumn(mineCard, 1); grid.Children.Add(mineCard); page.Children.Add(grid);
         var fund = new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 16 };
         fund.Children.Add(Dialogs.Text("10% of each block subsidy supports children's literacy", 16));
@@ -253,16 +272,30 @@ internal sealed partial class MainWindow : Window
         var maximum = Dialogs.Text($"{Environment.ProcessorCount} available", 12);
         maximum.HorizontalAlignment = HorizontalAlignment.Right;
         Grid.SetColumn(maximum, 1); limits.Children.Add(maximum);
-        var card = Card("CPU mining", _threadCount, _miningThreads, limits,
+        _miningSettingsCard = Card("CPU mining", _threadCount, _miningThreads, limits,
             Dialogs.Text("Changes apply the next time you start mining. More threads use more power and can make your computer warmer.", 13));
-        card.Name = "MiningSettings";
-        return card;
+        _miningSettingsCard.Name = "MiningSettings";
+        return _miningSettingsCard;
     }
 
     private void UpdateThreadCount()
     {
         int threads = _settings.GetMiningThreadCount();
         _threadCount.Text = $"{threads} CPU thread{(threads == 1 ? "" : "s")} selected";
+        _miningSettingsText.Text = _mining?.Active == true
+            ? $"Next start: {threads} thread{(threads == 1 ? "" : "s")}. Settings"
+            : $"{threads} CPU thread{(threads == 1 ? "" : "s")}. Change in Settings";
+    }
+
+    private void ShowMiningSettings()
+    {
+        _mainTabs.SelectedItem = _settingsTab;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _miningSettingsCard.BringIntoView();
+            _miningThreads.Focus(NavigationMethod.Tab);
+            _miningThreads.BringIntoView();
+        }, DispatcherPriority.Loaded);
     }
 
     private static Border Card(string? title, params Control[] children)
@@ -603,6 +636,8 @@ internal sealed partial class MainWindow : Window
         _miningButton.Content = canStopDuringUpdate ? "Stop mining" : _busy ? "Please wait..." : active ? "Stop mining" : "Start mining";
         _walletButton.Content = _walletName.Length == 0 ? "Open wallet" : "Manage wallet";
         _miningThreads.IsEnabled = !_busy && !_installingUpdate;
+        _miningSettingsLink.IsEnabled = _miningThreads.IsEnabled;
+        UpdateThreadCount();
         _custom.IsEnabled = !active && !_busy; _miningAddress.IsEnabled = !active && !_busy;
         UpdateHistoryControls();
     }

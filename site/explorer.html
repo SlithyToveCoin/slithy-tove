@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10231f">
   <meta name="author" content="CS Idea Labs LLC">
-  <meta name="description" content="Slithy Tove test-network block explorer.">
+  <meta name="description" content="Browse recent Slithy Tove test-network blocks and transactions. Check treasury payments and official node status.">
   <title>Slithy Tove | Explorer</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
-  <script src="/explorer.js?v=20261102-wallet-links" defer></script>
+  <script src="/explorer.js?v=20261103-copy" defer></script>
   <link rel="stylesheet" href="/explorer-transactions.css?v=20260922">
   <script src="/site.js?v=20260907-site-copy" defer></script>
   <link rel="stylesheet" href="/node-status.css?v=20260922">
@@ -18,7 +18,7 @@
 <body>
   <div class="launch-banner" role="status">
     <strong>Live network target: December 1, 2026.</strong>
-    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+    <span>Public beta testing is open. Test coins have no market value. Wallets and balances will reset before the live launch. <a href="/downloads.html">Download the beta</a>.</span>
   </div>
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -44,7 +44,7 @@
     <section class="page-hero explorer-intro">
       <p class="eyebrow">Block explorer</p>
       <h1>Recent test blocks</h1>
-      <p class="lede">Borogove, the East Coast node, provides the records below. You can check recent blocks and see how each block subsidy is split between its miner and the literacy fund.</p>
+      <p class="lede">These records come from Borogove, the East Coast node. Browse recent blocks to check miner rewards and literacy treasury payments.</p>
       <div class="testnet-warning">
         <strong>Test-network data.</strong> These blocks are for beta testing. Test coins do not carry over to the live chain.
       </div>
@@ -72,7 +72,7 @@
     <section class="notice explorer-tip">
       <p class="eyebrow">Latest block</p>
       <h2>Latest block hash</h2>
-      <p class="hash-line" data-explorer-best>Loading best block hash...</p>
+      <p class="hash-line" data-explorer-best>Loading latest block hash...</p>
     </section>
 
     <section class="explorer-table-wrap" aria-labelledby="recent-blocks-title">
@@ -81,7 +81,7 @@
           <p class="eyebrow">Recent blocks</p>
           <h2 id="recent-blocks-title">Blocks reported by Borogove</h2>
         </div>
-        <p>This page checks every minute. Mining payout amounts include any transaction fees paid in the block. The peer count and mining status above describe Borogove, not everyone mining on the network.</p>
+        <p>This page checks for updates every minute. Mining payouts include any transaction fees paid in the block. The peer count and mining status describe Borogove. They do not measure network-wide mining activity.</p>
       </div>
 
       <div class="explorer-table-scroll">
@@ -91,7 +91,7 @@
               <th>Height</th>
               <th>Time</th>
               <th>Hash</th>
-              <th>Tx</th>
+              <th>Transactions</th>
               <th>Mining payout</th>
               <th>Treasury output</th>
               <th>Difficulty</th>
@@ -107,12 +107,12 @@
     <section aria-labelledby="transactions-title">
       <h2 id="transactions-title">Transaction IDs and addresses</h2>
       <p data-explorer-notice role="status">Loading recent transactions...</p>
-      <p>Open a transaction to see its full ID, input references and output addresses. Outputs can include change returned to the paying wallet. An address does not identify a person.</p>
-      <label class="transaction-search">Find a transaction ID or address in this snapshot
+      <p>Open a transaction for its full ID and details of the inputs and outputs. An output may be change returned to the paying wallet. An address does not identify a person.</p>
+      <label class="transaction-search">Search these transactions by ID or address
         <input type="search" data-transaction-search placeholder="Paste a transaction ID or address" autocomplete="off" spellcheck="false">
       </label>
       <p data-transaction-count></p>
-      <p>This snapshot covers the latest 25 blocks, with up to 8 transactions per block and 16 inputs and outputs per transaction. Large snapshots may show fewer details. Older transactions and full address history are not indexed here.</p>
+      <p>This snapshot covers the latest 25 blocks. It includes up to 8 transactions per block and 16 inputs and outputs per transaction. Large snapshots may show fewer details. Older transactions and full address history are not indexed here.</p>
       <div data-explorer-transactions></div>
     </section>
 
@@ -142,7 +142,7 @@
           <p class="node-status-time"></p>
         </article>
       </div>
-      <p class="node-status-note">Online means a verified node report is less than two minutes old. This page checks every minute. Peer connections include links between these servers and do not count individual users.</p>
+      <p class="node-status-note">Online means a verified node report is less than two minutes old. This page checks for updates every minute. Peer connections include links between these servers, so the count does not represent individual users.</p>
       <noscript><p>Enable JavaScript to load current node status.</p></noscript>
     </section>
   </main>

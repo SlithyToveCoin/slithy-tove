@@ -22,7 +22,7 @@
       const summary = add('summary', undefined, details);
       add('span', 'Block ' + block.height + (tx.coinbase ? ' / Mining reward' : ' / Transaction'), summary);
       add('code', tx.txid, summary, 'tx-address');
-      add('p', block.confirmations + ' confirmations in this snapshot. ' + time(block.time), details);
+      add('p', block.confirmations + (block.confirmations === 1 ? ' confirmation' : ' confirmations') + ' at last update. Block time: ' + time(block.time), details);
       add('h3', 'Inputs', details);
       for (const input of tx.inputs) {
         const row = add('div', undefined, details, 'tx-entry');
@@ -41,8 +41,8 @@
       }
       if (tx.inputCount > tx.inputs.length || tx.outputCount > tx.outputs.length) add('p', 'Showing the first 16 inputs and outputs. Total: ' + tx.inputCount + ' inputs, ' + tx.outputCount + ' outputs.', details);
     }
-    if (!matches) add('p', query ? 'No match in the loaded transactions. This is not a search of the entire chain.' : 'No transaction details in this snapshot.', container);
-    set('[data-transaction-count]', matches + ' transactions shown. Search covers the loaded details below.');
+    if (!matches) add('p', query ? 'No match in the details shown here. Some transactions and addresses are outside this list.' : 'No transaction details are available yet.', container);
+    set('[data-transaction-count]', matches + (matches === 1 ? ' transaction shown.' : ' transactions shown.') + ' Search checks the transactions below.');
   }
   function renderBlocks() {
     const body = document.querySelector('[data-explorer-blocks]');
@@ -71,7 +71,7 @@
       set('[data-explorer-notice]', 'Recent confirmed transactions. Pending transactions are not included.');
       renderBlocks();
     } catch (_) {
-      set('[data-explorer-notice]', 'Fresh explorer data is unavailable. Any details below are from the last loaded snapshot.');
+      set('[data-explorer-notice]', 'The explorer could not refresh. Details below may be out of date.');
       set('[data-explorer-height]', 'Unavailable'); set('[data-explorer-peers]', 'Unknown'); set('[data-explorer-mining]', 'Unknown');
     } finally {clearTimeout(timer);busy=false;}
   }

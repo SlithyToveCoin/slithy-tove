@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10231f">
   <meta name="author" content="CS Idea Labs LLC">
-  <meta name="description" content="The Slithy Tove white paper: a transparent proof-of-work network that sets aside part of each block reward for children's literacy.">
+  <meta name="description" content="The Slithy Tove white paper explains its CPU-mined network and the 10 percent block subsidy share for children's literacy.">
   <title>White Paper | Slithy Tove</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
@@ -14,7 +14,7 @@
 <body>
   <div class="launch-banner" role="status">
     <strong>Live network target: December 1, 2026.</strong>
-    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+    <span>Public beta testing is open. Test coins have no market value. Wallets and balances will reset before the live launch. <a href="/downloads.html">Download the beta</a>.</span>
   </div>
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
@@ -38,16 +38,16 @@
   <main id="main" class="page whitepaper-page">
     <section class="page-hero whitepaper-hero">
       <p class="eyebrow">Slithy Tove white paper</p>
-      <h1>A proof-of-work network with a public reading fund.</h1>
+      <h1>How Slithy Tove works</h1>
       <p class="lede">Slithy uses CPU mining to fund children's literacy. Ten percent of each block subsidy goes to a treasury whose transactions you can inspect on the public chain.</p>
-      <p class="paper-meta">Version 1.4 &middot; Revised September 22, 2026 &middot; slithy.io</p>
+      <p class="paper-meta">Version 1.4 &middot; Revised November 3, 2026 &middot; slithy.io</p>
     </section>
 
     <section class="paper-summary" aria-label="White paper summary">
       <article>
         <span>Network</span>
         <strong>Transparent proof of work</strong>
-        <p>A Bitcoin-style ledger lets you check transactions and follow treasury payments yourself.</p>
+        <p>Transactions and treasury payments are recorded on a public ledger.</p>
       </article>
       <article>
         <span>Mining</span>
@@ -70,8 +70,8 @@
 
       <section>
         <h2>1. Why Slithy exists</h2>
-        <p>The mission is to bring the magic of reading to more kids. Slithy takes part of the reward from cryptocurrency mining and puts it toward that work. The software should make it easy to join in without buying expensive mining hardware or learning a long list of terminal commands.</p>
-        <p>The name comes from Lewis Carroll&rsquo;s poem <cite>Jabberwocky</cite>. I wanted a name connected to books because helping kids read is the reason for the project.</p>
+        <p>Slithy uses part of each mining reward to fund children&rsquo;s books and literacy programs. The software is designed for people using ordinary computers, including those who have not used a cryptocurrency wallet before.</p>
+        <p>The name comes from Lewis Carroll&rsquo;s poem <cite>Jabberwocky</cite>.</p>
       </section>
 
       <section>
@@ -82,7 +82,7 @@
           <div><strong>Usable software.</strong><p>You should not need a background in cryptocurrency to open a wallet or stop a miner.</p></div>
           <div><strong>CPU mining.</strong><p>An ordinary computer should be enough to participate.</p></div>
           <div><strong>A required literacy payment.</strong><p>A valid block must include the treasury share.</p></div>
-          <div><strong>No price promises.</strong><p>The project must not promise adoption or an exchange listing it cannot deliver.</p></div>
+          <div><strong>No price promises.</strong><p>The project makes no guarantee of market value, adoption or exchange listings.</p></div>
         </div>
       </section>
 
@@ -94,9 +94,9 @@
 
       <section>
         <h2>4. Proof of work and mining</h2>
-        <p>A miner assembles a candidate block and tries different block headers until one produces a hash below the current difficulty target. It then sends the block to its peers. Each node checks the proof of work and the block contents, including the miner reward and treasury payment, before accepting it.</p>
-        <p>Slithy uses yespower, an algorithm designed for general-purpose CPUs. You can contribute work with the processor already in your computer. I chose CPU mining because requiring a separate mining machine would shut a lot of people out before they could try the software.</p>
-        <p>Computers do not have equal mining power. Faster hardware and cheaper electricity give some miners an advantage, and pools can gather a large share of the network&rsquo;s hashrate. Specialized hardware may appear over time. The project should publish mining observations and discuss concentration risks with the community. Changing proof of work would require published software, advance notice and testing, followed by adoption from independent node operators. CS Idea Labs LLC or a future foundation cannot impose that change on nodes that reject it.</p>
+        <p>A miner assembles a candidate block and tries different block headers until one produces a hash at or below the current difficulty target. It then sends the block to its peers. Each node checks the proof of work and the block contents, including the miner reward and treasury payment, before accepting it.</p>
+        <p>Slithy uses yespower, an algorithm designed for general-purpose CPUs. You can mine with the processor already in your computer.</p>
+        <p>Faster hardware and cheaper electricity give some miners an advantage. Pools can gather a large share of the network&rsquo;s hashrate, and specialized hardware may appear over time. The project should publish mining observations and discuss concentration risks with the community. A change to proof of work would need advance notice and tested software. Independent node operators would then decide whether to adopt it. CS Idea Labs LLC or a future foundation cannot impose that change on nodes that reject it.</p>
         <p>Slithy targets an average of 2 minutes per block. Difficulty adjusts from observed block timing as miners join or leave. Individual blocks can take much longer or arrive close together, and a laptop may go days without finding one. Official project nodes are intended to relay and verify blocks without mining.</p>
       </section>
 
@@ -105,28 +105,28 @@
         <p>The initial block subsidy is 10 SLTHY. Each reward block creates 9 SLTHY for its miner and 1 SLTHY for the literacy treasury. Any transaction fees in the block go to the miner as well.</p>
         <p>The subsidy halves every 1,051,200 blocks, roughly four years at the target block interval. It starts at 10 SLTHY, then falls to 5 SLTHY and later 2.5 SLTHY. The 90/10 split applies after each halving. For example, a 5 SLTHY subsidy pays 4.5 SLTHY to the miner and 0.5 SLTHY to the treasury.</p>
         <p>The planned supply is about 21.024 million SLTHY. With reward rounding and the zero-reward genesis block accounted for, the schedule permits up to 21,023,989.863344 SLTHY from mining. The treasury share is part of that total. Transaction fees do not create additional coins.</p>
-        <p>Transaction fees come from people sending transactions. The miner that includes those transactions receives the fees, which provide an incentive to secure the chain as new coin rewards shrink. Fees are separate from the subsidy and its treasury split.</p>
+        <p>Transaction fees are paid by senders to the miner that includes their transactions. They provide a mining incentive as the subsidy shrinks. The treasury split does not apply to fees.</p>
         <p>Nodes reject blocks that omit the required treasury output or pay the wrong amount. A miner cannot choose to skip that payment.</p>
       </section>
 
       <section>
         <h2>6. Treasury use</h2>
-        <p>The treasury is for children&rsquo;s books, reading materials and literacy programs, including costs directly tied to that work. The treasury page shows its address and balance. Spending reports are planned for the live fund, with a note explaining what each grant paid for.</p>
-        <p>At launch, CS Idea Labs LLC will control one encrypted offline wallet. Community control is a future goal. The plan is to publish each payment with its recipient, amount and literacy purpose.</p>
-        <p>Community voting on proposed donations is planned for later, after the network has regular activity and a community taking part in it. Eligible proposals must support the literacy mission. There is no binding voting system today. Before voting begins, the project must publish who can propose and vote, the required turnout and approval thresholds, and rules for conflicts of interest. It must also explain the review period, how approved payments get made, and how disputed results get resolved.</p>
+        <p>The treasury is for children&rsquo;s books and literacy programs. Reading materials and costs directly tied to that work are eligible. The treasury page shows its address and balance. Spending reports are planned for the live fund, with a note explaining what each grant paid for.</p>
+        <p>At launch, CS Idea Labs LLC will control one encrypted offline treasury wallet. Community control is a future goal. The plan is to publish each payment amount and recipient, with an explanation of the literacy work it supports.</p>
+        <p>Community voting on proposed donations is planned for later, once the network has regular activity. Proposals must support the literacy mission. There is no binding voting system today. Before voting begins, the project must publish who can submit proposals and vote, along with the turnout and approval thresholds. The rules must cover conflicts of interest and allow time to review proposals. They must also explain how approved payments are made and how disputes are resolved.</p>
         <p>The website displays treasury records from the chain. It does not hold the keys needed to spend the fund.</p>
       </section>
 
       <section>
         <h2>7. Wallet and user experience</h2>
-        <p>The desktop app combines a wallet with a local miner. You can create or open a wallet, make a backup and check your balance from the same program. Mining controls apply to your computer. The app also shows network and treasury information.</p>
-        <p>The app checks for updates because this software will need fixes as testing continues. It checks release signatures before accepting update packages and shows progress during installation.</p>
+        <p>The desktop app includes a wallet and local miner. It has controls for wallet backups and sending coins, along with your balance and mining status. Mining controls apply to your computer. Network and treasury information is also shown in the app.</p>
+        <p>The app checks for updates and verifies release signatures before accepting update packages. It shows progress during installation.</p>
       </section>
 
       <section>
         <h2>8. How nodes connect</h2>
         <p>Official seed nodes help new nodes find the network. Community nodes give them additional peers and reduce dependence on project servers. Every full node still checks the blocks it receives.</p>
-        <p>A public peer connection lets nodes exchange blocks and transactions. Wallet RPC is a separate control interface and should stay restricted unless an operator deliberately provides a public service with appropriate limits.</p>
+        <p>A public peer connection lets nodes exchange blocks and transactions. Wallet RPC is a separate interface for controlling a wallet. Access should stay restricted unless an operator deliberately provides a public service with appropriate limits.</p>
       </section>
 
       <section>
@@ -137,18 +137,18 @@
 
       <section>
         <h2>10. CS Idea Labs LLC and plans for a foundation</h2>
-        <p>CS Idea Labs LLC operates slithy.io and publishes the official software during development. It also manages project servers and contracts, and supports public treasury reporting. Running those services does not give the company ownership of the blockchain. You control your wallet, and independent miners and node operators choose the software they run.</p>
-        <p>Once a community is established, the project plans to consider a separate Slithy Tove foundation. None exists today, and no nonprofit or tax-exempt status is claimed. Its legal form, location, board and relationship with CS Idea Labs LLC would need community discussion and legal and tax advice.</p>
-        <p>A foundation could handle grant applications and community votes, then publish receipts and spending reports. It could also arrange independent audits, maintain conflict-of-interest rules and look after shared project resources. As qualified independent people join, treasury custody should gain documented controls for multiple approvers, separated keys and spending limits.</p>
-        <p>A foundation would have no claim to your coins or authority to force a software change on independent nodes. Before any transition, the project should publish its proposed charter, board selection and custody arrangements. The plan must also cover conflicts of interest, financial reporting and the division of responsibilities with CS Idea Labs LLC.</p>
+        <p>CS Idea Labs LLC operates slithy.io and publishes the official software during development. It manages project servers and contracts and supports public treasury reporting. The company does not own the blockchain. Wallet owners control their keys, and independent miners and node operators choose the software they run.</p>
+        <p>A separate Slithy Tove foundation may be considered once a community is established. None exists today, and no nonprofit or tax-exempt status is claimed. Its legal form and location would need community discussion and legal and tax advice. The same applies to its board and relationship with CS Idea Labs LLC.</p>
+        <p>A foundation could manage grant applications and community votes, then publish receipts and spending reports. It could arrange independent audits and oversee shared project resources under published conflict-of-interest rules. As qualified independent people join, treasury custody should require multiple approvers with separated keys and documented spending limits.</p>
+        <p>A foundation would have no claim to your coins or authority to force a software change on independent nodes. Before a transition, the project should publish a proposed charter explaining board selection and treasury custody. The plan must include conflict-of-interest rules and financial reporting requirements, and define the responsibilities of the foundation and CS Idea Labs LLC.</p>
       </section>
 
       <section>
         <h2>11. Roadmap</h2>
-        <p>The live network target is December 1, 2026. The date can move if testing finds problems that need more time. Public beta testing covers the Windows wallet and local miner, Linux tools and signed updates. The test chain and balances will reset before the live launch.</p>
+        <p>The live network target is December 1, 2026. Testing may delay that date. Public beta testing covers the Windows wallet and local miner, along with Linux tools and signed updates. The test chain and balances will reset before the live launch.</p>
         <p>Before launch, testing covers wallet recovery and the required treasury payment. The final releases must agree on the same starting block. Downloads and network details will be published before mining opens.</p>
         <p>After launch, work will continue on reliable node connections and signed releases for Windows and Linux. Treasury reporting should follow the public chain, with grant notes added as funds are spent on literacy work.</p>
-        <p>The current reward schedule halves until rounding brings the subsidy to zero. There is no continuing tail subsidy in the code. Community voting rules and the move beyond one treasury wallet also need public discussion, along with mining performance and the conditions for a future foundation. Those decisions must be published before they become final policy. This roadmap makes no promise about price, adoption or exchange listings.</p>
+        <p>The current reward schedule halves until rounding brings the subsidy to zero. There is no continuing tail subsidy in the code. Community voting rules and changes to treasury custody need public discussion. Mining performance and the conditions for a future foundation also remain open questions. Decisions must be published before they become final policy. This roadmap makes no promise about price, adoption or exchange listings.</p>
       </section>
 
       <section>
@@ -160,7 +160,7 @@
       <section>
         <h2>13. Influences</h2>
         <p>Bitcoin&rsquo;s proof-of-work ledger is the basis for Slithy&rsquo;s network model. Litecoin and Dogecoin offer examples of payment networks built on that approach. Ravencoin is another Bitcoin-based project with a stated purpose. The treasury arrangements in Decred, Dash and Zcash offer different examples of using block rewards to fund work.</p>
-        <p>For Slithy, the funded work is children&rsquo;s literacy. The references below informed the design; they do not imply those projects endorse Slithy.</p>
+        <p>The references below informed the design. They do not imply those projects endorse Slithy.</p>
       </section>
 
       <section class="paper-references">

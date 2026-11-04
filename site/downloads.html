@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10231f">
   <meta name="author" content="CS Idea Labs LLC">
-  <meta name="description" content="Download Slithy Tove test-network wallet and Linux tools.">
+  <meta name="description" content="Download the Slithy Tove test wallet and miner for Windows or Linux. Check release details and find instructions for updating an older beta.">
   <title>Slithy Tove | Test downloads</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
@@ -14,7 +14,7 @@
 <body>
   <div class="launch-banner" role="status">
     <strong>Live network target: December 1, 2026.</strong>
-    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+    <span>Public beta testing is open. Test coins have no market value. Wallets and balances will reset before the live launch. <a href="/downloads.html">Download the beta</a>.</span>
   </div>
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -50,13 +50,13 @@
       <article class="download-card primary-download">
         <p class="eyebrow">Windows</p>
         <h2>Slithy Tove wallet and miner</h2>
-        <p>Create a wallet and start mining from the same app. It runs a node on your computer and checks for software updates when you open it.</p>
+        <p>Create a wallet and start mining in one app. Slithy also runs a node on your computer.</p>
         <a class="button" href="/downloads/windows/Slithy-Tove-Web-Setup.exe">Download Windows installer</a>
-        <p class="download-meta">Setup downloads the current beta, so you need an internet connection during installation. The app checks for updates when you open it.</p>
+        <p class="download-meta">The installer downloads the current beta, so you'll need an internet connection during setup. The app checks for updates when you open it.</p>
         <p><a href="/downloads/windows/Slithy-Tove-Setup-0.1.47.exe">Download the full offline installer, version 0.1.47</a></p>
-        <p class="download-meta">Mining starts with one CPU thread. Choose a different count in Settings &gt; Mining and Slithy remembers it. Updates leave your saved count in place.</p>
-        <p class="download-meta">The app checks again while it runs. An update badge beside the version lets you review a new release when you are ready.</p>
-        <p class="download-meta">This update adds searchable transaction history with addresses, new receiving addresses and recovery-word checks. Advanced sending lets you choose inputs or combine small rewards. Mining status and download progress have more room.</p>
+        <p class="download-meta">Mining starts with one CPU thread. You can change the count in Settings &gt; Mining. Your setting stays saved through updates.</p>
+        <p class="download-meta">The app also checks for updates while it's running. A badge beside the version number tells you when a release is ready to review.</p>
+        <p class="download-meta">This release adds search to transaction history and shows transaction addresses. You can create extra receiving addresses and check your recovery words. Advanced sending lets you choose inputs or combine small rewards. The mining status and download progress displays have more room.</p>
         <p class="download-meta"><a href="/downloads/windows/Slithy-Tove-0.1.47-manifest.json">Signed release information</a> | <a href="/downloads/source/Slithy-Tove-0.1.47-source.tar.gz">Source for this build</a></p>
         <p class="download-meta">The installers and Slithy programs are signed by CS Idea Labs LLC. Windows may still show a SmartScreen warning for a new download. Setup verifies the release signature, file hash and publisher before installing. Mining needs an internet connection, including after an offline installation.<br><a href="/downloads/SHA256SUMS.txt">Installer and package SHA256 checksums</a></p>
       </article>
@@ -64,11 +64,11 @@
       <article class="download-card">
         <p class="eyebrow">Linux desktop beta</p>
         <h2>Linux wallet and miner</h2>
-        <p>A windowed app with the same wallet and mining controls as the Windows version. It runs its own local node. You can use the terminal app instead if you prefer.</p>
+        <p>The desktop app has the same wallet and mining controls as the Windows version and runs its own local node. There's also a terminal app below if you prefer that.</p>
         <a class="button" href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-x64.tar.gz">Download Linux desktop app</a>
         <p class="download-meta">Version 0.1.47-beta.1 for Linux x64 desktops. Ubuntu 24.04 is the reference platform; other distributions and desktop environments need testing. Extract the archive into a folder you own, open <code>slithy-install</code>, then choose <strong>Install for my account</strong>. No sudo or separate .NET installation is needed.</p>
-        <p class="download-meta">Mining starts with one CPU thread when no count has been saved. Choose your count under Settings &gt; CPU mining and Slithy remembers it. If you have 0.1.43-beta.1 or earlier, close it and install this package once to get the updater. Your wallet data stays in place. The GUI uses a separate wallet folder from the terminal app. <a href="/guide.html#linux-desktop">Read the Linux desktop instructions</a>.</p>
-        <p class="download-meta">Includes the new wallet tools, a graphical installer and recovery for a local node left running after a crash. <a href="/guide.html#wallet-tools">Read about the wallet tools</a>.</p>
+        <p class="download-meta">Mining starts with one CPU thread unless you've saved a different count under Settings &gt; CPU mining. If you have 0.1.43-beta.1 or earlier, close it and install this package once to get the updater. Your wallet data stays in place. The desktop app uses a separate wallet folder from the terminal app. <a href="/guide.html#linux-desktop">Read the Linux desktop instructions</a>.</p>
+        <p class="download-meta">Includes the new wallet tools and a graphical installer. It can also recover when a crash leaves its local node running. <a href="/guide.html#wallet-tools">Read about the wallet tools</a>.</p>
         <p class="download-meta"><a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-x64.tar.gz.sha256">SHA256 checksum</a> | <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-manifest.json">Signed release information</a> | <a href="/downloads/source/Slithy-Tove-0.1.47-source.tar.gz">Source for this build</a></p>
       </article>
 
@@ -77,7 +77,7 @@
         <h2>Linux menu tool</h2>
         <p>The install script downloads the software and checks the release signature and file hash. After installation, use the terminal menu to open your wallet or watch your miner run.</p>
         <a class="button" href="/install/linux/slithy-install.sh">Download Linux install script</a>
-        <p class="download-meta">Installs Linux version 0.1.50-testnet. On 0.1.47 through 0.1.49? Open Updates in the menu and choose Install update. The new menu checks in the background and shows a notice while you watch mining. For an older beta installation, read the migration steps below first.<br>Install script SHA256: <code>0E14142211A40CF9ED8E7D3B433F4FBFD41CB6B45EFAF9087142984218E27D4D</code></p>
+        <p class="download-meta">Installs Linux version 0.1.50-testnet. If you have 0.1.47 through 0.1.49, open Updates in the menu and choose Install update. The new menu checks for updates in the background and shows a notice on the mining screen. For an older beta installation, read the migration steps below first.<br>Install script SHA256: <code>0E14142211A40CF9ED8E7D3B433F4FBFD41CB6B45EFAF9087142984218E27D4D</code></p>
       </article>
 
       <article class="download-card">
@@ -93,7 +93,7 @@
         <h2>Report a problem</h2>
         <p>Tell me what you tried and what happened. Include your Slithy version so I can check the same build. Never send wallet passwords, recovery words, or private keys.</p>
         <a class="button secondary-button" href="/bug-report.html">Report a bug</a>
-        <p class="download-meta">Thank you for helping test and develop Slithy.</p>
+        <p class="download-meta">Thanks for helping test Slithy.</p>
       </article>
     </section>
 
@@ -103,10 +103,10 @@
     </section>
 
     <section class="notice" id="beta-migration">
-      <h2>Moving to the refreshed beta</h2>
+      <h2>Updating from the old test chain</h2>
       <p>The test chain restarted on September 9, 2026. Old test coins do not carry over. Your previous wallet files stay on your computer. The live launch is planned for December 1, 2026, and test balances will reset again before that launch.</p>
       <p><strong>Windows:</strong> use Check for updates in the app. If version 0.1.35 closes without installing, or version 0.1.37 offers the same update again, exit Slithy through the notification-area menu and run the installer above once. It replaces the app without deleting your wallet files. Create a new beta wallet if prompted. A wallet created with the replacement-beta build, such as version 0.1.36, can still be used.</p>
-      <p><strong>Linux:</strong> this chain change needs a separate installation. The old update feed does not silently replace your existing network. Download the new install script above. For a standard installation using the <code>slithy-node</code> service, stop the old service before installing:</p>
+      <p><strong>Linux:</strong> the new test chain needs a separate installation. The old updater won't switch networks for you. Download the new install script above. For a standard installation using the <code>slithy-node</code> service, stop the old service before installing:</p>
       <pre style="overflow-x:auto;padding:1rem"><code>sudo systemctl stop slithy-node
 sudo systemctl show slithy-node -p MainPID -p ControlPID</code></pre>
       <p>Both process IDs must be 0 before continuing. Save a copy of your existing configuration and service file in a private folder. Leave old chain and wallet folders in place. Then run:</p>
@@ -116,8 +116,8 @@ sudo systemctl start slithy-beta-20260909
 slithy</code></pre>
       <p>Run each command separately and stop if it reports an error. Log out and back in if the menu cannot read its settings. The new menu asks you to create a beta wallet. Updates within this beta then use its own signed feed.</p>
       <p>If your installation uses different paths or a different service name, ask in <a href="/community.html">the community</a> before changing them. Do not delete your wallet folders to fix a connection problem.</p>
-      <p>If migration fails, stop the replacement service before restoring the old launcher links and service configuration. The old beta files remain available. That chain cannot mine with the refreshed public beta.</p>
-      <p>Thank you for helping test Slithy and finding problems before launch.</p>
+      <p>If the move fails, stop the new service before restoring the old launcher links and service configuration. The old beta files remain available, but that chain cannot mine with the current public beta.</p>
+      <p>Thanks for helping find problems before launch.</p>
     </section>
 
     <section class="notice">

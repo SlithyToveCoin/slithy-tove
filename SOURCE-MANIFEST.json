@@ -353,7 +353,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.cs",
-    "sha256": "b061efab6e9d7fc8e193409bd5507ccc84e5ee548e720918b9334b37958db300"
+    "sha256": "d9f81ac37550ca7bc4ab9fdf4f0df526800c59fbf55839451ec512a51b8e2442"
   },
   {
     "path": "Desktop/Slithy.Linux/Program.cs",
@@ -361,11 +361,11 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
-    "sha256": "63455e52b7d99e2eaba15cb0b5d2fd5a68321c9b7efc40bdf1b2689a62f941c4"
+    "sha256": "27282bca9d24e01bc9547ab309a47bf4dcfcefb0be5986a839d42f3ca5732590"
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
-    "sha256": "da262f9efc2cd92df5635a396bf283e92b1ae1f183b204d9565fa772e7d2054c"
+    "sha256": "9857c6df859b8448ef664d6ff5f2c9c45c9dd0cbe467f69199b10ccdc99ea0b6"
   },
   {
     "path": "Desktop/Slithy.Linux/UiWalletSelfTest.cs",
@@ -12305,19 +12305,19 @@
   },
   {
     "path": "site/about.html",
-    "sha256": "eb1bcea80a4cc6d9d92cdff8f2511261862a6a883948ad820e5b8d98f3ba27b0"
+    "sha256": "13170fcc9fd033083a7ea8610a165e56a20e6dc81ae25b0f0e8c39846b9c4677"
   },
   {
     "path": "site/beta-testing.html",
-    "sha256": "b2c30b1bb6680d3167061df452ba772024769466204b4355d57f0055044bdd9f"
+    "sha256": "516528feeb71caf2be9f341e17fd578e54a0ccb29d394d583c6c1ccb96f70af4"
   },
   {
     "path": "site/bug-report.html",
-    "sha256": "36c1dc49327c3dca5577ae8da9e304f246323ef5fcb17ff7fd84362bada1a24a"
+    "sha256": "4886c34fe19b23ebea685d15b5988ba296ace5aaa804e3f94447b48997ad6b6b"
   },
   {
     "path": "site/community.html",
-    "sha256": "12759e4e175efea6a0e91658953910f3d147b3ecb2fa5a89b725f070afc6a725"
+    "sha256": "56e814c9f02e8d6e831d205ce9c0d2457c7525d14088506e62fe3c41bfd9fefb"
   },
   {
     "path": "site/data/explorer.json",
@@ -12333,11 +12333,11 @@
   },
   {
     "path": "site/download.html",
-    "sha256": "b3b2c7d352e11fce519636e7f0f6601b49d9272d33744052db522cf3c5dcb36a"
+    "sha256": "5334e8c3a56ba864b1f6efb530377627c78d503084e527dc27b9cc226ef44cec"
   },
   {
     "path": "site/downloads.html",
-    "sha256": "1660cd7991436bdfe717b2ed06af796b35d93a6b675e30d8e555b4dee2ec5260"
+    "sha256": "12b1bc9b7ca7f35264fc70891da9fea28587bd33a76ca9d288faa200315e5847"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12389,11 +12389,11 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "764fc67126c4fe93de2ea367c86232f4bf3da3a626ec65b5d0d694b60a90f214"
+    "sha256": "b80108008e2d5512ec0a7bc6efc8ec73879fc9d761d7b9e655ec1ab5f742646c"
   },
   {
     "path": "site/explorer.js",
-    "sha256": "5b86505ca19936463b9b9f9dc86f56028d7268cc5ea5bd83ce7b6284de6b5b9c"
+    "sha256": "eae1ba3f1ec0246593024e292b5f01417c0ee4ee997d95c80d8970da3bacb199"
   },
   {
     "path": "site/favicon.svg",
@@ -12401,15 +12401,15 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "d0661e20e74f5b0ffc0fd0bf207d6f377160dd095e3dcbe09d553ca5dd735ac5"
+    "sha256": "259bf9275c9cde6698a31aacb06b341c0c6e0289fd7ac686ea3371c19a7dc9cf"
   },
   {
     "path": "site/home-full.html",
-    "sha256": "9ec01e5dd933743de3f01751141dc403f6729c9371f78b3762bc8fa0050e7a14"
+    "sha256": "5c4d20085a788f19cb4a47f601cbc8e2ddc957fd371c0ffee366482c7e690ca5"
   },
   {
     "path": "site/index.html",
-    "sha256": "a32c4902a0e601d8bebafdfaa25a03b7fc22b7fe4ac3f3040e61cd0914d2b9f3"
+    "sha256": "5b90c94407a6e16b89d114b8aff17dc2506232fc77a94149dbcba25d6f5ac758"
   },
   {
     "path": "site/install/linux/README.txt",
@@ -12453,11 +12453,11 @@
   },
   {
     "path": "site/nodes.html",
-    "sha256": "1cd9dd520c78a65a69834917010a4f5ff440c3e9dd0fcdcf6e448b30a0093f92"
+    "sha256": "5f2c811e4c4de97286ad81431574f7e902715a7d61f7faaf71f8a58d2eb20a99"
   },
   {
     "path": "site/privacy.html",
-    "sha256": "3d3f71f826fc0b501699152b3417ef41ebb4cd1fe4b79f3137979d805053ad0c"
+    "sha256": "a7e52c2f80f5f5a4df32ec95a1dc706e8d973586a01f6ae77c56f5bff02477d4"
   },
   {
     "path": "site/robots.txt",
@@ -12473,15 +12473,15 @@
   },
   {
     "path": "site/terms.html",
-    "sha256": "c3a820248e83990123f8c7a7917f34af8f1724f1e68895387795ec4f94fc6548"
+    "sha256": "5272fbe4075aa2f2ea8763d6035520868dbb40a79a1d174789c794e11833f904"
   },
   {
     "path": "site/treasury.html",
-    "sha256": "637fc26a92f9d07037db22e8c9e4059ae119d8b142b7d0efbac61cf2fa5943b3"
+    "sha256": "382b43da95b80f59f4f2f877eeb643b2d96705d917a5923adfbf63b10cd3ca97"
   },
   {
     "path": "site/treasury.js",
-    "sha256": "a23f1009275abd752e6a765a7bb689a0f31e6941ae0764224bfa2afc53e28aaa"
+    "sha256": "769a69a7fdca03c14c4898095def16f25f271d1cbe9e2a5587ade7cf1a99baac"
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
@@ -12505,7 +12505,7 @@
   },
   {
     "path": "site/whitepaper.html",
-    "sha256": "fa0b91b958f7fd86d8d365687c76a33c289e62dcfa14e3aa93937922aac99509"
+    "sha256": "8f0baf4d7a06764449037932b7636cf3c7df14d051216c936b6918c1919bcaee"
   },
   {
     "path": "tests/installer/InstallerTests.csproj",

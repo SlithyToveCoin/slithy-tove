@@ -18,7 +18,7 @@ async function loadTreasuryStatus() {
     })} SLTHY`;
     height.textContent = Number(status.chainHeight).toLocaleString();
     unlocked.textContent = status.unlockedBalance === null
-      ? "Awaiting wallet scan"
+      ? "Spendable balance unavailable"
       : `${Number(status.unlockedBalance).toLocaleString(undefined, {
           minimumFractionDigits: 0,
           maximumFractionDigits: 3

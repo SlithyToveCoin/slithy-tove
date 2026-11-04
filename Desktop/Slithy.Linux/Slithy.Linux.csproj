@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>slithy-desktop</AssemblyName>
     <RootNamespace>Slithy.Linux</RootNamespace>
-    <Version>0.1.47</Version>
-    <InformationalVersion>0.1.47-beta.1</InformationalVersion>
+    <Version>0.1.48</Version>
+    <InformationalVersion>0.1.48-beta.1</InformationalVersion>
     <Product>Slithy Tove Linux GUI Beta</Product>
     <Company>CS Idea Labs LLC</Company>
     <Description>Linux wallet and CPU miner for the Slithy test network.</Description>

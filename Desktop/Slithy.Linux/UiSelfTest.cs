@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Input;
@@ -52,9 +53,10 @@ internal static class UiSelfTest
             Console.WriteLine("PASS: pending payment records reject missing fields and malformed data.");
             CheckWalletPicker(output);
             UiWalletSelfTest.Run(output);
+            CheckSavedMiningShortcut(output);
             foreach (int width in new[] { 1200, 980, 760 })
             {
-                MainWindow window = new(preview: true) { Width = width, Height = 720 };
+                MainWindow window = new(preview: true) { Width = width, Height = width == 760 ? 620 : 720 };
                 if (!ReferenceEquals(window.Icon, Branding.WindowIcon)) throw new InvalidOperationException("Main window icon missing.");
                 window.Show();
                 Dispatcher.UIThread.RunJobs();
@@ -63,6 +65,7 @@ internal static class UiSelfTest
                 if (!ReferenceEquals(logo.Source, Branding.HeaderMark)) throw new InvalidOperationException("Header artwork missing.");
                 TabControl? tabs = window.GetVisualDescendants().OfType<TabControl>().FirstOrDefault();
                 if (tabs == null) throw new InvalidOperationException("The main tabs are missing.");
+                CheckMiningShortcut(window, output, width, expectedThreads: 1);
                 for (int index = 0; index < tabs.ItemCount; index++)
                 {
                     tabs.SelectedIndex = index;
@@ -112,6 +115,134 @@ internal static class UiSelfTest
         }
     }
 
+    private static void CheckSavedMiningShortcut(string output)
+    {
+        string root = Path.Combine(Path.GetTempPath(), "slithy-gui-mining-shortcut-" + Guid.NewGuid().ToString("N"));
+        MainWindow? window = null;
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+        try
+        {
+            var store = new LinuxSettingsStore(root);
+            int selected = Math.Min(3, Environment.ProcessorCount);
+            store.Save(new LinuxSettings { MiningThreads = selected });
+            byte[] original = File.ReadAllBytes(store.SettingsPath);
+            window = new MainWindow(store: store) { Width = 760, Height = 620 };
+            // Load real settings, but do not start any node, update check or wallet session.
+            typeof(MainWindow).GetField("_startupStarted", flags)!.SetValue(window, true);
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            CheckMiningShortcut(window, output, 760, selected, "-saved");
+            if (!original.SequenceEqual(File.ReadAllBytes(store.SettingsPath)))
+                throw new InvalidOperationException("Opening mining settings must not rewrite saved preferences.");
+            Console.WriteLine("PASS: the Home shortcut preserves an existing saved thread count and leaves its file unchanged.");
+        }
+        finally
+        {
+            if (window != null)
+            {
+                typeof(MainWindow).GetField("_closing", flags)!.SetValue(window, true);
+                window.Close();
+            }
+            if (Directory.Exists(root)) Directory.Delete(root, true);
+        }
+    }
+
+    private static void CheckMiningShortcut(MainWindow window, string output, int width, int expectedThreads, string suffix = "")
+    {
+        const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+        object Field(string name) => typeof(MainWindow).GetField(name, flags)!.GetValue(window)!;
+        var tabs = (TabControl)Field("_mainTabs");
+        var link = (Button)Field("_miningSettingsLink");
+        var label = (TextBlock)link.Content!;
+        var slider = (Slider)Field("_miningThreads");
+        var settings = (LinuxSettings)Field("_settings");
+        var toggle = (Button)Field("_miningButton");
+        var title = (TextBlock)Field("_miningTitle");
+        var status = (TextBlock)Field("_miningStatus");
+        string? originalTitle = title.Text, originalStatus = status.Text;
+        var miningField = typeof(MainWindow).GetField("_mining", flags)!;
+        object? originalMining = miningField.GetValue(window);
+        var refresh = typeof(MainWindow).GetMethod("UpdateControls", flags)!;
+        string originalSettings = System.Text.Json.JsonSerializer.Serialize(settings);
+        try
+        {
+            if (settings.GetMiningThreadCount() != expectedThreads || slider.Value != expectedThreads)
+                throw new InvalidOperationException("The Home shortcut changed the default or saved thread count.");
+            if (!link.Focusable || !link.IsTabStop || Avalonia.Automation.AutomationProperties.GetName(link) != "Change CPU mining threads in Settings")
+                throw new InvalidOperationException("The Home mining shortcut needs keyboard access and an accessible name.");
+            foreach (bool active in new[] { false, true })
+            {
+                var mining = new Slithy_Tove.MiningInfo(active, active ? 250UL : 0UL, active ? 4 : 0, "test-address", "yespower", 2);
+                miningField.SetValue(window, mining);
+                title.Text = active ? "Mining is on" : "Earn Slithy";
+                status.Text = MainWindow.MiningStatusText(mining, 2153);
+                refresh.Invoke(window, null);
+                string expectedLabel = active
+                    ? $"Next start: {expectedThreads} thread{(expectedThreads == 1 ? "" : "s")}. Settings"
+                    : $"{expectedThreads} CPU thread{(expectedThreads == 1 ? "" : "s")}. Change in Settings";
+                if (label.Text != expectedLabel)
+                    throw new InvalidOperationException("The Home link must show the saved choice, not the active worker count.");
+                foreach (string activation in new[] { "mouse", "enter", "space" })
+                {
+                    tabs.SelectedIndex = 0;
+                    Dispatcher.UIThread.RunJobs();
+                    AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                    var homeScroll = link.GetVisualAncestors().OfType<ScrollViewer>().First();
+                    var position = link.TranslatePoint(new Avalonia.Point(), homeScroll)!.Value;
+                    if (!link.IsVisible || link.Bounds.Width < 180 || position.X < 0 || position.Y < 0 ||
+                        position.X + link.Bounds.Width > homeScroll.Viewport.Width + 1 || position.Y + link.Bounds.Height > homeScroll.Viewport.Height + 1 ||
+                        label.Bounds.Width > link.Bounds.Width || label.Bounds.Height > link.Bounds.Height)
+                        throw new InvalidOperationException("The Home mining shortcut must fit and remain visible without scrolling.");
+                    object? originalToggle = toggle.Content;
+                    if (activation == "mouse")
+                    {
+                        using var homeImage = window.CaptureRenderedFrame() ?? throw new InvalidOperationException("No Home mining shortcut frame.");
+                        homeImage.Save(Path.Combine(output, $"linux-{width}-mining-shortcut-home-{(active ? "active" : "stopped")}{suffix}.png"));
+                        var point = link.TranslatePoint(new Avalonia.Point(link.Bounds.Width / 2, link.Bounds.Height / 2), window)!.Value;
+                        window.MouseDown(point, MouseButton.Left);
+                        window.MouseUp(point, MouseButton.Left);
+                    }
+                    else
+                    {
+                        if (toggle.IsEnabled)
+                        {
+                            toggle.Focus(NavigationMethod.Tab);
+                            window.KeyPressQwerty(PhysicalKey.Tab, RawInputModifiers.None);
+                            window.KeyReleaseQwerty(PhysicalKey.Tab, RawInputModifiers.None);
+                            if (!link.IsFocused)
+                                throw new InvalidOperationException("Tab must move from the mining button to its Settings shortcut.");
+                        }
+                        else link.Focus(NavigationMethod.Tab);
+                        var key = activation == "enter" ? PhysicalKey.Enter : PhysicalKey.Space;
+                        window.KeyPressQwerty(key, RawInputModifiers.None);
+                        window.KeyReleaseQwerty(key, RawInputModifiers.None);
+                    }
+                    Dispatcher.UIThread.RunJobs();
+                    AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                    var settingsScroll = slider.GetVisualAncestors().OfType<ScrollViewer>().First();
+                    position = slider.TranslatePoint(new Avalonia.Point(), settingsScroll)!.Value;
+                    if (tabs.SelectedItem != Field("_settingsTab") || !slider.IsFocused || position.Y < 0 ||
+                        position.Y + slider.Bounds.Height > settingsScroll.Viewport.Height + 1)
+                        throw new InvalidOperationException($"The {activation} mining shortcut must open Settings, reveal the slider and focus it.");
+                    if (!ReferenceEquals(miningField.GetValue(window), mining) || !Equals(toggle.Content, originalToggle) ||
+                        slider.Value != expectedThreads || System.Text.Json.JsonSerializer.Serialize(settings) != originalSettings)
+                        throw new InvalidOperationException("Opening mining settings must not change preferences or active mining.");
+                }
+                using var image = window.CaptureRenderedFrame() ?? throw new InvalidOperationException("No mining shortcut frame.");
+                image.Save(Path.Combine(output, $"linux-{width}-mining-shortcut-{(active ? "active" : "stopped")}{suffix}.png"));
+            }
+        }
+        finally
+        {
+            miningField.SetValue(window, originalMining);
+            title.Text = originalTitle; status.Text = originalStatus;
+            refresh.Invoke(window, null);
+            tabs.SelectedIndex = 0;
+            Dispatcher.UIThread.RunJobs();
+        }
+        Console.WriteLine($"PASS: Home mining shortcut supports mouse, Enter and Space at {width}x{window.Height}, focuses the visible slider and leaves stopped/active mining unchanged.");
+    }
+
     private static void CheckMiningSettings(MainWindow window, string output, int width)
     {
         var controls = window.GetVisualDescendants().OfType<Control>().ToArray();
@@ -121,6 +252,7 @@ internal static class UiSelfTest
         var scroll = slider.GetVisualAncestors().OfType<ScrollViewer>().First();
         var field = typeof(MainWindow).GetField("_settings", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var settings = (LinuxSettings)field.GetValue(window)!;
+        var shortcut = (TextBlock)((Button)typeof(MainWindow).GetField("_miningSettingsLink", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(window)!).Content!;
         if (slider.Minimum != 1 || slider.Maximum != Environment.ProcessorCount || !slider.IsSnapToTickEnabled || slider.TickFrequency != 1)
             throw new InvalidOperationException("The thread slider must cover whole numbers from one to the available CPU count.");
         foreach (double requested in new[] { 1d, Math.Min(3.4, slider.Maximum), slider.Maximum })
@@ -130,6 +262,8 @@ internal static class UiSelfTest
             int expected = Math.Clamp((int)Math.Round(requested), 1, Environment.ProcessorCount);
             if (slider.Value != expected || settings.GetMiningThreadCount() != expected || !count.Text!.StartsWith(expected + " CPU thread"))
                 throw new InvalidOperationException("The selected thread count was not applied to the next-start setting.");
+            if (!shortcut.Text!.StartsWith($"Next start: {expected} thread"))
+                throw new InvalidOperationException("The Home shortcut must track the next-start choice while mining remains active.");
         }
         if (!slider.IsEnabled) throw new InvalidOperationException("Mining settings should remain editable while mining, for the next start.");
         slider.Value = 1;
@@ -226,6 +360,10 @@ internal static class UiSelfTest
             refresh.Invoke(window, null);
             if (!button.IsEnabled || (string?)button.Content != "Stop mining")
                 throw new InvalidOperationException("Active mining must remain stoppable during the update download.");
+            var shortcut = (Button)typeof(MainWindow).GetField("_miningSettingsLink", flags)!.GetValue(window)!;
+            var slider = (Slider)typeof(MainWindow).GetField("_miningThreads", flags)!.GetValue(window)!;
+            if (shortcut.IsEnabled || slider.IsEnabled)
+                throw new InvalidOperationException("The mining shortcut must respect the slider's existing busy/update guard.");
 
             fields["_updateAllowsStop"].SetValue(window, false);
             refresh.Invoke(window, null);

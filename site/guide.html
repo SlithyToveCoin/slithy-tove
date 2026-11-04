@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10231f">
   <meta name="author" content="CS Idea Labs LLC">
-  <meta name="description" content="Learn how Slithy Tove works, set up your wallet, and use your computer's CPU to mine on the public test network.">
+  <meta name="description" content="Set up a Slithy Tove wallet and try CPU mining on the public test network. Includes Windows and Linux instructions.">
   <title>User Guide | Slithy Tove</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css?v=20260907-site-copy">
@@ -14,7 +14,7 @@
 <body>
   <div class="launch-banner" role="status">
     <strong>Live network target: December 1, 2026.</strong>
-    <span>Beta testing is open. Update your app before mining; balances from the previous test chain do not carry over. Wallets and the test chain will reset again before launch. <a href="/downloads.html">Downloads and update instructions</a>.</span>
+    <span>Public beta testing is open. Test coins have no market value. Wallets and balances will reset before the live launch. <a href="/downloads.html">Download the beta</a>.</span>
   </div>
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -40,7 +40,7 @@
     <section class="page-hero whitepaper-hero">
       <p class="eyebrow">User guide</p>
       <h1>Getting started with Slithy</h1>
-      <p class="lede">This guide explains how your wallet works and where mining rewards come from. It also walks you through trying Slithy on Windows or Linux.</p>
+      <p class="lede">Learn how wallets and mining work, then try Slithy on Windows or Linux.</p>
       <p class="paper-meta">Public test-network guide</p>
     </section>
 
@@ -53,7 +53,7 @@
       <article>
         <span>Mining</span>
         <strong>Your CPU tries to find blocks</strong>
-        <p>Your computer tests hashes until it finds one that meets the network's target. Other nodes check each block it finds.</p>
+        <p>Your computer calculates hashes, looking for one that meets the network's target. Other nodes check each block it finds.</p>
       </article>
       <article>
         <span>Public beta</span>
@@ -66,7 +66,7 @@
       <section>
         <h2>What is cryptocurrency?</h2>
         <p>A cryptocurrency uses a shared record of transactions called a blockchain. Computers running the node software each have a copy. They check incoming transactions against the same rules before accepting them into blocks.</p>
-        <p>That record lets you check where coins went. You can run a node yourself and verify the chain, including the rewards paid to miners and the literacy fund.</p>
+        <p>You can run a node to check that record yourself, including the rewards paid to miners and the literacy fund.</p>
       </section>
 
       <section>
@@ -78,7 +78,7 @@
       <section>
         <h2>What is a wallet?</h2>
         <p>Your coins are recorded on the chain. Your wallet holds the private keys that let you spend them, and it reads the chain to show your balance.</p>
-        <p>A password protects the wallet file on your computer. Recovery words let you restore access if you lose the file. Write those words down somewhere safe before you need them.</p>
+        <p>A password protects the wallet file on your computer. Recovery words let you restore access if you lose the file. Write them down and store them somewhere private.</p>
         <p>Anyone with your recovery words or private keys can spend your coins. Never share them, your wallet password, or seed files. Support will not ask for them.</p>
       </section>
 
@@ -90,22 +90,22 @@
 
       <section>
         <h2>What is mining?</h2>
-        <p>Your computer puts together a possible next block using the latest accepted block and pending transactions. It changes a number inside that block and calculates a hash, then tries again. Most attempts fail.</p>
-        <p>To succeed, the hash must be below the network's current target. Your miner sends a successful block to its peers, who check it before accepting it. This repeated work is why mining uses your CPU.</p>
-        <p>A faster CPU can make more attempts. It still cannot promise you a reward in a set amount of time. Difficulty and other miners affect how often your computer finds a block.</p>
+        <p>Your computer builds a candidate block from the latest accepted block and pending transactions. It changes a number in the block header and calculates a hash, then tries again. Most attempts fail.</p>
+        <p>To succeed, the hash must be at or below the network's current target. Your miner sends a successful block to its peers, which check it before accepting it. Calculating those hashes uses your CPU.</p>
+        <p>A faster CPU can make more attempts, but there is no guaranteed time to a reward. Difficulty and other miners affect how often your computer finds a block.</p>
       </section>
 
       <section>
         <h2>When another miner gets there first</h2>
         <p>Your local node receives the new block from its peers and checks it. If it extends the accepted chain, your miner begins work on the next block.</p>
-        <p>There is no partial answer to save. Each hash is a separate attempt, so ten minutes of mining does not mean you are closer to a reward than you were at the start.</p>
+        <p>Each hash is a separate attempt. Time spent mining does not accumulate toward a reward.</p>
       </section>
 
       <section>
         <h2>How Slithy splits the block reward</h2>
         <p>The subsidy is the new SLTHY created with a block. Ninety percent goes to the miner and ten percent goes to the literacy treasury. Nodes reject blocks that skip the required treasury payment.</p>
         <p>When you send a transaction, your wallet includes a fee. The miner who includes that transaction receives the fee in addition to their share of the subsidy.</p>
-        <p>A new mining reward needs confirmations before you can spend it. During that wait, the wallet shows it as an immature or locked balance. Those coins count toward your total even though they are not ready to send.</p>
+        <p>A new mining reward needs confirmations before you can spend it. During that wait, the wallet shows it as an immature or locked balance. It is included in your total balance, but you cannot send it yet.</p>
       </section>
 
       <section>
@@ -118,28 +118,28 @@
         <h2>What does the Windows app do?</h2>
         <p>The Windows app starts a local node and connects it to public peers. That node downloads and checks the chain so your wallet can show its balance.</p>
         <p>Click Start mining to use your computer's CPU. Rewards go to your wallet address unless you select Mine to another Slithy address on Home.</p>
-        <p>Mining starts with one CPU thread when no count has been saved. Set your count in Settings &gt; Mining. The slider runs from one thread to the logical processors available to Slithy, and the app remembers your choice. If mining is running, stop and start it to use a new count.</p>
+        <p>Mining starts with one CPU thread unless you have saved a different setting. Change it in Settings &gt; Mining. The slider runs from one thread to the number of logical processors available to Slithy. The app remembers your choice. Stop and restart mining to apply a change.</p>
         <p>When an update downloads while the node catches up, two progress bars can appear. The update bar tracks the app download. The chain-sync bar tracks blocks checked by your local node. They finish independently.</p>
         <p>Allow time for the first chain download, and check the disk space shown in the app. Mining also uses electricity and can make your computer run warmer.</p>
       </section>
 
       <section>
         <h2>What does the Linux terminal tool do?</h2>
-        <p>The Linux tool puts wallet and mining controls in a terminal menu. You can watch mining as it runs, send SLTHY from your wallet, and check for updates there.</p>
+        <p>The Linux tool has a terminal menu for your wallet and mining controls. It shows mining activity and includes an update check.</p>
         <p>The <a href="/downloads.html">install script</a> downloads the Linux package for you. Before installing it, the script checks the signed release information and compares the download's SHA256 hash with the published hash.</p>
       </section>
 
       <section id="linux-desktop">
         <h2>Using the Linux desktop app</h2>
-        <p>The Linux desktop beta has Home, Activity and Settings tabs like the Windows app. It includes the local node and .NET runtime. Ubuntu 24.04 x64 is the reference platform. You need X11 or XWayland; this download is not for ARM computers or headless servers. Other distributions and desktop environments need testing.</p>
+        <p>The Linux desktop beta has the same Home, Activity and Settings tabs as the Windows app. It includes the local node and .NET runtime. Ubuntu 24.04 x64 is the reference platform. The app needs X11 or XWayland and does not support ARM computers or headless servers. Other distributions and desktop environments need testing.</p>
         <p>Download the <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.47-beta.1-x64.tar.gz">Linux desktop archive</a> and extract it into a folder you own. Open <code>slithy-install</code>, then choose <strong>Install for my account</strong>. If your file manager does not open it, run this from a terminal in the extracted folder:</p>
         <pre style="overflow-x:auto;padding:1rem"><code>./slithy-install</code></pre>
         <p>Open Slithy Tove from your application menu. The installer copies the program into your account, so you can remove the extracted download folder afterward. To try it without installing, run <code>./slithy-desktop</code> from the extracted folder. Do not use sudo.</p>
-        <p>Create a test wallet, record its recovery words privately and allow the node to catch up before starting mining. In Settings, you can turn automatic wallet locking on or off. Locking does not stop mining or hide the balance. Sending asks for your password when the spending keys are locked.</p>
-        <p>The GUI has its own data folder, separate from the terminal app. Start with a new test wallet. To bring over a terminal wallet, make a backup in the terminal app and restore that backup through Manage wallet in the GUI. Do not copy an active wallet database or delete the original wallet. Avoid sending from two copies of the same wallet at once.</p>
+        <p>Create a test wallet and write down its recovery words privately. Wait for the node to catch up before mining. In Settings, you can turn automatic wallet locking on or off. Locking does not stop mining or hide the balance. Sending asks for your password when the spending keys are locked.</p>
+        <p>The desktop app has its own data folder, separate from the terminal app. Start with a new test wallet. To bring over a terminal wallet, make a backup in the terminal app and restore it through Manage wallet in the desktop app. Do not copy an active wallet database or delete the original wallet. Avoid sending from two copies of the same wallet at once.</p>
         <p>Choose your wallet from the dropdown when the app opens. It remembers your last selection. You can create a wallet or restore one from that same screen.</p>
-        <p>The app checks for updates when it opens and about once an hour. A badge beside the version and an in-app notice let you review the release. You can also use Settings &gt; Updates. Downloading leaves mining running; installation stops the local node and opens the new app. Start mining again when you are ready.</p>
-        <p>Mining starts with one CPU thread when no count has been saved. Under Settings &gt; CPU mining, choose a count from one to the number of logical processors available on your computer. The app remembers it. If mining is running, stop and start it to apply a different count. More threads can use more electricity and make the computer warmer.</p>
+        <p>The app checks for updates when it opens and about once an hour. A badge beside the version and an in-app notice let you review the release. You can also use Settings &gt; Updates. Mining can continue during the download. Installation stops the local node and opens the new app. Start mining again when you are ready.</p>
+        <p>Mining starts with one CPU thread unless you have saved a different setting. Under Settings &gt; CPU mining, choose a count from one to the number of logical processors available on your computer. The app remembers your choice. Stop and restart mining to apply a change. More threads can use more electricity and make the computer warmer.</p>
         <p>If you have 0.1.43-beta.1 or earlier, close it, extract this package into a separate folder and open <code>slithy-install</code>. That one manual upgrade adds the updater. Your wallet data stays in your Linux account's data folder. The terminal app has a separate updater.</p>
         <p>Some desktops need an extension to show notification-area icons. The app asks you to confirm that its icon is visible before hiding the window. If you cannot see the icon, cancel and turn off that option in Settings.</p>
         <p>If the app will not open, run <code>./slithy-desktop</code> from a terminal and include the error, your distribution and desktop environment in a <a href="/bug-report.html">bug report</a>. Do not send passwords, recovery words or wallet files.</p>
@@ -147,10 +147,10 @@
 
       <section id="wallet-tools">
         <h2>Wallet history and addresses</h2>
-        <p>Open Activity to search your history by transaction ID or address, browse older entries and export the results as a CSV file. Transaction details show complete addresses and outputs. An incoming payment does not identify its sender; a transaction can spend outputs from several addresses.</p>
+        <p>Open Activity to browse your history or search by transaction ID or address. You can export the results as a CSV file. Transaction details show complete addresses and outputs. An incoming payment does not identify its sender; a transaction can spend outputs from several addresses.</p>
         <p>Receive lets you create another address or copy an earlier one from the same wallet. Earlier addresses can still receive coins. Creating an address does not redirect mining already in progress.</p>
         <p>In Advanced sending, you can choose particular spendable outputs or consolidate 2 to 200 outputs into one in your own wallet. Review the fee before confirming. Combining outputs costs a transaction fee and links them publicly on the chain.</p>
-        <p>Manage wallet includes a recovery-word check. A restore checks receiving and change addresses through index 10,000 by default, with a deeper scan available for wallets used in other software. Retain a wallet-file backup as well as your words. <a href="https://github.com/SlithyToveCoin/slithy-tove/blob/main/docs/WALLET-TOOLS.md">Read the wallet tools guide</a> for recovery limits and sending details.</p>
+        <p>Manage wallet includes a recovery-word check. A restore checks receiving and change addresses through index 10,000 by default. A deeper scan is available for wallets used in other software. Save a wallet-file backup as well as your words. <a href="https://github.com/SlithyToveCoin/slithy-tove/blob/main/docs/WALLET-TOOLS.md">Read the wallet tools guide</a> for recovery limits and sending details.</p>
       </section>
 
       <section>
@@ -167,8 +167,8 @@
 
       <section>
         <h2>What to report</h2>
-        <p>Tell me which version you used and what you were doing when the problem appeared. The <a href="/bug-report.html">bug report form</a> has space for the details that help me repeat it.</p>
-        <p>Check screenshots and logs for private information before sending them. Thank you for spending time with Slithy and helping improve it.</p>
+        <p>Tell me which app version you used and what you were doing when the problem appeared. The <a href="/bug-report.html">bug report form</a> asks for the details I need to reproduce it.</p>
+        <p>Check screenshots and logs for private information before sending them.</p>
       </section>
     </article>
   </main>
