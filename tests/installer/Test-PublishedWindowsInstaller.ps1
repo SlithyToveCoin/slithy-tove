@@ -346,7 +346,8 @@ public static class SlithyInstallerWindowProbe {
     $powerShell = (Get-Process -Id $PID).Path
     Run-Program $powerShell @('-NoLogo', '-NoProfile', '-NonInteractive', '-File', $transactionScript,
         '-InstalledDirectory', $installRoot, '-EvidenceDirectory', $resultsRoot,
-        '-ExpectedAssemblyHash', $assemblyHash, '-ExpectedVersion', $version) 'chunked-transactions' 420
+        '-ExpectedAssemblyHash', $assemblyHash, '-ExpectedVersion', $version,
+        '-ExpectedSourceCommit', $sourceCommit) 'chunked-transactions' 420
     Pass 'Installed wallet assembly sends, confirms, backs up and restores using bounded regtest block batches'
 
     # Real offline wallet data lives in the fresh runner profile, never in uploaded evidence.

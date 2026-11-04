@@ -132,7 +132,7 @@
       <section id="linux-desktop">
         <h2>Using the Linux desktop app</h2>
         <p>The Linux desktop beta has the same Home, Activity and Settings tabs as the Windows app. It includes the local node and .NET runtime. Ubuntu 24.04 x64 is the reference platform. The app needs X11 or XWayland and does not support ARM computers or headless servers. Other distributions and desktop environments need testing.</p>
-        <p>Download the <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.48-beta.1-x64.tar.gz">Linux desktop archive</a> and extract it into a folder you own. Open <code>slithy-install</code>, then choose <strong>Install for my account</strong>. If your file manager does not open it, run this from a terminal in the extracted folder:</p>
+        <p>Download the <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.49-beta.1-x64.tar.gz">Linux desktop archive</a> and extract it into a folder you own. Open <code>slithy-install</code>, then choose <strong>Install for my account</strong>. If your file manager does not open it, run this from a terminal in the extracted folder:</p>
         <pre style="overflow-x:auto;padding:1rem"><code>./slithy-install</code></pre>
         <p>Open Slithy Tove from your application menu. The installer copies the program into your account, so you can remove the extracted download folder afterward. To try it without installing, run <code>./slithy-desktop</code> from the extracted folder. Do not use sudo.</p>
         <p>Create a test wallet and write down its recovery words privately. Wait for the node to catch up before mining. In Settings, you can turn automatic wallet locking on or off. Locking does not stop mining or hide the balance. Sending asks for your password when the spending keys are locked.</p>
@@ -151,6 +151,7 @@
         <p>Receive lets you create another address or copy an earlier one from the same wallet. Earlier addresses can still receive coins. Creating an address does not redirect mining already in progress.</p>
         <p>In Advanced sending, you can choose particular spendable outputs or consolidate 2 to 200 outputs into one in your own wallet. Review the fee before confirming. Combining outputs costs a transaction fee and links them publicly on the chain.</p>
         <p>Manage wallet includes a recovery-word check. A restore checks receiving and change addresses through index 10,000 by default. A deeper scan is available for wallets used in other software. Save a wallet-file backup as well as your words. <a href="https://github.com/SlithyToveCoin/slithy-tove/blob/main/docs/WALLET-TOOLS.md">Read the wallet tools guide</a> for recovery limits and sending details.</p>
+        <p>On Windows, copy a backup from OneDrive or another linked folder into a local folder that is not cloud-synced or linked. Import that copy through Manage wallet.</p>
       </section>
 
       <section>

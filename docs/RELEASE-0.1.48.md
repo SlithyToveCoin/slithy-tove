@@ -15,17 +15,18 @@ the chosen folder. Windows holds a verified update file open until installation
 finishes. Linux settings check linked parent folders and dangling links before
 reading or writing a record.
 
-The native dependency recipe uses libevent 2.1.13. The public report publishers
+The bundled native tools use libevent 2.1.13. The public report publishers
 now select their output fields explicitly, and treasury snapshots check for a
-chain reorganization before publishing. A late-halving mining-template fix
-removes the treasury-output requirement when its calculated amount rounds to
-zero. The subsidy schedule and block-validation rules have not changed.
+chain reorganization before publishing. Mining templates now report a zero
+treasury amount correctly after late halvings. The subsidy schedule and
+block-validation rules have not changed.
 
 ## Updating
 
 Review the update inside your app, or download the current package from
-[slithy.io](https://slithy.io/downloads.html). The Windows web installer remains
-the same file and downloads the current signed release.
+[slithy.io](https://slithy.io/downloads.html). This release replaces the Windows
+web installer with a build that bundles .NET 8.0.33. Its download address stays
+the same, and it downloads the current signed wallet release.
 
 Back up your wallet before updating. The update does not delete your wallet
 files or reset this beta chain. Mining stays stopped after the app restarts.

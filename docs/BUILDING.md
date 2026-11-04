@@ -3,6 +3,17 @@
 Build the native programs before packaging either desktop app or the Linux menu.
 Compiler output goes in `build/`, which is not source-controlled.
 
+## Runtime support
+
+Windows 0.1.48 and Linux GUI 0.1.49-beta.1 target .NET 8 and bundle runtime 8.0.33,
+the October 25, 2026 servicing release. Microsoft ends .NET 8 support on
+November 10, 2026. Moving both GUIs to .NET 10 LTS is the next runtime update.
+See [Microsoft's support policy](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core).
+
+These packages carry their own runtime. Installing a newer .NET runtime on your
+computer does not replace the copy bundled with Slithy; that copy arrives through
+an application update.
+
 ## Linux native tools
 
 Ubuntu 24.04 is the reference build environment. Install dependencies:
@@ -13,6 +24,11 @@ sudo apt-get install build-essential cmake pkgconf python3 libevent-dev libboost
 bash tools/build-core.sh linux
 ctest --test-dir build/native/linux --output-on-failure --timeout 600 -j2
 ```
+
+The November 2026 security packages use a static libevent 2.1.13 build instead
+of the distribution library selected by the command above. See the
+[release build configuration](LINUX-NATIVE-RELEASE-BUILD.md) for its pinned source,
+patches and build flags.
 
 The four programs are in `build/native/linux/bin`. The menu and Windows app
 select the beta network. If you run the raw daemon yourself, pass `-testnet`
@@ -68,7 +84,7 @@ Install the .NET 8 SDK on Linux for the recovery helper. From the source root:
 
 ```sh
 dotnet publish tools/SlithySeedTool/SlithySeedTool.csproj -c Release -r linux-x64 --self-contained true -o build/seed/linux
-SLITHY_SEED_TOOL="$PWD/build/seed/linux/SlithySeedTool" bash tools/build-linux-release-tarball.sh "$PWD/build/native/linux/bin" 0.1.50-testnet "$PWD/build/packages"
+SLITHY_SEED_TOOL="$PWD/build/seed/linux/SlithySeedTool" bash tools/build-linux-release-tarball.sh "$PWD/build/native/linux/bin" 0.1.51-testnet "$PWD/build/packages"
 python3 tests/terms/linux-terms-test.py
 python3 -m unittest discover -s tests/security -p 'test_*.py'
 ```

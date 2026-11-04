@@ -4,3 +4,7 @@ core/** text=auto eol=lf
 *.py text eol=lf
 site/install/linux/slithy text eol=lf
 site/install/linux/slithy-node text eol=lf
+
+# Release records must match the bytes published on the website.
+site/downloads/** -text whitespace=cr-at-eol
+site/updates/** -text whitespace=cr-at-eol

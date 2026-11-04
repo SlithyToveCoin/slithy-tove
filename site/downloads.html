@@ -53,11 +53,11 @@
         <p>Create a wallet and start mining in one app. Slithy also runs a node on your computer.</p>
         <a class="button" href="/downloads/windows/Slithy-Tove-Web-Setup.exe">Download Windows installer</a>
         <p class="download-meta">The installer downloads the current beta, so you'll need an internet connection during setup. The app checks for updates when you open it.</p>
-        <p><a href="/downloads/windows/Slithy-Tove-Setup-0.1.47.exe">Download the full offline installer, version 0.1.47</a></p>
+        <p><a href="/downloads/windows/Slithy-Tove-Setup-0.1.48.exe">Download the full offline installer, version 0.1.48</a></p>
         <p class="download-meta">Mining starts with one CPU thread. You can change the count in Settings &gt; Mining. Your setting stays saved through updates.</p>
         <p class="download-meta">The app also checks for updates while it's running. A badge beside the version number tells you when a release is ready to review.</p>
-        <p class="download-meta">This release adds search to transaction history and shows transaction addresses. You can create extra receiving addresses and check your recovery words. Advanced sending lets you choose inputs or combine small rewards. The mining status and download progress displays have more room.</p>
-        <p class="download-meta"><a href="/downloads/windows/Slithy-Tove-0.1.47-manifest.json">Signed release information</a> | <a href="/downloads/source/Slithy-Tove-0.1.47-source.tar.gz">Source for this build</a></p>
+        <p class="download-meta">This update tightens wallet and update file checks. Recovery errors no longer show private details, and the bundled node has an updated network library. Your wallet files and the current beta chain stay in place.</p>
+        <p class="download-meta"><a href="/downloads/windows/Slithy-Tove-0.1.48-manifest.json">Signed release information</a> | <a href="/downloads/source/Slithy-Tove-0.1.48-source.tar.gz">Source for this build</a></p>
         <p class="download-meta">The installers and Slithy programs are signed by CS Idea Labs LLC. Windows may still show a SmartScreen warning for a new download. Setup verifies the release signature, file hash and publisher before installing. Mining needs an internet connection, including after an offline installation.<br><a href="/downloads/SHA256SUMS.txt">Installer and package SHA256 checksums</a></p>
       </article>
 
@@ -65,11 +65,11 @@
         <p class="eyebrow">Linux desktop beta</p>
         <h2>Linux wallet and miner</h2>
         <p>The desktop app has the same wallet and mining controls as the Windows version and runs its own local node. There's also a terminal app below if you prefer that.</p>
-        <a class="button" href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.48-beta.1-x64.tar.gz">Download Linux desktop app</a>
-        <p class="download-meta">Version 0.1.48-beta.1 for Linux x64 desktops. Ubuntu 24.04 is the reference platform; other distributions and desktop environments need testing. Extract the archive into a folder you own, open <code>slithy-install</code>, then choose <strong>Install for my account</strong>. No sudo or separate .NET installation is needed.</p>
+        <a class="button" href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.49-beta.1-x64.tar.gz">Download Linux desktop app</a>
+        <p class="download-meta">Version 0.1.49-beta.1 for Linux x64 desktops. Ubuntu 24.04 is the reference platform; other distributions and desktop environments need testing. Extract the archive into a folder you own, open <code>slithy-install</code>, then choose <strong>Install for my account</strong>. No sudo or separate .NET installation is needed.</p>
         <p class="download-meta">Mining starts with one CPU thread unless you've saved a different count. Click the thread count below the mining button to open Settings &gt; CPU mining. Your choice applies the next time you start mining. If you have 0.1.43-beta.1 or earlier, close it and install this package once to get the updater. Your wallet data stays in place. The desktop app uses a separate wallet folder from the terminal app. <a href="/guide.html#linux-desktop">Read the Linux desktop instructions</a>.</p>
-        <p class="download-meta">Includes the new wallet tools and a graphical installer. It can also recover when a crash leaves its local node running. <a href="/guide.html#wallet-tools">Read about the wallet tools</a>.</p>
-        <p class="download-meta"><a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.48-beta.1-x64.tar.gz.sha256">SHA256 checksum</a> | <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.48-beta.1-manifest.json">Signed release information</a> | <a href="/downloads/source/Slithy-Tove-Linux-GUI-0.1.48-beta.1-source.tar.gz">Source for this build</a></p>
+        <p class="download-meta">Includes the same wallet-request and recovery-error fixes as Windows. It also checks linked settings and update folders before using them. <a href="/guide.html#wallet-tools">Read about the wallet tools</a>.</p>
+        <p class="download-meta"><a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.49-beta.1-x64.tar.gz.sha256">SHA256 checksum</a> | <a href="/downloads/linux/Slithy-Tove-Linux-GUI-0.1.49-beta.1-manifest.json">Signed release information</a> | <a href="/downloads/source/Slithy-Tove-0.1.48-source.tar.gz">Source for this build</a></p>
       </article>
 
       <article class="download-card">
@@ -77,15 +77,15 @@
         <h2>Linux menu tool</h2>
         <p>The install script downloads the software and checks the release signature and file hash. After installation, use the terminal menu to open your wallet or watch your miner run.</p>
         <a class="button" href="/install/linux/slithy-install.sh">Download Linux install script</a>
-        <p class="download-meta">Installs Linux version 0.1.50-testnet. If you have 0.1.47 through 0.1.49, open Updates in the menu and choose Install update. The new menu checks for updates in the background and shows a notice on the mining screen. For an older beta installation, read the migration steps below first.<br>Install script SHA256: <code>0E14142211A40CF9ED8E7D3B433F4FBFD41CB6B45EFAF9087142984218E27D4D</code></p>
+        <p class="download-meta">Installs Linux version 0.1.51-testnet. If you have 0.1.47 through 0.1.50, open Updates in the menu and choose Install update. The menu checks for updates in the background and shows a notice on the mining screen. This release fixes quoted install paths and hides private details in recovery errors. For an older beta installation, read the migration steps below first.<br>Install script SHA256: <code>5BB638EA69F2D07C4A08E8F066A878FEE38E1896C4302BA255C9A72AEF4A8508</code></p>
       </article>
 
       <article class="download-card">
         <p class="eyebrow">Linux package</p>
         <h2>Full Linux terminal package</h2>
         <p>Download the archive if you prefer to install by hand or want to inspect the files before installing. The install script above downloads this same package.</p>
-        <a class="button secondary-button" href="/updates/linux-x64/packages/slithy-linux-x64-0.1.50-testnet.tar.gz">Download Linux package</a>
-        <p class="download-meta">SHA256: <code>5CD31C0ED050ADADC46DD53ABEBA9F9D390AA413D86B7A42A779A8A4EBD12810</code><br><a href="/updates/linux-x64/beta-20260909/stable.json">View Linux update manifest</a></p>
+        <a class="button secondary-button" href="/updates/linux-x64/packages/slithy-linux-x64-0.1.51-testnet.tar.gz">Download Linux package</a>
+        <p class="download-meta">SHA256: <code>BE284429A1A851DAF649EB922232DAC1DC65DB9997CF6C7F6E794849AB99466D</code><br><a href="/updates/linux-x64/beta-20260909/stable.json">View Linux update manifest</a> | <a href="/downloads/source/Slithy-Tove-0.1.48-source.tar.gz">Source for this build</a></p>
       </article>
 
       <article class="download-card">
