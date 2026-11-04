@@ -1,6 +1,6 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.47-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.48-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
 
 The terminal app remains available. Installing this GUI does not replace it, and the terminal updater does not update the GUI.
 
@@ -63,6 +63,8 @@ Recovery-word restores scan the chain from the beginning and check receiving and
 ## What to test
 
 Create a wallet and record its recovery words privately. Confirm that the node catches up, then start mining. Check the total and spendable balances as rewards arrive.
+
+The thread-count link under the mining button on Home opens Settings and focuses the CPU mining slider. Opening it does not change your thread count or stop mining.
 
 Choose your thread count under **Settings > CPU mining**. The slider runs from one thread to the number of logical processors available to the app. Slithy remembers your choice. A higher count gives mining more of your CPU and can increase heat and power use. If mining is already running, stop and start it to use the new count. Moving the slider does not interrupt a running miner.
 
