@@ -9,7 +9,7 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "facbafa8bab54d93eb1a67b9d8951eea76aa19d1a534e178746bca784f32f887"
+    "sha256": "bef21acc6633355646452b10779bee2a2cec3423d5962a261a2b485d8f3a8319"
   },
   {
     "path": ".gitignore",
@@ -45,7 +45,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/BookMiningAnimation.cs",
-    "sha256": "04e2bac7805eb5240aeac7bacdba577f59edb4ebeafcc0d9535871f175f0cbdf"
+    "sha256": "5db63416123c58892161e9c3f67e968e153b77ee9fc76185803719f1e94a6c3d"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/BufferedPanel.cs",
@@ -177,7 +177,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "0dfa791c76feece2aeead68325185439bac33a4cd9c827c04dbbeb7e2ddd536d"
+    "sha256": "0a355cc5ec459de089d3d0e7063206631c4efdcaae669eb1042b271b4f3d8fdf"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
@@ -317,7 +317,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateInstaller.cs",
-    "sha256": "80031f7afaf808fb6e1e70fdee3c87e7bbf71591019366683accb218cf0c749d"
+    "sha256": "b46f204ab2de67061523bfed5545485e79582f7929eb536f47c3d4e9b242d893"
   },
   {
     "path": "Desktop/Slithy.Linux/LinuxGuiUpdateSelfTest.cs",
@@ -365,7 +365,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
-    "sha256": "bbb6477615503674c8be8f4ef64f16c705ae72316428a4b19483467a95a7e30a"
+    "sha256": "7ab060c93438162ef78148b2d18d3d5083f069ac0969bc2f9eb508a8d49a7cc8"
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
@@ -12117,11 +12117,11 @@
   },
   {
     "path": "docs/BUILDING.md",
-    "sha256": "9b9db6ba7509afac7894d3d4b79492962fe092405856fcc99f5fc9e5a5f4526d"
+    "sha256": "1fdcf6b6a6b1a5705d7142d53860c620c19ba9be86f6492134ea0bb1ef25bd72"
   },
   {
     "path": "docs/LINUX-GUI-PREVIEW.md",
-    "sha256": "0ee439eabc8bb2d85ccffe04c5d60dcdfb38745bed8aab1fbeca790bac5204a4"
+    "sha256": "1616444e957988cff5236e1694df6e82762971e2eacc10700d6c760c9ceee7da"
   },
   {
     "path": "docs/LINUX-NATIVE-RELEASE-BUILD.md",
@@ -12146,6 +12146,10 @@
   {
     "path": "docs/RELEASE-0.1.48.md",
     "sha256": "4b171ef57bec6cf81f264c6990fe699889cf35eee3ad065b95cb6ff5661ba47e"
+  },
+  {
+    "path": "docs/RELEASE-0.1.49.md",
+    "sha256": "83ebffa653b5e448895197848e431e081e706efb5a7adac0c17d753eac371070"
   },
   {
     "path": "docs/RELEASE-TESTING.md",
@@ -12176,8 +12180,12 @@
     "sha256": "281fe375d977cb1240e4c4cf5a7b0a7f54ff633e4460c5738bfc08f1808f4257"
   },
   {
+    "path": "installer/RuntimeCleanup.iss",
+    "sha256": "b2339721b3646f114f6a13e4ad43886685cedf96eff0dd2598a0aaf27ea0afa5"
+  },
+  {
     "path": "installer/SlithyTove.iss",
-    "sha256": "df0169efd54c854bce7a1021becbab5311c9831ea543d21f2ca568e9dc613c17"
+    "sha256": "86534a76994fe250d11ba703b1b215f182bb706052403413c815a067cc352c9f"
   },
   {
     "path": "installer/WEB-INSTALLER.md",
@@ -12189,15 +12197,15 @@
   },
   {
     "path": "installer/WebInstaller/SetupForm.Designer.cs",
-    "sha256": "0c09c83fa29b0966e24b6960d20a44f10bb0e33b40ebb3e5c028268ca5713d39"
+    "sha256": "dc775a00913f00a2c86d28359175bc0a7c75c491c7b355b3dd6fa48511d8a7dd"
   },
   {
     "path": "installer/WebInstaller/SetupForm.cs",
-    "sha256": "c61281b896e0804c5792f083820ce8215006e5fbbfa8950ffeea50cdac105bfc"
+    "sha256": "4579bc578053ee2987985330546c4dc1abd8a86c1b77da03e53dd20dc99bd076"
   },
   {
     "path": "installer/WebInstaller/WebInstaller.csproj",
-    "sha256": "8708be2fc366020a87c2b14ffb099b5cc3d74420ba0fc143a182f4e18ad74779"
+    "sha256": "3b7a3eced65182042aafb949c3428b8ed73dc11dc2c4bf14f66f804dca8b10ec"
   },
   {
     "path": "installer/assets/wizard-large.bmp",
@@ -12217,7 +12225,7 @@
   },
   {
     "path": "installer/build-web-installer.ps1",
-    "sha256": "a4c2f57c20deafbe743f0b7e404ee4df093e587e207ac1522a3ceb11795b17dd"
+    "sha256": "2d1094a90f5b1967e5c7c279d2361fc03eca8e75fb8d4c8b8670f65790896e9c"
   },
   {
     "path": "installer/new-installer-manifest.ps1",
@@ -12226,6 +12234,10 @@
   {
     "path": "installer/prepare-signing-tools.ps1",
     "sha256": "84f56df793795a965e7a2638b3849dfa9c79d4dda0bdaa4df3f173a48e4c0a18"
+  },
+  {
+    "path": "installer/runtime-files-0.1.48.iss",
+    "sha256": "0583daf72385d8d262f1b9824b7cc4392eafbb0c927ffa252e50f51713864663"
   },
   {
     "path": "licenses/Avalonia-LICENSE.txt",
@@ -12241,11 +12253,11 @@
   },
   {
     "path": "licenses/DOTNET-NOTICES.md",
-    "sha256": "0626a949301485e2232fa6569065c8e7f7f202bad3cb010341ca7f31ef983549"
+    "sha256": "a7f6fa874365129201b4afd6607d7e49ba165c821dfaa87efeb46f638d533343"
   },
   {
     "path": "licenses/DOTNET-THIRD-PARTY-NOTICES.txt",
-    "sha256": "97c1a7b3da6a4c6ad516448719f45114b41a4d4c5aa300a944476e2e4f5da438"
+    "sha256": "c6926930d0181fa515076603e1305461b1bce5275a8b35337d75d2eef3acad4a"
   },
   {
     "path": "licenses/HarfBuzzSharp-LICENSE.txt",
@@ -12349,7 +12361,7 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "57b04236a76d2e02697bb243727b18951e1cce505bf6dba1b10d66afd8ad9156"
+    "sha256": "d8fcc16634c40d508a72da6611464b33b72b5190af84eaeb6675e98b9060afa1"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12453,7 +12465,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "0717e94bcd985226c61d94da91235e3c9bafc81f96572d974ec061c3cb364706"
+    "sha256": "9c098c2117b866ceee97ce9020f4dfe80bbb960a085e19bf751073ef4a1bd315"
   },
   {
     "path": "site/home-full.html",
@@ -12561,15 +12573,19 @@
   },
   {
     "path": "site/whitepaper.html",
-    "sha256": "c518f92eb4f98e775e5310b7c9797f28c03e8dc5880b71938824046db6a3bf01"
+    "sha256": "5369a756fe80a8a2d2ccfc413533894249bb29515f8c30ee506e7439d167bdb2"
   },
   {
     "path": "tests/installer/InstallerTests.csproj",
-    "sha256": "6e20c55b165a3c0f19f17760fec3180c090376d233737519f8d775656ce93665"
+    "sha256": "9c5e8a48785de6e785e3ed88b01a21f8a777755841e4b0ad0f77421acbf70f6c"
   },
   {
     "path": "tests/installer/Program.cs",
-    "sha256": "7cc9fc084c9e5a58685936a2f4970f4f1d59555f43c8257f6af709e855e8d925"
+    "sha256": "9c9862a9de0b0aed505c3a37b26245a1c0ad2a5dc9bf6c465969502fb5839ef0"
+  },
+  {
+    "path": "tests/installer/README.md",
+    "sha256": "7c270ad63ae134c879ce2334777fcffe3706f0a70c47f7a13606955dc83d2dc9"
   },
   {
     "path": "tests/installer/Test-InstalledWalletTransactions.ps1",
@@ -12580,8 +12596,12 @@
     "sha256": "641513d56dc28909eee3bd42539bbce129b53d4cf17c6725d077388bb395e971"
   },
   {
+    "path": "tests/installer/Test-RuntimeCleanup.ps1",
+    "sha256": "a67e440b6924d4ebe8950e302e7e993b217ed23ebfc2e48da26a71aaa1854339"
+  },
+  {
     "path": "tests/linux-desktop-maintenance/LinuxDesktopMaintenance.Tests.csproj",
-    "sha256": "5abd9e809e014cbc99c5c8fc095854309c4d7a6e426cdce7bc43bd305e46ae31"
+    "sha256": "85f351d960295f392686350800d83ef03144aa9ec494e0bad72b3af3509acef6"
   },
   {
     "path": "tests/linux-desktop-maintenance/Program.cs",
@@ -12593,7 +12613,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "d3313cf096b84f236aaaab8b5bbbf13fb179870c56ba58ebc013f94c467607e7"
+    "sha256": "7ec12b170aed29228a05bf64fcf759fd3550ce80ac98ebab837b8bec4b01bf7b"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",
@@ -12625,7 +12645,7 @@
   },
   {
     "path": "tests/mining-settings/MiningSettingsTests.csproj",
-    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
   },
   {
     "path": "tests/mining-settings/Program.cs",
@@ -12633,7 +12653,7 @@
   },
   {
     "path": "tests/security/Slithy.SecurityTests.csproj",
-    "sha256": "8a20d72c71554a0051e005505dc2f5535a28b92343a4da98b8afa60cb6f62941"
+    "sha256": "a0e8f7aee32929736b11e0e75ae8e426ab80ed15dce28fc753617df590657590"
   },
   {
     "path": "tests/security/WalletSecurityTests.cs",
@@ -12657,7 +12677,7 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/LinuxGuiPackageUpdate.Tests.csproj",
-    "sha256": "583f590964efe3a25415627a41588042dc5f6883063375f35088c5ddb5dca8bc"
+    "sha256": "80be3fe0f370eb1621f7870605188bd7aab088b34141ee3446ce3d118e12259d"
   },
   {
     "path": "tests/security/linux-gui-package-update/Program.cs",
@@ -12665,11 +12685,11 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/README.md",
-    "sha256": "64df2d3716830e0e1fb04b1bee7b8ffff00892d8a3e60c82790bfbea4403d0f0"
+    "sha256": "7b26c5a99852f31f62c705298ca5534e7cf1ff1bb8b3627dbf8634e9f321f1b8"
   },
   {
     "path": "tests/security/linux-gui-update/LinuxGuiUpdate.Tests.csproj",
-    "sha256": "3fadcf7c7bd494c4855ad6ac50c3f9311a76ef9968061a88297707750e681dd1"
+    "sha256": "49f594face485d21fa645d34e9c964bb5f0e7dc53e53ebfd84bc38b618b648ab"
   },
   {
     "path": "tests/security/linux-gui-update/Program.cs",
@@ -12725,15 +12745,15 @@
   },
   {
     "path": "tests/security/update-roundtrip/Program.cs",
-    "sha256": "1737555a2bd9e13cfe17b9766e00613d30cc25f1aa1e16a1f87728f821544a49"
+    "sha256": "f9bfca63c7ea60718dd0df5cb74fe2404d6859ceb4d34142758af37a9d0b3e63"
   },
   {
     "path": "tests/security/update-roundtrip/UpdateRoundTrip.csproj",
-    "sha256": "e2b973a7a2974ce8ba09bc5cc4deaca6be89387e8da26b44bc00372318cc30ab"
+    "sha256": "6e56f857bbcba52a77d961eb0b07c9cf819f2b2dda7129ad74fae455e4359bcc"
   },
   {
     "path": "tests/security/update-roundtrip/fixture.iss",
-    "sha256": "c2049ecca95dcb1d6e36297bfdfe4a415e16fac954e1b6a6e4f8c01a8d1eca98"
+    "sha256": "e6fac7c40dfc0476136283f6b117b0805cfe63eaddeb0014c6e8413d7022a98f"
   },
   {
     "path": "tests/security/update-roundtrip/run.py",
@@ -12745,7 +12765,7 @@
   },
   {
     "path": "tests/security/windows-runtime/WindowsRuntimeTests.csproj",
-    "sha256": "414bf1e514f3b175ea8fdc3fd60274e6dea3bc7032df83a5819e496fdd8b6922"
+    "sha256": "518a6322b44b6b969fa5bd24dc577ed31dcadcbfd2d2ba1eb110fcae5ff2d51e"
   },
   {
     "path": "tests/site/explorer-links.test.cjs",
@@ -12756,12 +12776,16 @@
     "sha256": "1c050006fe36acc8a2264c2a5cebe256b41c6cc6ad8c926da987848fe965cf46"
   },
   {
+    "path": "tests/site/gui-downloads.test.cjs",
+    "sha256": "0112638ab05cd673c38dbd8f1c482594f36666a57cfb50d7f32a53033773c14f"
+  },
+  {
     "path": "tests/terms/Program.cs",
     "sha256": "eaf246dff738c677d853e5090d20a521623e19b9408e662f2d5aaf3ec412acf1"
   },
   {
     "path": "tests/terms/TermsTests.csproj",
-    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
   },
   {
     "path": "tests/terms/linux-terms-test.py",
@@ -12777,7 +12801,7 @@
   },
   {
     "path": "tests/wallet-features/WalletFeatures.Tests.csproj",
-    "sha256": "18a5aa3ad5fb24374cab81285f3bc8145724952f5c2c838e384e5d7de3a49fff"
+    "sha256": "0dc41bbc7cef9ea1f9b36e7af5af8cbf467a2a62966fe74be73501b0affa1651"
   },
   {
     "path": "tests/wallet-features/WalletIntegration.cs",
@@ -12801,11 +12825,11 @@
   },
   {
     "path": "tests/wallet-timeout-ui/Program.cs",
-    "sha256": "39039ccd38b8a3dc4e8f0279151769092af3582e363ef80e393d08a2efe8a204"
+    "sha256": "db9c13faf844e589b8a4bfb36c5c787cb37b78327d3be13b02b5029ee9e32565"
   },
   {
     "path": "tests/wallet-timeout-ui/WalletTimeoutUiTests.csproj",
-    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
   },
   {
     "path": "tests/wallet-timeout/Program.cs",
@@ -12813,7 +12837,7 @@
   },
   {
     "path": "tests/wallet-timeout/WalletTimeoutTests.csproj",
-    "sha256": "016743d5d6d3ab1540120600e232e53176064af4f6408d84f71095efcdcee309"
+    "sha256": "0808fab1013ae63b94a95749cd1d8ab5be9a390f4ebe43cedd849344d5be56ef"
   },
   {
     "path": "tests/windows-update-notice/Program.cs",
@@ -12821,7 +12845,7 @@
   },
   {
     "path": "tests/windows-update-notice/WindowsUpdateNoticeTests.csproj",
-    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
   },
   {
     "path": "tests/windows-wallet-tools/Program.cs",
@@ -12829,7 +12853,7 @@
   },
   {
     "path": "tests/windows-wallet-tools/WindowsWalletToolsTests.csproj",
-    "sha256": "daa966092b3ff59d62ae37413e62de19598f11a8472c1731c79e3574f1cfb631"
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
   },
   {
     "path": "tools/SlithySeedTool/Program.cs",
@@ -12837,7 +12861,7 @@
   },
   {
     "path": "tools/SlithySeedTool/SlithySeedTool.csproj",
-    "sha256": "b75a9499e1cb2e05ecd265cd7bac495e77243e076c1f39f8f4351c14da51195b"
+    "sha256": "5c5a796cc4b5efcc35033e9d2f30b7af22f67ff6f38fdd25c1148ea3610ce146"
   },
   {
     "path": "tools/build-core.sh",
@@ -12865,7 +12889,7 @@
   },
   {
     "path": "tools/public-source.json",
-    "sha256": "6c152c172e66422db0b1480d077b62d1a982d9d78bbbc38abe9a4258eb924c40"
+    "sha256": "d9c0c9c927ebd6835a0961b4182524d50b2d8701bbefcd736ca21556cb5826b0"
   },
   {
     "path": "tools/scan-source.py",

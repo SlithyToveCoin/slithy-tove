@@ -6,7 +6,7 @@ The harness links the production updater and node-host source. Its HTTP handler 
 
 You need Linux x64 with a graphical session and the GUI's system libraries. RPC port 54436 must be free. The test never attaches to a node that already owns that port. Public peer connections are disabled. HTTP requests outside localhost use a deliberately unavailable proxy during the test.
 
-Build on a machine with .NET 8:
+Build on a machine with the .NET 10 SDK:
 
 ```sh
 dotnet publish tests/security/linux-gui-package-update/LinuxGuiPackageUpdate.Tests.csproj \

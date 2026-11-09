@@ -29,9 +29,13 @@ if (args.Contains("--self-test-health-marker"))
 
 // This fixture has no wallet, node, network or GUI startup path.
 if (args.Length == 4 && args[0] == "--apply-update")
+{
+    WriteRuntimeReceipt("runtime-updater.json");
     return UpdateInstaller.Apply(args[1], args[2], int.Parse(args[3]));
+}
 if (args.Any(a => a.StartsWith("--updated-from=")))
 {
+    WriteRuntimeReceipt("runtime-replacement.json");
     if (File.Exists(Path.Combine(AppContext.BaseDirectory, "fail-startup"))) return 1;
     string updates = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixture-update-dir.txt"));
     UpdateInstaller.MarkCurrentVersionHealthy(updates, typeof(UpdateInstaller).Assembly.GetName().Version!);
@@ -39,6 +43,7 @@ if (args.Any(a => a.StartsWith("--updated-from=")))
 }
 if (args.Contains("--update-rolled-back"))
 {
+    WriteRuntimeReceipt("runtime-rollback.json");
     File.WriteAllText(Path.Combine(AppContext.BaseDirectory, "rollback-started"), "yes");
     return 0;
 }
@@ -79,7 +84,7 @@ if (!File.ReadAllBytes(oldWallet).SequenceEqual(walletFixture)) throw new Except
 if (args[2] == "success")
 {
     if (result != 0 || !File.Exists(Path.Combine(install, "introduced-marker"))) throw new Exception("Installer update failed.");
-    Console.WriteLine("PASS: EXE installer used the requested folder and replacement startup was healthy.");
+    Console.WriteLine("PASS: update used the requested folder and replacement startup was healthy.");
 }
 else
 {
@@ -87,6 +92,17 @@ else
         throw new Exception("Installer rollback did not restore the previous file set.");
     for (int i = 0; i < 50 && !File.Exists(Path.Combine(install, "rollback-started")); i++) Thread.Sleep(100);
     if (!File.Exists(Path.Combine(install, "rollback-started"))) throw new Exception("Restored app did not start.");
-    Console.WriteLine("PASS: failed EXE update restored the prior file set and restarted the old application.");
+    Console.WriteLine("PASS: failed update restored the prior file set and restarted the old application.");
 }
 return 0;
+
+static void WriteRuntimeReceipt(string file)
+{
+    // Record the runtime actually loaded by each side of an update, not just its target framework.
+    File.WriteAllText(Path.Combine(AppContext.BaseDirectory, file), System.Text.Json.JsonSerializer.Serialize(new
+    {
+        RuntimeVersion = Environment.Version.ToString(),
+        Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription,
+        AssemblyVersion = typeof(UpdateInstaller).Assembly.GetName().Version!.ToString()
+    }));
+}

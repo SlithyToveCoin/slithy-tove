@@ -47,6 +47,9 @@ internal static class Program
             Check(!((Button)Field(form, "sendButton")).Enabled, "A locked wallet cannot start a payment");
             Check(((Button)Field(form, "miningToggleButton")).Enabled, "Stop remains available while the wallet is locked");
             object animation = Field(form, "_bookMiningAnimation");
+            var miningProperty = System.ComponentModel.TypeDescriptor.GetProperties(animation)["Mining"]!;
+            Check(!miningProperty.IsBrowsable && miningProperty.SerializationVisibility == System.ComponentModel.DesignerSerializationVisibility.Hidden,
+                "The designer cannot save runtime mining state");
             Check((bool)animation.GetType().GetProperty("Mining")!.GetValue(animation)!, "Lock preserves mining animation state");
             Check(((Label)Field(form, "miningStatusLineLabel")).Text.Contains("selected mining address"), "Mining destination remains accurate after lock");
             typeof(Form1).GetField("_miningStartedByApp", flags)!.SetValue(form, false);

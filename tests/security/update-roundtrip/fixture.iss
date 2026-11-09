@@ -14,5 +14,8 @@ RestartApplications=no
 OutputDir={#OutputPath}
 OutputBaseFilename=fixture-setup
 Compression=lzma2
+[InstallDelete]
+; Simulate an obsolete runtime file removed by a newer installer.
+Type: files; Name: "{app}\old-marker"
 [Files]
 Source: "{#PayloadDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs

@@ -83,6 +83,16 @@ Type: files; Name: "{app}\Slithy Tove.pdb"
 Type: dirifempty; Name: "{app}"
 
 [Code]
+#include "RuntimeCleanup.iss"
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  { Do this after the new files are in place, never before an attempted install. }
+  if CurStep = ssPostInstall then begin
+    #include "runtime-files-0.1.48.iss"
+  end;
+end;
+
 function InitializeSetup(): Boolean;
 begin
   Result := True;

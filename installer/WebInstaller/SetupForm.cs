@@ -22,6 +22,78 @@ internal partial class SetupForm : Form
         }
     }
 
+    internal static string GetLicenseText()
+    {
+        System.Text.StringBuilder text = new();
+        foreach ((string title, string resource) in new[] {
+            ("Slithy Tove", "Slithy.InstallerLicense"),
+            (".NET runtime", "Slithy.DotnetLicense"),
+            (".NET third-party notices", "Slithy.DotnetNotices"),
+            ("Windows desktop runtime", "Slithy.WindowsDesktopLicense")
+        })
+        {
+            using Stream source = typeof(SetupForm).Assembly.GetManifestResourceStream(resource)
+                ?? throw new InvalidDataException("A bundled software notice is missing.");
+            using StreamReader reader = new(source);
+            text.AppendLine(title).AppendLine();
+            text.AppendLine(reader.ReadToEnd().ReplaceLineEndings(Environment.NewLine)).AppendLine();
+        }
+        return text.ToString();
+    }
+
+    internal static Form CreateLicensesDialog()
+    {
+        Form dialog = new()
+        {
+            Text = "Software licenses",
+            Font = SystemFonts.MessageBoxFont,
+            BackColor = Color.FromArgb(247, 243, 232),
+            ClientSize = new Size(760, 500),
+            MinimumSize = new Size(640, 400),
+            AutoScaleDimensions = new SizeF(96F, 96F),
+            AutoScaleMode = AutoScaleMode.Dpi,
+            StartPosition = FormStartPosition.CenterParent,
+            ShowInTaskbar = false,
+            MinimizeBox = false,
+            Padding = new Padding(12)
+        };
+        TextBox text = new()
+        {
+            Name = "licenseText",
+            AccessibleName = "Software license text",
+            Text = GetLicenseText(),
+            Multiline = true,
+            ReadOnly = true,
+            ScrollBars = ScrollBars.Vertical,
+            WordWrap = true,
+            Dock = DockStyle.Fill,
+            BackColor = Color.FromArgb(255, 253, 247),
+            TabIndex = 0
+        };
+        Button close = new()
+        {
+            Text = "Close",
+            DialogResult = DialogResult.OK,
+            Dock = DockStyle.Right,
+            Width = 100,
+            TabIndex = 1
+        };
+        Panel buttons = new() { Dock = DockStyle.Bottom, Height = 44, Padding = new Padding(0, 8, 0, 0) };
+        buttons.Controls.Add(close);
+        dialog.Controls.Add(text);
+        dialog.Controls.Add(buttons);
+        dialog.AcceptButton = close;
+        dialog.CancelButton = close;
+        dialog.ActiveControl = close;
+        return dialog;
+    }
+
+    private void Licenses_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
+    {
+        using Form dialog = CreateLicensesDialog();
+        dialog.ShowDialog(this);
+    }
+
     private async void Install_Click(object? sender, EventArgs e)
     {
         _cancel.Dispose();

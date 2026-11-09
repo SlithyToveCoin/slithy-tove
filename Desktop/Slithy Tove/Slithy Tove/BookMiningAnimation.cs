@@ -28,6 +28,9 @@ internal sealed class BookMiningAnimation : Control
         };
     }
 
+    // Mining state comes from the running node, not from the form designer.
+    [System.ComponentModel.Browsable(false)]
+    [System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
     public bool Mining
     {
         get => _mining;

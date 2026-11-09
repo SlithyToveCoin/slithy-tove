@@ -5,14 +5,15 @@ Compiler output goes in `build/`, which is not source-controlled.
 
 ## Runtime support
 
-Windows 0.1.48 and Linux GUI 0.1.49-beta.1 target .NET 8 and bundle runtime 8.0.33,
-the October 25, 2026 servicing release. Microsoft ends .NET 8 support on
-November 10, 2026. Moving both GUIs to .NET 10 LTS is the next runtime update.
+The desktop apps, recovery helper and Windows web installer target .NET 10 LTS.
+Build them with a serviced .NET 10 SDK. Microsoft supports .NET 10 through
+November 14, 2028.
 See [Microsoft's support policy](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core).
 
-These packages carry their own runtime. Installing a newer .NET runtime on your
+Release packages carry their own runtime. Installing a newer .NET runtime on your
 computer does not replace the copy bundled with Slithy; that copy arrives through
-an application update.
+an application update. Published release records describe the runtime in each
+download. Changing this source does not change an existing download.
 
 ## Linux native tools
 
@@ -59,7 +60,11 @@ To reuse an existing dependency build, set `SLITHY_TOOLCHAIN` to its
 
 ## Windows application
 
-Install the .NET 8 SDK and the Visual Studio .NET desktop development workload.
+Install the .NET 10 SDK. For the Visual Studio editor and Forms designer, use
+Visual Studio 2026 (18.0 or newer) with the .NET desktop development workload.
+Visual Studio 2022 does not support targeting .NET 10. You can build from a
+terminal with the standalone SDK without installing Visual Studio.
+See [Microsoft's SDK and Visual Studio requirements](https://learn.microsoft.com/en-us/dotnet/core/porting/versioning-sdk-msbuild-vs).
 Copy the four native Windows executables from the Linux build to
 `build/native/windows/bin` in your Windows checkout. Then run:
 
@@ -80,7 +85,7 @@ everyday wallet unless you intend to do so.
 
 ## Linux menu package
 
-Install the .NET 8 SDK on Linux for the recovery helper. From the source root:
+Install the .NET 10 SDK on Linux for the recovery helper. From the source root:
 
 ```sh
 dotnet publish tools/SlithySeedTool/SlithySeedTool.csproj -c Release -r linux-x64 --self-contained true -o build/seed/linux
@@ -95,7 +100,7 @@ The build never installs it over an existing node.
 
 ## Linux desktop app
 
-Install the .NET 8 SDK and build the native Linux tools above. Then run:
+Install the .NET 10 SDK and build the native Linux tools above. Then run:
 
 ```sh
 bash tools/build-linux-gui.sh "$PWD/build/native/linux/bin/slithyd" "$PWD/build/linux-gui"

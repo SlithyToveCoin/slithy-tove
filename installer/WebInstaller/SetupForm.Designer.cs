@@ -6,6 +6,7 @@ partial class SetupForm
     private System.ComponentModel.IContainer? components;
     private PictureBox artwork = null!;
     private Label heading = null!;
+    private LinkLabel licenses = null!;
     private Label description = null!;
     private Label status = null!;
     private ProgressBar progress = null!;
@@ -28,6 +29,7 @@ partial class SetupForm
         components = new System.ComponentModel.Container();
         artwork = new PictureBox();
         heading = new Label();
+        licenses = new LinkLabel();
         description = new Label();
         status = new Label();
         progress = new ProgressBar();
@@ -50,6 +52,16 @@ partial class SetupForm
         heading.Text = "Slithy Tove";
         heading.Font = new Font("Georgia", 27F, FontStyle.Bold);
         heading.Dock = DockStyle.Fill;
+        licenses.Name = "licensesLink";
+        licenses.Text = "Licenses";
+        licenses.AccessibleName = "Software licenses";
+        licenses.Dock = DockStyle.Fill;
+        licenses.TextAlign = ContentAlignment.MiddleRight;
+        licenses.LinkColor = Color.FromArgb(65, 99, 77);
+        licenses.ActiveLinkColor = Color.FromArgb(42, 48, 41);
+        licenses.TabStop = true;
+        licenses.TabIndex = 2;
+        licenses.LinkClicked += Licenses_LinkClicked;
         description.Text = "A wallet and CPU miner that helps support children's literacy.\n\nSetup downloads the current signed beta release. Internet access is required. Test balances do not carry into the live network.";
         description.Dock = DockStyle.Fill;
         status.Text = "Ready to download. Your wallet files stay on this computer.";
@@ -62,11 +74,13 @@ partial class SetupForm
         install.ForeColor = Color.White;
         install.FlatStyle = FlatStyle.Flat;
         install.Click += Install_Click;
+        install.TabIndex = 0;
         cancel.Text = "Cancel";
         cancel.Dock = DockStyle.Fill;
+        cancel.TabIndex = 1;
         cancel.Click += (_, _) => { if (_installing) _cancel.Cancel(); else Close(); };
         layout.Controls.Add(heading, 0, 0);
-        layout.SetColumnSpan(heading, 2);
+        layout.Controls.Add(licenses, 1, 0);
         layout.Controls.Add(description, 0, 1);
         layout.SetColumnSpan(description, 2);
         layout.Controls.Add(status, 0, 2);

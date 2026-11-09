@@ -2,11 +2,12 @@ param(
     [switch]$Sign,
     [string]$SignToolPath,
     [string]$SigningLibraryPath,
-    [string]$SigningMetadataPath
+    [string]$SigningMetadataPath,
+    [string]$OutputDirectory = ""
 )
 $ErrorActionPreference = 'Stop'
 $project = Join-Path $PSScriptRoot 'WebInstaller/WebInstaller.csproj'
-$output = Join-Path $PSScriptRoot 'output/web-installer'
+$output = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $PSScriptRoot 'output/web-installer' }
 dotnet publish $project -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o $output
 if ($LASTEXITCODE -ne 0) { throw 'Web installer build failed.' }
 $file = Join-Path $output 'Slithy-Tove-Web-Setup.exe'

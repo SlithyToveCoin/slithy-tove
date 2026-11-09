@@ -1,8 +1,8 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.48-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.50-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
 
-The terminal app remains available. Installing this GUI does not replace it, and the terminal updater does not update the GUI.
+If you already use the terminal app, your existing installation and wallets stay in place. This GUI has its own installer and update feed.
 
 ## Run the test package
 
@@ -27,7 +27,7 @@ such as ICU and OpenSSL. On Ubuntu 24.04, the relevant packages include
 installed on a full desktop. A headless server is not a desktop test
 environment. Older distributions may need a build made for their libraries.
 
-The older `install-desktop.sh` script remains available for a portable installation. It creates a menu shortcut pointing to the extracted folder, so leave that folder in place if you use the script. The graphical installer copies the program to its managed installation folder instead.
+If you used the older `install-desktop.sh` script, its menu shortcut points to the extracted folder. Leave that folder in place until you switch to the graphical installer, which copies the program to its managed installation folder.
 
 To remove a graphical installation, close Slithy, then right-click its application-menu entry and choose **Uninstall Slithy Tove**. You can also open **slithy-uninstall** in its installed version folder. Removal leaves your wallets, settings and blockchain data in place. Older program versions and any extra files you placed beside the program are left alone.
 
@@ -116,7 +116,7 @@ For published packages, use [slithy.io/downloads.html](https://slithy.io/downloa
 
 The Avalonia interface links the existing Windows wallet RPC client and recovery-word code. The Windows Forms interface itself is not used on Linux.
 
-From the repository root with the .NET SDK installed:
+From the repository root with the .NET 10 SDK installed:
 
 ```bash
 bash tools/build-core.sh linux

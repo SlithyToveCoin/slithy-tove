@@ -477,6 +477,15 @@ class Suite:
             wait_for(lambda: not x.windows("Open wallet"), "open selected wallet", timeout=30)
             wait_for(lambda: json.loads((config / "settings.json").read_text()).get("LastWalletName") == "DesktopBeta", "persist dropdown selection")
             assert rpc("getwalletinfo", wallet="DesktopBeta")["walletname"] == "DesktopBeta"
+            # Saving the wallet name happens before its refresh finishes. Wait
+            # for the Manage button's enabled fill before asking the app to close.
+            def wallet_controls_ready():
+                width, _, pixels = x.pixels(window)
+                gold = bytes.fromhex("ede0bd")
+                matches = sum(pixels[(py * width + px) * 3:(py * width + px) * 3 + 3] == gold
+                              for py in range(277, 282) for px in range(385, 445))
+                return matches >= 240
+            wait_for(wallet_controls_ready, "enabled wallet controls after refresh", timeout=30)
             x.screenshot(self.output / "wallet-open.png", window)
             self.passed("real wallet dropdown selects, opens and remembers the chosen wallet")
             x.click(window, x.geometry(window)["WIDTH"] - 20, 16)

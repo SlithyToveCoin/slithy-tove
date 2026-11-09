@@ -8,6 +8,7 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+        ApplicationConfiguration.Initialize();
         System.Diagnostics.Trace.Listeners.Add(new System.Diagnostics.TextWriterTraceListener(Console.Out));
         System.Diagnostics.Trace.AutoFlush = true;
         int count = 0;
@@ -60,6 +61,35 @@ internal static class Program
         Check(ChainSyncDisplay.From(long.MaxValue - 1, long.MaxValue, false, false).Percent == 99,
             "Large heights cannot overflow or claim completion");
         Check(ChainSyncDisplay.From(50, 200, false, false).Percent == 25, "New headers update progress target");
+        foreach ((string name, string expected) in new[] {
+            ("Slithy.InstallerLicense", "d455224b6c1a279b92a7e7993b05c1f2b16486df2f6e86b5da6e670dacfb4ebd"),
+            ("Slithy.DotnetLicense", "cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310"),
+            ("Slithy.DotnetNotices", "c6926930d0181fa515076603e1305461b1bce5275a8b35337d75d2eef3acad4a"),
+            ("Slithy.WindowsDesktopLicense", "cfc21f5e8bd655ae997eec916138b707b1d290b83272c02a95c9f821b8c87310")
+        })
+        {
+            using Stream notice = typeof(SetupForm).Assembly.GetManifestResourceStream(name)
+                ?? throw new Exception("Missing installer notice: " + name);
+            Check(Convert.ToHexString(SHA256.HashData(notice)).Equals(expected, StringComparison.OrdinalIgnoreCase),
+                "Bundled notice matches reviewed source: " + name);
+        }
+        string licenseText = SetupForm.GetLicenseText();
+        Check(licenseText.Contains(".NET third-party notices") &&
+            licenseText.Contains("Copyright (c) .NET Foundation") &&
+            licenseText.Contains("Windows desktop runtime"), "License view includes the bundled notices");
+        using (Form licenses = SetupForm.CreateLicensesDialog())
+        {
+            TextBox text = licenses.Controls.Find("licenseText", true).OfType<TextBox>().Single();
+            Check(text.ReadOnly && text.Multiline && text.TabStop &&
+                text.ScrollBars == ScrollBars.Vertical && text.Text == licenseText,
+                "License text is read-only, scrollable and keyboard accessible");
+        }
+        using (SetupForm setup = new())
+        {
+            LinkLabel link = setup.Controls.Find("licensesLink", true).OfType<LinkLabel>().Single();
+            Check(link.TabStop && link.Enabled && link.AccessibleName == "Software licenses",
+                "Installer has a keyboard-accessible licenses link");
+        }
         if (args.Length == 2 && args[0] == "--verify-publisher")
         {
             SetupForm.VerifyPublisherAsync(Path.GetFullPath(args[1]), CancellationToken.None).GetAwaiter().GetResult();
@@ -79,7 +109,6 @@ internal static class Program
         }
         if (args.Length == 1)
         {
-            ApplicationConfiguration.Initialize();
             using SetupForm form = new();
             form.StartPosition = FormStartPosition.Manual;
             form.Location = new Point(-4000, -4000);
@@ -88,6 +117,16 @@ internal static class Program
             using Bitmap bitmap = new(form.Width, form.Height);
             form.DrawToBitmap(bitmap, new Rectangle(Point.Empty, form.Size));
             bitmap.Save(Path.GetFullPath(args[0]));
+            using Form licenses = SetupForm.CreateLicensesDialog();
+            licenses.StartPosition = FormStartPosition.Manual;
+            licenses.Location = new Point(-4000, -4000);
+            licenses.Show(form);
+            Application.DoEvents();
+            using Bitmap licenseBitmap = new(licenses.Width, licenses.Height);
+            licenses.DrawToBitmap(licenseBitmap, new Rectangle(Point.Empty, licenses.Size));
+            string licensePreview = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(args[0]))!,
+                Path.GetFileNameWithoutExtension(args[0]) + "-licenses.png");
+            licenseBitmap.Save(licensePreview);
             Console.WriteLine("Saved installer layout preview.");
         }
         Console.WriteLine($"{count} checks passed.");

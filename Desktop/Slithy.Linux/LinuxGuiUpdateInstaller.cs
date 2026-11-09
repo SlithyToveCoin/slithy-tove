@@ -140,7 +140,9 @@ internal sealed class LinuxGuiUpdateInstaller
             if (!File.Exists(path)) throw new InvalidOperationException("The existing version folder is incomplete. It was not replaced.");
             await using FileStream first = File.OpenRead(Path.Combine(staged, name));
             await using FileStream second = File.OpenRead(path);
-            if (!(await SHA256.HashDataAsync(first, cancellationToken)).SequenceEqual(await SHA256.HashDataAsync(second, cancellationToken)))
+            byte[] stagedHash = await SHA256.HashDataAsync(first, cancellationToken);
+            byte[] existingHash = await SHA256.HashDataAsync(second, cancellationToken);
+            if (!stagedHash.SequenceEqual(existingHash))
                 throw new InvalidOperationException("The existing version folder contains changed files. It was not replaced.");
             if (OperatingSystem.IsLinux() && File.GetUnixFileMode(path) != File.GetUnixFileMode(Path.Combine(staged, name)))
                 throw new InvalidOperationException("The existing version folder has different file permissions. It was not replaced.");
