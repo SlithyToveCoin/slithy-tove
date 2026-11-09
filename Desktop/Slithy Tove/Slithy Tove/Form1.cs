@@ -67,6 +67,12 @@ public partial class Form1 : Form
     private long _lastMiningBlocksCount = -1;
     private int _operationProgressPercent;
     private int _updateProgressPercent;
+    private CancellationTokenSource _applicationLifetime = new();
+    private readonly SemaphoreSlim _nodeStartupGate = new(1, 1);
+    private CancellationTokenSource? _nodeStartupCancellation;
+    private bool _nodeStartupInProgress;
+    private bool _walletStartupCancelled;
+    private readonly Button _cancelNodeStartupButton = new();
 
     private sealed record DiskSpaceSnapshot(
         string DriveName,
@@ -99,7 +105,7 @@ public partial class Form1 : Form
         InitializeOperationProgress();
         _settings = _settingsStore.Load();
         ArchivePreSeedWallets();
-        _localNode = new LocalNodeManager(AppendLog);
+        _localNode = new LocalNodeManager(AppendLog, _settingsStore);
         _updateService = new UpdateService(_settingsStore.UpdateDirectory);
         Application.AddMessageFilter(_activityFilter);
         _trayIcon.Icon = Icon ?? Icon.ExtractAssociatedIcon(Application.ExecutablePath) ?? SystemIcons.Application;
@@ -121,6 +127,33 @@ public partial class Form1 : Form
         updateProgressTrackPanel.Resize += (_, _) => UpdateUpdateProgressFill(_updateProgressPercent);
         updatesCard.SizeChanged += (_, _) => UpdateUpdatesScrollArea();
         UpdateUpdatesScrollArea();
+
+        _cancelNodeStartupButton.Text = "Cancel";
+        _cancelNodeStartupButton.AccessibleName = "Cancel opening the wallet";
+        _cancelNodeStartupButton.Dock = DockStyle.Right;
+        _cancelNodeStartupButton.AutoSize = true;
+        _cancelNodeStartupButton.Font = _operationProgressLabel.Font;
+        _cancelNodeStartupButton.FlatStyle = FlatStyle.Flat;
+        _cancelNodeStartupButton.FlatAppearance.BorderSize = 0;
+        _cancelNodeStartupButton.Padding = Padding.Empty;
+        _cancelNodeStartupButton.ForeColor = Color.FromArgb(48, 68, 56);
+        _cancelNodeStartupButton.Visible = false;
+        _cancelNodeStartupButton.UseWaitCursor = false;
+        _cancelNodeStartupButton.Click += (_, _) =>
+        {
+            _walletStartupCancelled = true;
+            _nodeStartupCancellation?.Cancel();
+        };
+        _operationProgressPanel.Controls.Add(_cancelNodeStartupButton);
+        _cancelNodeStartupButton.SendToBack();
+        _operationProgressPanel.Layout += (_, _) =>
+        {
+            // Button text needs a little more room than the label beside it.
+            if (!_cancelNodeStartupButton.Visible) return;
+            int height = _cancelNodeStartupButton.GetPreferredSize(Size.Empty).Height
+                + _operationProgressPanel.Padding.Vertical;
+            if (_operationProgressPanel.Height < height) _operationProgressPanel.Height = height;
+        };
 
         _operationProgressPanel.BringToFront();
         mainTabControl.BringToFront();
@@ -377,7 +410,9 @@ public partial class Form1 : Form
                 MessageBoxIcon.Warning);
         }
         await RefreshNodeStatusAsync();
+        if (_closingForExit || IsDisposed) return;
         await ShowWalletAccessAsync(startupPrompt: true);
+        if (_closingForExit || IsDisposed) return;
         _startupComplete = true;
         _updateCheckTimer.Start();
         if (InstallerUpdatesEnabled && _settings.CheckForUpdatesAutomatically)
@@ -419,7 +454,7 @@ public partial class Form1 : Form
 
     private async void connectionModeComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
-        if (connectionModeComboBox.SelectedIndex < 0)
+        if (connectionModeComboBox.SelectedIndex < 0 || _walletBusy || _nodeStartupInProgress || _closingForExit)
         {
             return;
         }
@@ -452,7 +487,8 @@ public partial class Form1 : Form
 
     private async void officialNodeComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
-        if (_loadingSettingsIntoControls || officialNodeComboBox.SelectedIndex < 0)
+        if (_loadingSettingsIntoControls || officialNodeComboBox.SelectedIndex < 0 ||
+            _walletBusy || _nodeStartupInProgress || _closingForExit)
         {
             return;
         }
@@ -481,8 +517,13 @@ public partial class Form1 : Form
 
             await RefreshNodeStatusAsync();
         }
+        catch (OperationCanceledException) when (_closingForExit || _walletStartupCancelled)
+        {
+            AppendLog("Public node change was cancelled.");
+        }
         catch (Exception ex)
         {
+            if (_closingForExit || IsDisposed) return;
             AppendLog($"Public node change failed: {ex.Message}");
             SetConnectionState("Connection needs a check", StatusKind.Error);
             statusMessageLabel.Text =
@@ -495,20 +536,20 @@ public partial class Form1 : Form
         }
         finally
         {
-            officialNodeComboBox.Enabled = IsAutomaticOfficialNodeMode();
+            officialNodeComboBox.Enabled = !_walletBusy && !_nodeStartupInProgress && IsAutomaticOfficialNodeMode();
             miningToggleButton.Enabled = CanMine();
         }
     }
 
     private async Task RestartLocalNodeAfterPublicNodeChangeAsync()
     {
-        Uri localNode = BuildLocalNodeUri();
-        bool wasMining = _miningStartedByApp ||
-                         miningToggleButton.Text.StartsWith("Stop", StringComparison.OrdinalIgnoreCase);
-
+        await _nodeStartupGate.WaitAsync(_applicationLifetime.Token);
         _miningChangeInProgress = true;
         try
         {
+            Uri localNode = BuildLocalNodeUri();
+            bool wasMining = _miningStartedByApp ||
+                             miningToggleButton.Text.StartsWith("Stop", StringComparison.OrdinalIgnoreCase);
             if (wasMining)
             {
                 statusMessageLabel.Text = "Stopping mining before changing public nodes...";
@@ -532,15 +573,20 @@ public partial class Form1 : Form
             statusMessageLabel.Text = "Restarting the local node with the selected public peer...";
             AppendLog("Restarting local node so the selected public peer takes effect.");
             await _localNode.StopAsync(localNode);
-            await Task.Delay(750);
+            await Task.Delay(750, _applicationLifetime.Token);
             await SelectAutomaticPublicNodeAsync();
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await _localNode.StartAsync(_settings);
             startNodeButton.Enabled = false;
             stopNodeButton.Enabled = true;
             await WaitForLocalNodeAsync();
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await CatchUpLocalNodeAsync(localNode);
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await EnsureLocalChainMatchesPublicCheckpointAsync(localNode);
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await SyncLocalNodeToPublicCheckpointAsync(localNode);
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
 
             if (wasMining)
             {
@@ -552,6 +598,7 @@ public partial class Form1 : Form
         finally
         {
             _miningChangeInProgress = false;
+            _nodeStartupGate.Release();
         }
     }
 
@@ -628,19 +675,20 @@ public partial class Form1 : Form
             }
 
             _walletOpening = true;
+            _walletStartupCancelled = false;
             ShowCachedWalletBalance(dialog.WalletName);
-            SetWalletBusy(true, "Checking the local Slithy node...", 5);
+            SetWalletBusy(true, "Checking the local Slithy node...");
             await EnsureWalletServiceAsync();
             Uri endpoint = WalletRpcUri;
-            SetWalletBusy(true, "Opening the Slithy wallet service...", 5);
+            SetWalletBusy(true, "Opening the Slithy wallet service...");
             if (_walletSnapshot is not null)
             {
-                SetWalletBusy(true, "Closing the previous wallet...", 55);
+                SetWalletBusy(true, "Closing the previous wallet...");
                 await _walletRpcClient.CloseWalletAsync(endpoint);
             }
             if (dialog.AccessMode == WalletAccessMode.Create)
             {
-                SetWalletBusy(true, "Creating your new wallet...", 65);
+                SetWalletBusy(true, "Creating your new wallet...");
                 // Record this before creation so an interrupted recovery screen
                 // cannot erase the reminder. Recovery words are not stored here.
                 _settings.WalletsNeedingBackup ??= [];
@@ -665,12 +713,12 @@ public partial class Form1 : Form
             }
             else if (dialog.AccessMode == WalletAccessMode.RestoreBackup)
             {
-                SetWalletBusy(true, "Restoring wallet backup...", 65);
+                SetWalletBusy(true, "Restoring wallet backup...");
                 WalletBackupTools.RestoreBackup(
                     dialog.RestoreSourceDirectory,
                     GetTransparentWalletDirectory(),
                     dialog.WalletName);
-                SetWalletBusy(true, "Unlocking restored wallet...", 70);
+                SetWalletBusy(true, "Unlocking restored wallet...");
                 await _walletRpcClient.OpenWalletAsync(
                     endpoint,
                     dialog.WalletName,
@@ -680,7 +728,7 @@ public partial class Form1 : Form
             }
             else if (dialog.AccessMode == WalletAccessMode.RestoreWords)
             {
-                SetWalletBusy(true, "Restoring recovery words...", 65);
+                SetWalletBusy(true, "Restoring recovery words...");
                 await _walletRpcClient.RestoreWalletAsync(
                     endpoint,
                     dialog.WalletName,
@@ -693,7 +741,7 @@ public partial class Form1 : Form
             }
             else
             {
-                SetWalletBusy(true, "Unlocking your wallet...", 70);
+                SetWalletBusy(true, "Unlocking your wallet...");
                 await _walletRpcClient.OpenWalletAsync(
                     endpoint,
                     dialog.WalletName,
@@ -704,7 +752,7 @@ public partial class Form1 : Form
             _openWalletName = dialog.WalletName;
             _settings.LastWalletName = dialog.WalletName;
             _settingsStore.Save(_settings);
-            SetWalletBusy(true, "Loading balance...", 88);
+            SetWalletBusy(true, "Loading balance...");
             await RefreshWalletAsync(forceRefresh: true, waitForSettledBalance: true);
             SetWalletBusy(true, "Wallet ready.", 100);
             walletButton.Text = "Manage";
@@ -717,8 +765,14 @@ public partial class Form1 : Form
             receiveButton.Enabled = true;
             miningToggleButton.Enabled = CanMine();
         }
+        catch (OperationCanceledException) when (_closingForExit || _walletStartupCancelled)
+        {
+            AppendLog("Wallet opening was cancelled.");
+            if (!_closingForExit) ClearWallet();
+        }
         catch (Exception ex)
         {
+            if (_closingForExit || IsDisposed) return;
             AppendLog($"Wallet open failed: {ex.Message}");
             MessageBox.Show(this,
                 $"The wallet could not be opened.\n\n{FriendlyWalletError(ex.Message)}",
@@ -730,6 +784,7 @@ public partial class Form1 : Form
             dialog?.Dispose();
             _walletOpening = false;
             _walletDialogOpen = false;
+            _walletStartupCancelled = false;
             walletButton.Enabled = true;
             SetWalletBusy(false);
             if (_walletSnapshot is not null && !string.IsNullOrWhiteSpace(_openWalletName))
@@ -1093,6 +1148,7 @@ public partial class Form1 : Form
         }
         catch (Exception ex)
         {
+            if (_closingForExit || IsDisposed) return;
             AppendLog($"Mining control failed: {ex.Message}");
             if (stopRequested && IsLocalNodeUnavailable(ex))
             {
@@ -1605,9 +1661,9 @@ public partial class Form1 : Form
 
     private async Task EnsureWalletServiceAsync()
     {
-        SetWalletBusy(true, "Starting the local Slithy node...", 10);
+        SetWalletBusy(true, "Starting the local Slithy node...");
         await StartLocalNodeIfNeededAsync();
-        SetWalletBusy(true, "Wallet service is ready on this computer...", 60);
+        SetWalletBusy(true, "Wallet service is ready on this computer...");
     }
 
     private async Task RefreshWalletAsync(
@@ -1743,7 +1799,7 @@ public partial class Form1 : Form
     {
         NodeInfo nodeInfo = await _rpcClient.GetInfoAsync(BuildLocalNodeUri(), TimeSpan.FromSeconds(5));
         long targetHeight = nodeInfo.Height;
-        SetWalletBusy(true, "Scanning wallet history...", 90);
+        SetWalletBusy(true, "Scanning wallet history...");
         for (int attempt = 0; attempt < 120; attempt++)
         {
             WalletScanStatus scan = await _walletRpcClient.GetScanStatusAsync(WalletRpcUri);
@@ -1756,14 +1812,14 @@ public partial class Form1 : Form
                 ? scan.Progress
                 : Math.Clamp(scan.LastProcessedBlockHeight / (decimal)targetHeight, 0m, 1m);
             decimal progressValue = Math.Max(scan.Progress, heightProgress);
-            int scanProgress = 90 + (int)Math.Round(progressValue * 6m, MidpointRounding.AwayFromZero);
+            int scanProgress = (int)Math.Round(progressValue * 100m, MidpointRounding.AwayFromZero);
             SetWalletBusy(true,
                 $"Syncing wallet history {Math.Min(scan.LastProcessedBlockHeight, targetHeight):N0}/{targetHeight:N0} blocks...",
-                Math.Clamp(scanProgress, 90, 96));
+                Math.Clamp(scanProgress, 0, 100));
             await Task.Delay(500);
         }
 
-        SetWalletBusy(true, "Loading current balance...", 98);
+        SetWalletBusy(true, "Loading current balance...");
         return await _walletRpcClient.GetSnapshotAsync(WalletRpcUri);
     }
 
@@ -1993,20 +2049,22 @@ public partial class Form1 : Form
         sendButton.Enabled = !busy && !_networkLockedByUpdate && _walletSnapshot is not null;
         receiveButton.Enabled = !busy && _walletSnapshot is not null;
         miningToggleButton.Enabled = !busy && CanMine();
+        connectionModeComboBox.Enabled = !busy && !_closingForExit;
+        officialNodeComboBox.Enabled = !busy && !_closingForExit && IsAutomaticOfficialNodeMode();
+        nodeAddressTextBox.Enabled = !busy && !_closingForExit && IsCustomNodeMode();
         if (!string.IsNullOrWhiteSpace(message))
         {
-            if (!_installingUpdate) availableBalanceLabel.Text = message;
-            _operationProgressLabel.Text = message;
+            if (!_installingUpdate && availableBalanceLabel.Text != message) availableBalanceLabel.Text = message;
+            if (_operationProgressLabel.Text != message) _operationProgressLabel.Text = message;
+            _operationProgressTrack.AccessibleDescription = message;
         }
+        _operationProgressTrack.Indeterminate = busy && !_installingUpdate && progressPercent < 0;
+        _operationProgressFill.Visible = !_operationProgressTrack.Indeterminate;
         if (progressPercent >= 0)
         {
             _operationProgressPercent = Math.Clamp(progressPercent, 0, 100);
         }
-        else if (busy && _operationProgressPercent == 0)
-        {
-            _operationProgressPercent = 10;
-        }
-        else if (!busy)
+        else
         {
             _operationProgressPercent = 0;
         }
@@ -2087,53 +2145,102 @@ public partial class Form1 : Form
 
     private async Task WaitForLocalNodeAsync()
     {
-        for (int attempt = 0; attempt < 30; attempt++)
+        using CancellationTokenSource cancellation = CancellationTokenSource.CreateLinkedTokenSource(_applicationLifetime.Token);
+        _nodeStartupCancellation = cancellation;
+        _nodeStartupInProgress = true;
+        _cancelNodeStartupButton.Visible = _walletOpening;
+        bool ownedProcess = _localNode.IsRunning;
+        bool priorBusy = _walletBusy;
+        try
         {
-            try
+            while (true)
             {
-                await _rpcClient.GetInfoAsync(BuildLocalNodeUri(), TimeSpan.FromSeconds(2));
-                return;
+                try
+                {
+                    await NodeStartupWaiter.WaitAsync(async token =>
+                    {
+                        string? stage = await _rpcClient.GetStartupStageAsync(BuildLocalNodeUri(), token);
+                        return new NodeStartupProbe(stage is null, stage ?? "Wallet service ready.");
+                    },
+                    () => ownedProcess ? _localNode.ReadStartupActivity() : new(true, TimeSpan.Zero, 0, null),
+                    stage =>
+                    {
+                        if (_closingForExit || IsDisposed) return;
+                        SetWalletBusy(true, stage);
+                        SetConnectionState(_walletOpening ? "Loading wallet" : "Starting local node", StatusKind.Neutral);
+                    }, cancellation.Token);
+                    return;
+                }
+                catch (NodeStartupStalledException)
+                {
+                    if (_closingForExit) throw new OperationCanceledException(cancellation.Token);
+                    DialogResult answer = MessageBox.Show(this,
+                        "The local node is still running but has not shown startup activity. It may be waiting on your disk.\n\nKeep waiting? Choose No to cancel opening the wallet.",
+                        "Still loading", MessageBoxButtons.YesNo, MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button1);
+                    if (answer == DialogResult.Yes) continue;
+                    _walletStartupCancelled = true;
+                    cancellation.Cancel();
+                    cancellation.Token.ThrowIfCancellationRequested();
+                }
             }
-            catch
-            {
-                // Wait until the local RPC endpoint is ready.
-            }
-
-            if (!_localNode.IsRunning)
-            {
-                throw new InvalidOperationException("The local node stopped before it was ready.");
-            }
-
-            await Task.Delay(500);
         }
-
-        throw new TimeoutException("The local node did not become ready within 15 seconds.");
+        finally
+        {
+            _nodeStartupCancellation = null;
+            _nodeStartupInProgress = false;
+            _cancelNodeStartupButton.Visible = false;
+            if (!priorBusy && !_closingForExit) SetWalletBusy(false);
+        }
     }
 
     private async Task StartLocalNodeIfNeededAsync()
     {
-        Uri localNode = BuildLocalNodeUri();
+        await _nodeStartupGate.WaitAsync(_applicationLifetime.Token);
         try
         {
-            await _rpcClient.GetInfoAsync(localNode, TimeSpan.FromSeconds(2));
+            Uri localNode = BuildLocalNodeUri();
+            bool responding = false;
+            bool ready = false;
+            try
+            {
+                string? stage = await _rpcClient.GetStartupStageAsync(localNode, _applicationLifetime.Token);
+                responding = true;
+                ready = stage is null;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode is null &&
+                ex.HttpRequestError is System.Net.Http.HttpRequestError.ConnectionError or System.Net.Http.HttpRequestError.NameResolutionError)
+            {
+                // A refused local connection is expected before the child starts.
+            }
+            catch (OperationCanceledException) when (!_applicationLifetime.IsCancellationRequested)
+            {
+                // The existing node may still be warming up before it answers RPC.
+            }
+            if (!ready)
+            {
+                if (!responding && !_localNode.IsRunning)
+                {
+                    await SelectAutomaticPublicNodeAsync();
+                    _applicationLifetime.Token.ThrowIfCancellationRequested();
+                    await _localNode.StartAsync(_settings);
+                }
+                startNodeButton.Enabled = false;
+                stopNodeButton.Enabled = true;
+                await WaitForLocalNodeAsync();
+            }
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await CatchUpLocalNodeAsync(localNode);
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await EnsureLocalChainMatchesPublicCheckpointAsync(localNode);
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
             await SyncLocalNodeToPublicCheckpointAsync(localNode);
-            return;
+            _applicationLifetime.Token.ThrowIfCancellationRequested();
         }
-        catch
+        finally
         {
-            // No local node is answering yet.
+            _nodeStartupGate.Release();
         }
-
-        await SelectAutomaticPublicNodeAsync();
-        await _localNode.StartAsync(_settings);
-        startNodeButton.Enabled = false;
-        stopNodeButton.Enabled = true;
-        await WaitForLocalNodeAsync();
-        await CatchUpLocalNodeAsync(localNode);
-        await EnsureLocalChainMatchesPublicCheckpointAsync(localNode);
-        await SyncLocalNodeToPublicCheckpointAsync(localNode);
     }
 
     private async Task SelectAutomaticPublicNodeAsync()
@@ -2318,7 +2425,7 @@ public partial class Form1 : Form
     private async Task<bool> RefreshNodeStatusAsync()
     {
         // Picks a healthy node, shows chain status, and refreshes treasury information.
-        if (_refreshing)
+        if (_refreshing || _nodeStartupInProgress || _nodeStartupGate.CurrentCount == 0 || _closingForExit)
         {
             return false;
         }
@@ -2327,6 +2434,7 @@ public partial class Form1 : Form
         try
         {
             NodeSelection selection = await GetHealthyNodeAsync();
+            if (_nodeStartupInProgress || _nodeStartupGate.CurrentCount == 0 || _closingForExit) return false;
             NodeInfo info = selection.Info;
             ShowChainProgress(info);
             UpdateDiskSpaceDisplay();
@@ -2356,6 +2464,7 @@ public partial class Form1 : Form
             {
                 PublicTreasuryStatus? publicTreasury =
                     await _treasuryStatusService.TryGetPublicStatusAsync(_settings.TreasuryStatusUrl);
+                if (_nodeStartupInProgress || _nodeStartupGate.CurrentCount == 0 || _closingForExit) return false;
                 if (publicTreasury is not null && publicTreasury.ChainHeight >= info.Height)
                 {
                     treasuryStatusLabel.Text =
@@ -2370,6 +2479,7 @@ public partial class Form1 : Form
             }
             catch (Exception ex)
             {
+                if (_nodeStartupInProgress || _nodeStartupGate.CurrentCount == 0 || _closingForExit) return false;
                 Debug.WriteLine(ex);
                 TreasuryStatus treasury = TreasuryStatusCalculator.FromChainHeight(info.Height);
                 treasuryStatusLabel.Text =
@@ -2380,6 +2490,7 @@ public partial class Form1 : Form
         }
         catch (Exception ex)
         {
+            if (_nodeStartupInProgress || _nodeStartupGate.CurrentCount == 0 || _closingForExit) return false;
             _consecutiveNodeRefreshFailures++;
             UpdateDiskSpaceDisplay();
             bool recentlyHealthy =
@@ -2952,6 +3063,7 @@ public partial class Form1 : Form
 
         e.Cancel = true;
         _closingForExit = true;
+        _applicationLifetime.Cancel();
         Enabled = false;
         statusTimer.Stop();
         _updateCheckTimer.Stop();
@@ -2998,6 +3110,8 @@ public partial class Form1 : Form
         }
         catch (Exception ex)
         {
+            _applicationLifetime.Dispose();
+            _applicationLifetime = new CancellationTokenSource();
             _closingForExit = false;
             Enabled = true;
             statusTimer.Start();

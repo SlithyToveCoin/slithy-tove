@@ -14,22 +14,65 @@ namespace Slithy_Tove;
 internal sealed class LocalNodeManager
 {
     private readonly Action<string> _log;
-    private readonly AppSettingsStore _paths = new();
+    private readonly AppSettingsStore _paths;
     private readonly NodeRpcClient _rpcClient = new();
     private Process? _process;
+    private readonly object _startupLock = new();
+    private string _startupStage = "Starting the local Slithy node...";
+    private long _startupWorkSequence;
 
-    public LocalNodeManager(Action<string> log)
+    public LocalNodeManager(Action<string> log, AppSettingsStore? paths = null)
     {
         _log = log;
+        _paths = paths ?? new AppSettingsStore();
     }
 
     public bool IsRunning => _process is { HasExited: false };
+
+    public NodeStartupActivity ReadStartupActivity()
+    {
+        Process? process = _process;
+        if (process is null || process.HasExited)
+            return new(false, TimeSpan.Zero, 0, null);
+        TimeSpan cpu;
+        try
+        {
+            process.Refresh();
+            cpu = process.TotalProcessorTime;
+        }
+        catch (InvalidOperationException)
+        {
+            return new(false, TimeSpan.Zero, 0, null);
+        }
+        lock (_startupLock)
+            return new(true, cpu, _startupWorkSequence, _startupStage);
+    }
+
+    private void ObserveStartupLine(string line)
+    {
+        const string marker = "init message: ";
+        int offset = line.IndexOf(marker, StringComparison.Ordinal);
+        if (offset < 0) return;
+        string stage = NodeRpcClient.DescribeStartupStage(line[(offset + marker.Length)..]);
+        lock (_startupLock)
+        {
+            if (stage == _startupStage) return;
+            _startupStage = stage;
+            _startupWorkSequence++;
+        }
+    }
 
     public Task StartAsync(AppSettings settings)
     {
         if (IsRunning)
         {
             return Task.CompletedTask;
+        }
+
+        lock (_startupLock)
+        {
+            _startupStage = "Starting the local Slithy node...";
+            _startupWorkSequence = 0;
         }
 
         string executable = Path.Combine(AppContext.BaseDirectory, "Binaries", "slithyd.exe");
@@ -90,6 +133,7 @@ internal sealed class LocalNodeManager
         {
             if (!string.IsNullOrWhiteSpace(e.Data))
             {
+                ObserveStartupLine(e.Data);
                 _log(e.Data);
             }
         };
@@ -97,6 +141,7 @@ internal sealed class LocalNodeManager
         {
             if (!string.IsNullOrWhiteSpace(e.Data))
             {
+                ObserveStartupLine(e.Data);
                 _log(e.Data);
             }
         };

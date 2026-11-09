@@ -76,7 +76,7 @@ partial class Form1
     private Button _headerUpdateButton;
     private BookMiningAnimation _bookMiningAnimation;
     private Panel _operationProgressPanel;
-    private Panel _operationProgressTrack;
+    private LoadingProgressTrack _operationProgressTrack;
     private Panel _operationProgressFill;
     private Label _operationProgressLabel;
     private TabControl advancedTabControl;
@@ -275,7 +275,7 @@ partial class Form1
         recentActivityTitleLabel = new Label();
         _operationProgressPanel = new BufferedPanel();
         _operationProgressLabel = new Label();
-        _operationProgressTrack = new BufferedPanel();
+        _operationProgressTrack = new LoadingProgressTrack();
         _operationProgressFill = new Panel();
         _trayIcon = new NotifyIcon(components);
         _trayMenu = new ContextMenuStrip(components);
@@ -1841,10 +1841,10 @@ partial class Form1
         _operationProgressPanel.Controls.Add(_operationProgressLabel);
         _operationProgressPanel.Controls.Add(_operationProgressTrack);
         _operationProgressPanel.Dock = DockStyle.Bottom;
-        _operationProgressPanel.Location = new Point(0, 962);
+        _operationProgressPanel.Location = new Point(0, 958);
         _operationProgressPanel.Name = "_operationProgressPanel";
         _operationProgressPanel.Padding = new Padding(18, 7, 18, 7);
-        _operationProgressPanel.Size = new Size(1495, 44);
+        _operationProgressPanel.Size = new Size(1495, 48);
         _operationProgressPanel.TabIndex = 2;
         _operationProgressPanel.Visible = false;
         // 

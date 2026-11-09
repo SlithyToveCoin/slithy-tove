@@ -9,7 +9,7 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "bef21acc6633355646452b10779bee2a2cec3423d5962a261a2b485d8f3a8319"
+    "sha256": "670787b1c08f4fb988ed074b1cbcfad1f13af5797f16c6040eb6fdc149103818"
   },
   {
     "path": ".gitignore",
@@ -69,7 +69,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.Designer.cs",
-    "sha256": "bdb64133af9c17620d635eba0fef42943679f62d927eee348c757df480c82374"
+    "sha256": "3e90fff9c1e6e1eb35a7f73c63223cf76609a773438303775217f4dcb525785f"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.History.cs",
@@ -85,15 +85,19 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.cs",
-    "sha256": "2b82b31376c413af207eb1340fcbee9f4d9fb471d1b419f9c5798d177cda3357"
+    "sha256": "a297ae42b77a9e63bf25dd370519201dcba2b3cae001b66746cf734736b4009e"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.resx",
     "sha256": "f183100edce86a04124c582d4771ce6d740b65eca31efeca5eb82ec5d435ffdc"
   },
   {
+    "path": "Desktop/Slithy Tove/Slithy Tove/LoadingProgressTrack.cs",
+    "sha256": "7a948d6b950ce59eeebfcb20cba91f52a3b76d6e20c377f8a33a8bb8a1fa0b9d"
+  },
+  {
     "path": "Desktop/Slithy Tove/Slithy Tove/LocalNodeManager.cs",
-    "sha256": "cfbc7c452af3e8299bb3e52c2bcb9275401212fdce937254874210d82da44fc9"
+    "sha256": "f9898660162c8f5c707e20dd638084b261fda46ddad3c4a9032c50b4649a573b"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/MiningRpcSelfTest.cs",
@@ -105,7 +109,11 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/NodeRpcClient.cs",
-    "sha256": "08252b50c9d530227f88933b2e7632432d3f32da87e22cd68691059c824c5589"
+    "sha256": "53881319b350b88236111af24c2a53dcb78a81f285536e2cf1b4aef0b1f1d272"
+  },
+  {
+    "path": "Desktop/Slithy Tove/Slithy Tove/NodeStartupWaiter.cs",
+    "sha256": "2553ae0eb3df80ea3179fe79bcd2c3697e6c3c38707b9e9a5c14f0e0dc181808"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Program.cs",
@@ -177,7 +185,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "0a355cc5ec459de089d3d0e7063206631c4efdcaae669eb1042b271b4f3d8fdf"
+    "sha256": "19ae4f81bf058d9355dc1354d3220b97a9cb4ec3de9c6a855e44fbd3cf683214"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
@@ -12152,6 +12160,10 @@
     "sha256": "83ebffa653b5e448895197848e431e081e706efb5a7adac0c17d753eac371070"
   },
   {
+    "path": "docs/RELEASE-0.1.50.md",
+    "sha256": "a747bd1bdeedead83d6bcb6c79d4416bbd2c6a8847d4b1b62bfb647109afeb1b"
+  },
+  {
     "path": "docs/RELEASE-TESTING.md",
     "sha256": "4d6427406b01932807ae9e915005e3d843d6922eb901ac7f203bd80e3e5fc170"
   },
@@ -12361,7 +12373,7 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "e4e1ea6f89be531b47aad7b96bba58c9636e6355b4c416f4c98f38e2b4746559"
+    "sha256": "b44397922734ffe1662999a8025e417e2a342a641756cb9d47ca20fd3eb84695"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12489,7 +12501,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "9c098c2117b866ceee97ce9020f4dfe80bbb960a085e19bf751073ef4a1bd315"
+    "sha256": "07574605a6ba4bfa60b6ebad0bdab58950f86e0dbc771fb82b2ff99f335a0d16"
   },
   {
     "path": "site/home-full.html",
@@ -12674,6 +12686,22 @@
   {
     "path": "tests/mining-settings/Program.cs",
     "sha256": "cbde7e38afb6d50d78dee9e5d66d75202cac36e0aac4cda1f64e7f1c06dd5f98"
+  },
+  {
+    "path": "tests/node-startup-ui/NodeStartupUiTests.csproj",
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
+  },
+  {
+    "path": "tests/node-startup-ui/Program.cs",
+    "sha256": "d33a71a6cd632d8d698ed973ed6282a02444baac90d4a8246e986c323b48db1b"
+  },
+  {
+    "path": "tests/node-startup/NodeStartupTests.csproj",
+    "sha256": "f9fb31ae0a392d93a16e54e606a58b52c6f1e7bbbf2c91ecc56fb48e0dad6b2d"
+  },
+  {
+    "path": "tests/node-startup/Program.cs",
+    "sha256": "2d27f0f0a739ac349d986b595b2b7fca733bfb5151a9a16fd02d28f419613740"
   },
   {
     "path": "tests/security/Slithy.SecurityTests.csproj",
@@ -12913,7 +12941,7 @@
   },
   {
     "path": "tools/public-source.json",
-    "sha256": "d9c0c9c927ebd6835a0961b4182524d50b2d8701bbefcd736ca21556cb5826b0"
+    "sha256": "381d92f3794eeb56a695f14bbe1681b17855522e9fcc819d1366192f2a439fa5"
   },
   {
     "path": "tools/scan-source.py",

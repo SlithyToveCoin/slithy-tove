@@ -26,6 +26,11 @@ internal sealed record NodeInfo(
 
 internal sealed record ChainProgress(long Height, long Headers);
 
+internal sealed class NodeRpcException(int code, string message) : InvalidOperationException(message)
+{
+    public int Code { get; } = code;
+}
+
 // Plain data returned by the node when the app asks if mining is running.
 internal sealed record MiningInfo(
     bool Active,
@@ -59,6 +64,35 @@ internal sealed class NodeRpcClient : IDisposable
         Timeout = Timeout.InfiniteTimeSpan
     };
     private int _requestId;
+
+    public async Task<string?> GetStartupStageAsync(Uri nodeUri, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await CallAsync(nodeUri, "", "getblockchaininfo", Array.Empty<object>(),
+                TimeSpan.FromSeconds(2), cancellationToken);
+            return null;
+        }
+        catch (NodeRpcException ex) when (ex.Code == -28)
+        {
+            // Warmup is a normal reply while Core reads and verifies the saved chain.
+            return DescribeStartupStage(ex.Message);
+        }
+    }
+
+    internal static string DescribeStartupStage(string stage)
+    {
+        // Display known steps, never wallet names, paths or arbitrary daemon output.
+        if (stage.Contains("block index", StringComparison.OrdinalIgnoreCase)) return "Checking saved block headers...";
+        if (stage.Contains("Verifying blocks", StringComparison.OrdinalIgnoreCase)) return "Checking recent blocks...";
+        if (stage.Contains("Replaying blocks", StringComparison.OrdinalIgnoreCase)) return "Recovering saved chain data...";
+        if (stage.Contains("wallet", StringComparison.OrdinalIgnoreCase)) return "Preparing the wallet service...";
+        if (stage.Contains("P2P addresses", StringComparison.OrdinalIgnoreCase) ||
+            stage.Contains("banlist", StringComparison.OrdinalIgnoreCase) ||
+            stage.Contains("network threads", StringComparison.OrdinalIgnoreCase)) return "Preparing network connections...";
+        if (stage.Contains("Done loading", StringComparison.OrdinalIgnoreCase)) return "Connecting to the wallet service...";
+        return "Starting the local Slithy node...";
+    }
 
     public async Task<NodeInfo> GetInfoAsync(Uri nodeUri, TimeSpan? timeout = null)
     {
@@ -265,7 +299,8 @@ internal sealed class NodeRpcClient : IDisposable
         string walletName,
         string method,
         object parameters,
-        TimeSpan? timeout = null)
+        TimeSpan? timeout = null,
+        CancellationToken cancellationToken = default)
     {
         // All Slithy Core RPC commands use the same JSON-RPC envelope:
         // method name, parameters, and a request id.
@@ -285,11 +320,14 @@ internal sealed class NodeRpcClient : IDisposable
         };
         request.Headers.Authorization = BuildAuthorization(nodeUri);
 
-        using CancellationTokenSource cancellation = new(timeout ?? TimeSpan.FromSeconds(30));
+        using CancellationTokenSource cancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cancellation.CancelAfter(timeout ?? TimeSpan.FromSeconds(30));
         using HttpResponseMessage response = await _httpClient.SendAsync(request, cancellation.Token);
         if ((int)response.StatusCode is >= 300 and < 400)
-            throw new HttpRequestException("The node returned a redirect. RPC requests must use the configured node address.");
-        string responseJson = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException("The node returned a redirect. RPC requests must use the configured node address.", null, response.StatusCode);
+        if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
+            throw new InvalidOperationException("The node refused the app's connection. Its connection credentials do not match.");
+        string responseJson = await response.Content.ReadAsStringAsync(cancellation.Token);
         if (string.IsNullOrWhiteSpace(responseJson))
         {
             response.EnsureSuccessStatusCode();
@@ -304,7 +342,9 @@ internal sealed class NodeRpcClient : IDisposable
             string message = error.TryGetProperty("message", out JsonElement value)
                 ? value.GetString() ?? "RPC operation failed."
                 : "RPC operation failed.";
-            throw new InvalidOperationException(RedactRpcError(message, method, parameters));
+            int code = error.TryGetProperty("code", out JsonElement codeValue) && codeValue.TryGetInt32(out int number)
+                ? number : 0;
+            throw new NodeRpcException(code, RedactRpcError(message, method, parameters));
         }
         response.EnsureSuccessStatusCode();
 
