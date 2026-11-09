@@ -92,19 +92,24 @@ internal static class Program
         }
         if (args.Length == 2 && args[0] == "--verify-publisher")
         {
-            SetupForm.VerifyPublisherAsync(Path.GetFullPath(args[1]), CancellationToken.None).GetAwaiter().GetResult();
+            // The form checks install a UI context, but this test has no message loop.
+            Task.Run(() => SetupForm.VerifyPublisherAsync(Path.GetFullPath(args[1]), CancellationToken.None))
+                .GetAwaiter().GetResult();
             Check(true, "Accept trusted Windows publisher signature");
         }
         if (args.Length == 2 && args[0] == "--verify-feed")
         {
-            using UpdateService service = new(Path.GetFullPath(args[1]), allowRedirects: false);
-            UpdateCheckResult result = service.CheckAsync(
-                new Uri("https://slithy.io/updates/windows/installer/stable.json"),
-                ReleaseTrust.UpdatePublicKeyPem, new Version(0, 0)).GetAwaiter().GetResult();
-            UpdateManifest release = result.Manifest ?? throw new Exception("Missing installer manifest");
-            SetupForm.ValidateInstaller(release);
-            string package = service.DownloadVerifiedPackageAsync(release).GetAwaiter().GetResult();
-            SetupForm.VerifyPublisherAsync(package, CancellationToken.None).GetAwaiter().GetResult();
+            Task.Run(async () =>
+            {
+                using UpdateService service = new(Path.GetFullPath(args[1]), allowRedirects: false);
+                UpdateCheckResult result = await service.CheckAsync(
+                    new Uri("https://slithy.io/updates/windows/installer/stable.json"),
+                    ReleaseTrust.UpdatePublicKeyPem, new Version(0, 0));
+                UpdateManifest release = result.Manifest ?? throw new Exception("Missing installer manifest");
+                SetupForm.ValidateInstaller(release);
+                string package = await service.DownloadVerifiedPackageAsync(release);
+                await SetupForm.VerifyPublisherAsync(package, CancellationToken.None);
+            }).GetAwaiter().GetResult();
             Check(true, "Live installer feed, package hash and publisher signature");
         }
         if (args.Length == 1)

@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "676ff983a64c3b07ae7b343613dcdbf03b1eb0d04e80229a4de4d9970e37b728"
+    "sha256": "2ee61b84ef0fcb8cd7887283e0f4e31622242a7fd7d8ca30f315bb8f45769764"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12581,7 +12581,7 @@
   },
   {
     "path": "tests/installer/Program.cs",
-    "sha256": "9c9862a9de0b0aed505c3a37b26245a1c0ad2a5dc9bf6c465969502fb5839ef0"
+    "sha256": "5439fc67b254218e789d3dba8ced5db39bd62d8e9b14164d3d67062ca144d4c9"
   },
   {
     "path": "tests/installer/README.md",
@@ -12593,7 +12593,7 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "641513d56dc28909eee3bd42539bbce129b53d4cf17c6725d077388bb395e971"
+    "sha256": "8b0d4b6e6c199dbdc49d96c8deef6728d3f7d0adcf457619d49e8f5b30344713"
   },
   {
     "path": "tests/installer/Test-RuntimeCleanup.ps1",
@@ -12613,7 +12613,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "7ec12b170aed29228a05bf64fcf759fd3550ce80ac98ebab837b8bec4b01bf7b"
+    "sha256": "886cac2b2fb05d49d066f4cdceff8166d178951437b95feabf61ca109fa7f7bb"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",
