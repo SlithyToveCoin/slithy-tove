@@ -12361,11 +12361,11 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "d8fcc16634c40d508a72da6611464b33b72b5190af84eaeb6675e98b9060afa1"
+    "sha256": "e4e1ea6f89be531b47aad7b96bba58c9636e6355b4c416f4c98f38e2b4746559"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "70d8f6a5e954d7c6300c21f0bc23216967eea8e62eeecfe9a88a8acfd1537389"
+    "sha256": "fe3795e318c095379358e8a845cb0e94cbc42cc5f294d28385b17469c24ece1b"
   },
   {
     "path": "site/downloads/linux/Slithy-Tove-Linux-0.1.51-testnet-manifest.json",
@@ -12412,12 +12412,24 @@
     "sha256": "146335da152adacc1727f069700c5c16beb50815c6ec51c99003fc941abdfc57"
   },
   {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.50-beta.1-manifest.json",
+    "sha256": "98b2c9aedbd1b755cb7a61237ea5815ee01c4986983f92242f3c8d99ce09d48c"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.50-beta.1-x64.tar.gz.sha256",
+    "sha256": "1689155c64d6a04249a8d84e7309acdc383b967c9315385b5fa26f59f55c5667"
+  },
+  {
     "path": "site/downloads/source/Slithy-Tove-0.1.47-source.tar.gz.sha256",
     "sha256": "2be917917a0e1d91e3aa119649a30faf0d224b986b9206d4a1203e95c81b7afa"
   },
   {
     "path": "site/downloads/source/Slithy-Tove-0.1.48-source.tar.gz.sha256",
     "sha256": "053731b8ab951f9a302b48637f1f5f92a999445e0821ff3dcfff376367377c43"
+  },
+  {
+    "path": "site/downloads/source/Slithy-Tove-0.1.49-source.tar.gz.sha256",
+    "sha256": "36731fd14f960ae0e42b53ff6970649ab92b3990386d6997f8cd7fcbb1ba8b98"
   },
   {
     "path": "site/downloads/windows/Slithy-Tove-0.1.45-manifest.json",
@@ -12436,12 +12448,24 @@
     "sha256": "405aa7263704bc3ff1f769d3b5019502439556a086642e1cde93034c1dbfcc77"
   },
   {
+    "path": "site/downloads/windows/Slithy-Tove-0.1.49-manifest.json",
+    "sha256": "1974546c6235fcc987e6109c00b4dc6774f6afa218bb65a72151e2a627de17b5"
+  },
+  {
     "path": "site/downloads/windows/Slithy-Tove-Setup-0.1.48.exe.sha256",
     "sha256": "8f505048ea1857bb4284ac3209b8809e2f7e0d1a496ada6f658233120f7306fc"
   },
   {
+    "path": "site/downloads/windows/Slithy-Tove-Setup-0.1.49.exe.sha256",
+    "sha256": "0d0c3f6d07a08bf380c1a270084d9943117468c14ad17116c8ddb05c446a4c63"
+  },
+  {
     "path": "site/downloads/windows/Slithy-Tove-Web-Setup-20261104.exe.sha256",
     "sha256": "4e401459ccf6fe31456916886063973e6734d4446c4c37522e1f968d2939fa79"
+  },
+  {
+    "path": "site/downloads/windows/Slithy-Tove-Web-Setup-20261108.exe.sha256",
+    "sha256": "e3086a9ada5eb940e22a76e7016c62e389d839972e3b472ec4a91a0d559cceff"
   },
   {
     "path": "site/explorer-transactions.css",
@@ -12549,7 +12573,7 @@
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
-    "sha256": "72bb21b3ceb43023d832cba763ef9be029c05a6faeedc9063d5b111386e888c9"
+    "sha256": "98b2c9aedbd1b755cb7a61237ea5815ee01c4986983f92242f3c8d99ce09d48c"
   },
   {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
@@ -12565,11 +12589,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "405aa7263704bc3ff1f769d3b5019502439556a086642e1cde93034c1dbfcc77"
+    "sha256": "1974546c6235fcc987e6109c00b4dc6774f6afa218bb65a72151e2a627de17b5"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "405aa7263704bc3ff1f769d3b5019502439556a086642e1cde93034c1dbfcc77"
+    "sha256": "1974546c6235fcc987e6109c00b4dc6774f6afa218bb65a72151e2a627de17b5"
   },
   {
     "path": "site/whitepaper.html",
