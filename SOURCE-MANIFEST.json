@@ -12629,7 +12629,7 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "8b0d4b6e6c199dbdc49d96c8deef6728d3f7d0adcf457619d49e8f5b30344713"
+    "sha256": "d18529bc61800b549574bd4aa439b8c543dd5571adf242524eb14a6a3afe829f"
   },
   {
     "path": "tests/installer/Test-RuntimeCleanup.ps1",
