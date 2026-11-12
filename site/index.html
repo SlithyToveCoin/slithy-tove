@@ -12,8 +12,8 @@
   <script src="/feed-data.js?v=20261103-security" defer></script>
   <script src="/treasury.js?v=20261103-security" defer></script>
   <script src="/site.js?v=20260907-site-copy" defer></script>
-  <link rel="stylesheet" href="/node-status.css?v=20260922">
-  <script src="/node-status.js?v=20261103-security" defer></script>
+  <link rel="stylesheet" href="/node-status.css?v=20261112-network">
+  <script src="/node-status.js?v=20261112-network" defer></script>
 </head>
 <body>
   <div class="launch-banner" role="status">
@@ -175,6 +175,18 @@
     <section class="official-node-status" aria-labelledby="official-nodes-title">
       <h2 id="official-nodes-title">Official test nodes</h2>
       <p>These servers check and share blocks. Mining happens on your computer.</p>
+      <div class="network-summary" data-network-summary>
+        <article>
+          <h3>Estimated hashrate</h3>
+          <strong data-network-hashrate role="status">Loading</strong>
+          <p data-network-hashrate-note>Waiting for a fresh mining estimate.</p>
+        </article>
+        <article>
+          <h3>Peer connections</h3>
+          <strong data-network-peers role="status">Loading</strong>
+          <p data-network-peers-note>Total across the three official nodes.</p>
+        </article>
+      </div>
       <div class="official-node-grid">
         <article class="official-node-card" data-node-status="borogove" data-state="unknown">
           <h3>Borogove</h3>
@@ -198,7 +210,7 @@
           <p class="node-status-time"></p>
         </article>
       </div>
-      <p class="node-status-note">Online means the latest node report is less than two minutes old. This page checks every minute. Peer connections include links between these servers and do not count individual users.</p>
+      <p class="node-status-note">Reports refresh every minute and expire after two minutes. Links between official nodes count at both ends. Connections are not individual people.</p>
       <noscript><p>Enable JavaScript to load current node status.</p></noscript>
     </section>
   </main>

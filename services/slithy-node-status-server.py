@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import math
 import os
 import subprocess
 import time
@@ -13,6 +14,7 @@ NODE_NAME = os.environ.get("SLITHY_NODE_NAME", "slithy-node")
 NODE_REGION = os.environ.get("SLITHY_NODE_REGION", "")
 TREASURY_SCRIPT = os.environ.get("SLITHY_TREASURY_SCRIPT", "")
 TREASURY_ADDRESS = os.environ.get("SLITHY_TREASURY_ADDRESS", "")
+HASHRATE_WINDOW_BLOCKS = 120
 
 
 def cli(*args):
@@ -28,6 +30,20 @@ def cli(*args):
 def cli_json(*args):
     value = cli(*args)
     return json.loads(value) if value else {}
+
+
+def network_hashrate(height):
+    # Use the same chain height as the rest of the report. This is an estimate
+    # from recent block work and timing, not this server's own mining speed.
+    estimate = None
+    try:
+        value = cli_json("getnetworkhashps", str(HASHRATE_WINDOW_BLOCKS), str(height))
+        if type(value) in (int, float) and math.isfinite(value) and value >= 0:
+            estimate = value
+    except Exception:
+        # A missing estimate must not hide working peer and chain readings.
+        pass
+    return {"hashesPerSecond": estimate, "windowBlocks": HASHRATE_WINDOW_BLOCKS}
 
 
 # The index follows actual transactions, including spending and ordinary
@@ -189,8 +205,10 @@ def build_explorer():
         pass
 
     height = int(chain.get("blocks", 0))
+    hashrate = network_hashrate(height)
     first_height = max(0, height - 24)
     tip = chain.get("bestblockhash", "")
+    recent_blocks = _explorer_blocks
     if tip != _explorer_tip:
         recent_blocks = [block_summary(at, height) for at in range(height, first_height - 1, -1)]
         # Bound the public snapshot. Counts still say when details were omitted.
@@ -199,10 +217,11 @@ def build_explorer():
                 if block["transactions"]:
                     block["transactions"].pop()
                     break
-        if cli("getblockhash", str(height)) != tip:
-            raise RuntimeError("Chain changed during explorer collection")
-        _explorer_blocks = recent_blocks
-        _explorer_tip = tip
+    # Check cached blocks too: a reorg can arrive while the estimate is read.
+    if cli("getblockhash", str(height)) != tip:
+        raise RuntimeError("Chain changed during explorer collection")
+    _explorer_blocks = recent_blocks
+    _explorer_tip = tip
 
     return {
         "network": "slithy-" + str(chain.get("chain", "unknown")),
@@ -213,6 +232,7 @@ def build_explorer():
         "headers": int(chain.get("headers", 0)),
         "bestBlockHash": chain.get("bestblockhash", ""),
         "difficulty": chain.get("difficulty", 0),
+        "networkHashrate": hashrate,
         "initialBlockDownload": bool(chain.get("initialblockdownload", False)),
         "peerCount": len(peers) if isinstance(peers, list) else 0,
         "version": str(network.get("subversion", "")).strip("/"),
@@ -238,6 +258,7 @@ def build_status():
         pass
 
     height = int(chain.get("blocks", 0))
+    hashrate = network_hashrate(height)
     payload = {
         "network": {"test": "slithy-testnet", "main": "slithy-mainnet", "regtest": "regtest"}.get(chain.get("chain"), "unknown"),
         "node": NODE_NAME,
@@ -248,6 +269,7 @@ def build_status():
         "headers": int(chain.get("headers", 0)),
         "bestBlockHash": chain.get("bestblockhash", ""),
         "difficulty": chain.get("difficulty", 0),
+        "networkHashrate": hashrate,
         "initialBlockDownload": bool(chain.get("initialblockdownload", False)),
         "peerCount": len(peers) if isinstance(peers, list) else 0,
         "version": str(network.get("subversion", "")).strip("/"),

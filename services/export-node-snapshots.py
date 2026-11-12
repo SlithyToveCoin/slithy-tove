@@ -47,6 +47,17 @@ def public_snapshot(snapshot, name):
         if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
             raise ValueError("Invalid difficulty")
         result["difficulty"] = value
+    if "networkHashrate" in snapshot:
+        hashrate = snapshot["networkHashrate"]
+        if not isinstance(hashrate, dict) or "hashesPerSecond" not in hashrate:
+            raise ValueError("Invalid network hashrate")
+        value = hashrate["hashesPerSecond"]
+        if value is not None and (type(value) not in (int, float) or not math.isfinite(value) or value < 0):
+            raise ValueError("Invalid network hashrate")
+        if type(hashrate.get("windowBlocks")) is not int or hashrate["windowBlocks"] != 120:
+            raise ValueError("Invalid network hashrate window")
+        # Publish the estimate, never arbitrary fields returned by a collector.
+        result["networkHashrate"] = {"hashesPerSecond": value, "windowBlocks": 120}
     if "mining" in snapshot:
         mining = snapshot["mining"]
         if not isinstance(mining, dict):

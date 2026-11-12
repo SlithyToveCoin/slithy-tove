@@ -12341,7 +12341,7 @@
   },
   {
     "path": "services/export-node-snapshots.py",
-    "sha256": "31916f0000365d37c71a57b434def753f5fe31da3f4e73e485ab0c7c4ba59669"
+    "sha256": "eaaf60791643b99a54d695d7e090db863df83e7f384bba1f24efbc693e1dcbb4"
   },
   {
     "path": "services/fetch_beta_treasury_status.py",
@@ -12349,7 +12349,7 @@
   },
   {
     "path": "services/slithy-node-status-server.py",
-    "sha256": "0cb14431f438a2abb0dcdfb1614e7a50540ec46d1b9b7e21346fb5e529e5845d"
+    "sha256": "cf9a53aea1f3e2783f34feac4fcd215e8be0ae12c89153bfdd19f461d6b77c84"
   },
   {
     "path": "shared/AppDiagnosticLog.cs",
@@ -12537,7 +12537,7 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "86dcea63c2e0908d14d3dbf7064b8697b9da450365d5afbf24a893bed1ae7754"
+    "sha256": "06ad2d46e0fc2f92243a786c30bccd4bf4a08f3f54f4d0c33bed1635ea9f3e11"
   },
   {
     "path": "site/explorer.js",
@@ -12557,11 +12557,11 @@
   },
   {
     "path": "site/home-full.html",
-    "sha256": "ae6adb717fd3caf2849b6186f3e3ffb7e9568d95949034b290c097fcef025afd"
+    "sha256": "60476edc5e482d6d49e646836842bf0218c882b7689b03c17d3eea5b0aae7eb6"
   },
   {
     "path": "site/index.html",
-    "sha256": "f0fe79abee27e6f1d98fd9d3897b700960f2795e3e447e89805ae6202a8c6b26"
+    "sha256": "46639d7ae1058fd2fa425b0541a02e13c4264e685691da8b11a402a469828ae2"
   },
   {
     "path": "site/install/linux/README.txt",
@@ -12597,11 +12597,11 @@
   },
   {
     "path": "site/node-status.css",
-    "sha256": "3b91f5c305284ef0ee746b83f801c9677e882dfc19f57ae2b69669e146c48371"
+    "sha256": "e73b3bea3b2e6b7754cc448eebdb9cd88f375e9fd5030f0c843a98cc0493aa0d"
   },
   {
     "path": "site/node-status.js",
-    "sha256": "ade0d08c79e6eaf2f73460c9d59924823f9d546c28232991eea3df1e5599dbba"
+    "sha256": "6b2ae49e4af1534b64ae9fff9e84fd2b2c465ab5693b741067765fbada7c9b9d"
   },
   {
     "path": "site/nodes.html",
@@ -12860,6 +12860,10 @@
     "sha256": "340c88aae8c46ab1d18e4f604e324b60defe9e0f2d407c248d5a97e24f28c6f6"
   },
   {
+    "path": "tests/security/test_network_stats.py",
+    "sha256": "c99e12218f47f33587dba8e19ab74784346df36161dfd1215a23f0c26fad62f2"
+  },
+  {
     "path": "tests/security/test_node_publication.py",
     "sha256": "5db70d4c0d51344417833fdd2c7890a8309776b688ca2ea37ba6852cd82f780c"
   },
@@ -12910,6 +12914,10 @@
   {
     "path": "tests/site/gui-downloads.test.cjs",
     "sha256": "0112638ab05cd673c38dbd8f1c482594f36666a57cfb50d7f32a53033773c14f"
+  },
+  {
+    "path": "tests/site/network-summary.test.cjs",
+    "sha256": "b23bccd483927aa2ec5f6a17d2ac8797cc4bc8f322afddf280008b184210a2fa"
   },
   {
     "path": "tests/terms/Program.cs",

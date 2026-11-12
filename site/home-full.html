@@ -12,6 +12,8 @@
   <script src="/feed-data.js?v=20261103-security" defer></script>
   <script src="/treasury.js?v=20261103-security" defer></script>
   <script src="/site.js?v=20260907-site-copy" defer></script>
+  <link rel="stylesheet" href="/node-status.css?v=20261112-network">
+  <script src="/node-status.js?v=20261112-network" defer></script>
 </head>
 <body>
   <div class="launch-banner" role="status">
@@ -168,6 +170,47 @@
         <li><span>03</span><div><strong>Check the launch build</strong><small>Finish testing and publish the software before mining opens</small></div></li>
         <li><span>04</span><div><strong>Live network</strong><small>Target: December 1, 2026. A fresh chain with no premine</small></div></li>
       </ol>
+    </section>
+    <section class="official-node-status" aria-labelledby="official-nodes-title">
+      <h2 id="official-nodes-title">Official test nodes</h2>
+      <p>These servers check and share blocks. Mining happens on your computer.</p>
+      <div class="network-summary" data-network-summary>
+        <article>
+          <h3>Estimated hashrate</h3>
+          <strong data-network-hashrate role="status">Loading</strong>
+          <p data-network-hashrate-note>Waiting for a fresh mining estimate.</p>
+        </article>
+        <article>
+          <h3>Peer connections</h3>
+          <strong data-network-peers role="status">Loading</strong>
+          <p data-network-peers-note>Total across the three official nodes.</p>
+        </article>
+      </div>
+      <div class="official-node-grid">
+        <article class="official-node-card" data-node-status="borogove" data-state="unknown">
+          <h3>Borogove</h3>
+          <p>East Coast, US</p>
+          <div class="node-status-badge" role="status"><span class="node-status-dot" aria-hidden="true"></span><span class="node-status-label">Checking status</span></div>
+          <p class="node-status-detail">Waiting for a fresh report.</p>
+          <p class="node-status-time"></p>
+        </article>
+        <article class="official-node-card" data-node-status="mome" data-state="unknown">
+          <h3>Mome</h3>
+          <p>West Coast, US</p>
+          <div class="node-status-badge" role="status"><span class="node-status-dot" aria-hidden="true"></span><span class="node-status-label">Checking status</span></div>
+          <p class="node-status-detail">Waiting for a fresh report.</p>
+          <p class="node-status-time"></p>
+        </article>
+        <article class="official-node-card" data-node-status="rath" data-state="unknown">
+          <h3>Rath</h3>
+          <p>Europe</p>
+          <div class="node-status-badge" role="status"><span class="node-status-dot" aria-hidden="true"></span><span class="node-status-label">Checking status</span></div>
+          <p class="node-status-detail">Waiting for a fresh report.</p>
+          <p class="node-status-time"></p>
+        </article>
+      </div>
+      <p class="node-status-note">Reports refresh every minute and expire after two minutes. Links between official nodes count at both ends. Connections are not individual people.</p>
+      <noscript><p>Enable JavaScript to load current node status.</p></noscript>
     </section>
   </main>
 
