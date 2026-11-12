@@ -203,7 +203,7 @@ internal static class Program
         ((System.Windows.Forms.Timer)Field(form, "statusTimer")).Stop();
         ((NotifyIcon)Field(form, "_trayIcon")).Visible = false;
         Set(form, "_walletRpcClient", fixtureClient);
-        Set(form, "_walletSnapshot", New("WalletSnapshot", Address, 100_000_000UL, 100_000_000UL, 0L, 100L));
+        Set(form, "_walletSnapshot", New("WalletSnapshot", Address, 100_000_000UL, 100_000_000UL, 0L, 100L, 0UL, 0UL));
         Set(form, "_openWalletName", "disposable-fixture");
         form.Show();
         ((TabControl)Field(form, "mainTabControl")).SelectedTab = (TabPage)Field(form, "_walletActivityTab");

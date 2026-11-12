@@ -12693,7 +12693,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "3d4258349b7efac69fdc51c23e7e78d1c7da67e83bf966e940154cd74e0341ff"
+    "sha256": "38e85699e32d121655e0a4499c1d4e3dc692e7a129f28640dae9be8598d9ae2a"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",
@@ -12961,7 +12961,7 @@
   },
   {
     "path": "tests/windows-wallet-tools/Program.cs",
-    "sha256": "5a364cf93d0a373de0bd59d7172bf7b9486ccc546d623ff2c1d87573c3e84aa6"
+    "sha256": "92eb7b88b17e1e249da1f4c67aad674e575ba76c584945b93a76dd249d843bd1"
   },
   {
     "path": "tests/windows-wallet-tools/WindowsWalletToolsTests.csproj",
