@@ -28,10 +28,11 @@ internal static class Program
         string temporary = Path.Combine(Path.GetTempPath(), "slithy-startup-ui-" + Guid.NewGuid().ToString("N"));
         string? screenshots = args.FirstOrDefault(argument => !argument.StartsWith("--", StringComparison.Ordinal));
         if (screenshots is not null) Directory.CreateDirectory(screenshots);
+        Form1? form = null;
         try
         {
             TestRpcReplies();
-            using Form1 form = CreateForm(Path.Combine(temporary, "behavior"));
+            form = CreateForm(Path.Combine(temporary, "behavior"));
             form.Show();
             Pump(50);
             if (dpi96) Check(form.DeviceDpi == 96, "The fresh process actually created 96-DPI controls");
@@ -48,6 +49,19 @@ internal static class Program
         }
         finally
         {
+            if (form is not null)
+            {
+                object? diagnostics = Field(form, "_diagnosticLog");
+                form.Dispose();
+                if (diagnostics is not null)
+                {
+                    // The writer can outlive the controls. Finish it before removing its files.
+                    using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+                    Task drain = (Task)diagnostics.GetType().GetMethod("FlushAsync", Hidden)!
+                        .Invoke(diagnostics, [timeout.Token])!;
+                    Run(drain.WaitAsync(timeout.Token));
+                }
+            }
             // Every file in this randomly named test directory belongs to this run.
             if (Directory.Exists(temporary)) Directory.Delete(temporary, true);
         }

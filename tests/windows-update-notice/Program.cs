@@ -14,9 +14,10 @@ internal static class Program
         string temporary = Path.Combine(Path.GetTempPath(), "slithy-update-notice-" + Guid.NewGuid().ToString("N"));
         string? screenshotDirectory = args.Length > 1 ? Path.GetFullPath(args[1]) : null;
         if (screenshotDirectory != null) Directory.CreateDirectory(screenshotDirectory);
+        Form1? form = null;
         try
         {
-            using Form1 form = CreateForm(temporary);
+            form = CreateForm(temporary);
             var badge = (Button)Field(form, "_headerUpdateButton");
             var settings = Field(form, "_settings");
             form.Show();
@@ -96,7 +97,23 @@ internal static class Program
             form.Hide();
             Console.WriteLine($"Passed {_checks} checks. No real wallet, node or external HTTP request was used.");
         }
-        finally { if (Directory.Exists(temporary)) Directory.Delete(temporary, true); }
+        finally
+        {
+            if (form is not null)
+            {
+                object? diagnostics = Field(form, "_diagnosticLog");
+                form.Dispose();
+                if (diagnostics is not null)
+                {
+                    // The writer can outlive the controls. Finish it before removing its files.
+                    using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+                    Task drain = (Task)diagnostics.GetType().GetMethod("FlushAsync", Hidden)!
+                        .Invoke(diagnostics, [timeout.Token])!;
+                    Run(drain.WaitAsync(timeout.Token));
+                }
+            }
+            if (Directory.Exists(temporary)) Directory.Delete(temporary, true);
+        }
     }
 
     private static Form1 CreateForm(string directory)

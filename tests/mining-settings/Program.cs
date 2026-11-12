@@ -17,6 +17,7 @@ internal static partial class Program
         string root = Path.Combine(Path.GetTempPath(), "slithy-mining-settings-" + Guid.NewGuid().ToString("N"));
         string? screenshots = args.FirstOrDefault();
         if (screenshots != null) Directory.CreateDirectory(screenshots);
+        Form1? form = null;
         try
         {
             Type settingsType = App.GetType("Slithy_Tove.AppSettings")!;
@@ -43,7 +44,7 @@ internal static partial class Program
                 "Settings without a saved thread count default to one thread");
             Check((int)settingsType.GetProperty("AutoLockMinutes")!.GetValue(legacy)! == 17,
                 "Defaulting the thread count leaves unrelated settings unchanged");
-            using Form1 form = CreateForm(store);
+            form = CreateForm(store);
             TrackBar slider = (TrackBar)Field(form, "miningThreadsTrackBar");
             Check(slider.Minimum == 1 && slider.Maximum == Math.Max(1, Environment.ProcessorCount), "Slider spans every available CPU thread");
             Check(slider.SmallChange == 1 && slider.LargeChange == 1, "Keyboard changes by one thread");
@@ -129,7 +130,23 @@ internal static partial class Program
             TestDownloadProgress(root);
             Console.WriteLine($"Passed {checks} checks. Disposable settings and simulated HTTP were used. No user wallet or public mining was touched.");
         }
-        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+        finally
+        {
+            if (form is not null)
+            {
+                object? diagnostics = Field(form, "_diagnosticLog");
+                form.Dispose();
+                if (diagnostics is not null)
+                {
+                    // The writer can outlive the controls. Finish it before removing its files.
+                    using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(10));
+                    Task drain = (Task)diagnostics.GetType().GetMethod("FlushAsync", Hidden)!
+                        .Invoke(diagnostics, [timeout.Token])!;
+                    Run(drain.WaitAsync(timeout.Token));
+                }
+            }
+            if (Directory.Exists(root)) Directory.Delete(root, true);
+        }
     }
 
     private static void TestUpdateProgress(Form1 form, string? screenshots)

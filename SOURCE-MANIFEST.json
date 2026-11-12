@@ -12397,7 +12397,7 @@
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
-    "sha256": "439f7323fdca3618a06e7c69b8357f87e805f1ca516b3d4affaf56d1312cf626"
+    "sha256": "a6fe3982290cdfc1b6fe48fa6d831f255512f55e8b629ca185da682f15aaf08a"
   },
   {
     "path": "site/downloads/linux/Slithy-Tove-Linux-0.1.51-testnet-manifest.json",
@@ -12452,6 +12452,14 @@
     "sha256": "1689155c64d6a04249a8d84e7309acdc383b967c9315385b5fa26f59f55c5667"
   },
   {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.51-beta.1-manifest.json",
+    "sha256": "279ce78613b0c6f1bcc5bea07fba51f167626d08ff4e06a6a2893a838f3ef1a9"
+  },
+  {
+    "path": "site/downloads/linux/Slithy-Tove-Linux-GUI-0.1.51-beta.1-x64.tar.gz.sha256",
+    "sha256": "0d139071e49f8fe18c8ded6a31aba751b0d022e00656f73aac18b68881649f8c"
+  },
+  {
     "path": "site/downloads/source/Slithy-Tove-0.1.47-source.tar.gz.sha256",
     "sha256": "2be917917a0e1d91e3aa119649a30faf0d224b986b9206d4a1203e95c81b7afa"
   },
@@ -12466,6 +12474,10 @@
   {
     "path": "site/downloads/source/Slithy-Tove-0.1.50-source.tar.gz.sha256",
     "sha256": "693bbb2d60ab5c41fba8fabeda0617985a81811439932e8a35d770e3a94371e9"
+  },
+  {
+    "path": "site/downloads/source/Slithy-Tove-0.1.51-source.tar.gz.sha256",
+    "sha256": "bf381f75a3b2e19a357d41dd434514de74105c3bffcd0dae95eadcc1db9d8e45"
   },
   {
     "path": "site/downloads/windows/Slithy-Tove-0.1.45-manifest.json",
@@ -12492,6 +12504,10 @@
     "sha256": "7df8509f733c45bf35386dbbb661a6ab60a883c7014d0b2920770e6d3cee27b5"
   },
   {
+    "path": "site/downloads/windows/Slithy-Tove-0.1.51-manifest.json",
+    "sha256": "0e91ae87fc356388d8e3c40d9d25cfeddc9aee38563c52ff09ba3faf5f2d5925"
+  },
+  {
     "path": "site/downloads/windows/Slithy-Tove-Setup-0.1.48.exe.sha256",
     "sha256": "8f505048ea1857bb4284ac3209b8809e2f7e0d1a496ada6f658233120f7306fc"
   },
@@ -12502,6 +12518,10 @@
   {
     "path": "site/downloads/windows/Slithy-Tove-Setup-0.1.50.exe.sha256",
     "sha256": "ac4f75b18ca17f370538e6cc9eaf4ac3b5e94827bbfe30e042adc073c0b3995c"
+  },
+  {
+    "path": "site/downloads/windows/Slithy-Tove-Setup-0.1.51.exe.sha256",
+    "sha256": "50b201c7289b02db74a3bdbd39ab01e7094f900e41e9e4a1dd28176437e063db"
   },
   {
     "path": "site/downloads/windows/Slithy-Tove-Web-Setup-20261104.exe.sha256",
@@ -12617,7 +12637,7 @@
   },
   {
     "path": "site/updates/linux-gui-x64/beta-20260909/stable.json",
-    "sha256": "98b2c9aedbd1b755cb7a61237ea5815ee01c4986983f92242f3c8d99ce09d48c"
+    "sha256": "279ce78613b0c6f1bcc5bea07fba51f167626d08ff4e06a6a2893a838f3ef1a9"
   },
   {
     "path": "site/updates/linux-x64/beta-20260909/stable.json",
@@ -12633,11 +12653,11 @@
   },
   {
     "path": "site/updates/windows/installer/stable.json",
-    "sha256": "7df8509f733c45bf35386dbbb661a6ab60a883c7014d0b2920770e6d3cee27b5"
+    "sha256": "0e91ae87fc356388d8e3c40d9d25cfeddc9aee38563c52ff09ba3faf5f2d5925"
   },
   {
     "path": "site/updates/windows/stable.json",
-    "sha256": "7df8509f733c45bf35386dbbb661a6ab60a883c7014d0b2920770e6d3cee27b5"
+    "sha256": "0e91ae87fc356388d8e3c40d9d25cfeddc9aee38563c52ff09ba3faf5f2d5925"
   },
   {
     "path": "site/whitepaper.html",
@@ -12729,7 +12749,7 @@
   },
   {
     "path": "tests/mining-settings/Program.cs",
-    "sha256": "cbde7e38afb6d50d78dee9e5d66d75202cac36e0aac4cda1f64e7f1c06dd5f98"
+    "sha256": "eb15794b8c84c3466e662b4682f28d966242e6fc296432143614ca28ac166f4b"
   },
   {
     "path": "tests/mining-status-ui/MiningStatusUiTests.csproj",
@@ -12753,7 +12773,7 @@
   },
   {
     "path": "tests/node-startup-ui/Program.cs",
-    "sha256": "d33a71a6cd632d8d698ed973ed6282a02444baac90d4a8246e986c323b48db1b"
+    "sha256": "a46c246f9eda52bffd2dcb1642de2812ce80e212f8b0cdc25419ff7e1f10b1b9"
   },
   {
     "path": "tests/node-startup/NodeStartupTests.csproj",
@@ -12953,7 +12973,7 @@
   },
   {
     "path": "tests/windows-update-notice/Program.cs",
-    "sha256": "54c7d17e11814c60187aa09a7deb1d9b7e4fb8964ec4b75e88961e38b155422a"
+    "sha256": "afc8579b536f2521dc2a7f1ad4cf0e6d21deb76bfc8b97f6aaefef443670561c"
   },
   {
     "path": "tests/windows-update-notice/WindowsUpdateNoticeTests.csproj",
