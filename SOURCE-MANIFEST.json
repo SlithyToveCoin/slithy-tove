@@ -5,7 +5,7 @@
   },
   {
     "path": ".github/workflows/release-smoke.yml",
-    "sha256": "2ee61b84ef0fcb8cd7887283e0f4e31622242a7fd7d8ca30f315bb8f45769764"
+    "sha256": "126f34d7480d26f0ee31eb7620e358629739e8b8b1e8c1c80645f981301c46ff"
   },
   {
     "path": ".github/workflows/source-checks.yml",
@@ -12673,7 +12673,7 @@
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
-    "sha256": "d18529bc61800b549574bd4aa439b8c543dd5571adf242524eb14a6a3afe829f"
+    "sha256": "798f80227213fd42d20fa434bc2a38070c863d84a458d2713b890e6d026ba28d"
   },
   {
     "path": "tests/installer/Test-RuntimeCleanup.ps1",
