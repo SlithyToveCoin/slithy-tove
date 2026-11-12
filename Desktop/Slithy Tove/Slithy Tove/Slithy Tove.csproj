@@ -10,7 +10,7 @@
     <Company>CS Idea Labs LLC</Company>
     <Copyright>Copyright © 2026 CS Idea Labs LLC</Copyright>
     <Description>Slithy Tove desktop wallet and node manager</Description>
-    <Version>0.1.50</Version>
+    <Version>0.1.51</Version>
     <!-- The app, updater and file properties must report the same release. -->
     <FileVersion>$(Version).0</FileVersion>
     <AssemblyVersion>$(Version).0</AssemblyVersion>
@@ -138,6 +138,7 @@
   <ItemGroup>
     <PackageReference Include="NBitcoin" Version="7.0.49" />
     <Compile Include="../../../shared/RecoveryWords.cs" Link="RecoveryWords.cs" />
+    <Compile Include="../../../shared/AppDiagnosticLog.cs" Link="AppDiagnosticLog.cs" />
     <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 

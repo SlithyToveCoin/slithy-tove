@@ -14,6 +14,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Slithy_Tove;
+using Slithy.Diagnostics;
 
 namespace Slithy.Linux;
 
@@ -23,6 +24,8 @@ internal sealed partial class MainWindow : Window
     private readonly LinuxSettings _settings;
     private readonly string? _settingsError;
     private readonly LinuxNodeHost _host;
+    private readonly AppDiagnosticLog? _diagnostics;
+    private readonly Func<LinuxStorageInfo> _readStorage;
     private readonly NodeRpcClient _node = new();
     private readonly WalletRpcClient _wallet = new();
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(5) };
@@ -30,9 +33,12 @@ internal sealed partial class MainWindow : Window
     private Uri? _endpoint;
     private bool _busy, _polling, _closing, _locked = true, _ready, _trayConfirmed, _paymentBlocked = true;
     private bool _startupStarted;
+    private CancellationTokenSource? _pollCancellation;
+    private long _refreshGeneration;
     private string _walletName = "";
     private WalletSnapshot? _snapshot;
     private MiningInfo? _mining;
+    private bool _miningStatusUnknown;
     private NodeInfo? _chain;
     private DateTimeOffset _lastInput = DateTimeOffset.UtcNow, _lastTreasury;
     private PreparedTransfer? _pending;
@@ -91,6 +97,7 @@ internal sealed partial class MainWindow : Window
     {
         _preview = preview; _regtest = regtest;
         _store = store ?? new LinuxSettingsStore();
+        _diagnostics = preview ? null : new AppDiagnosticLog(Path.Combine(_store.DataDirectory, "diagnostics"));
         try { _settings = preview ? new LinuxSettings() : _store.Load(); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
         {
@@ -101,6 +108,7 @@ internal sealed partial class MainWindow : Window
         }
         _settings.Validate();
         _host = new LinuxNodeHost(_store, _settings, regtest);
+        _readStorage = _host.GetStorage;
         _host.ConfirmOrphanRecoveryAsync = () => Dialogs.Confirm(this, "Reopen your local node?",
             "A node from your previous Slithy session is still running. Stop it safely and reopen? Mining on that node will stop.",
             "Stop node and reopen");
@@ -129,11 +137,7 @@ internal sealed partial class MainWindow : Window
         _lockButton.Click += async (_, _) => await Run(LockWallet);
         _sendButton.Click += async (_, _) => await Run(Send);
         _receiveButton.Click += async (_, _) => await Run(Receive);
-        _miningButton.Click += async (_, _) =>
-        {
-            if (_installingUpdate) await StopMiningForUpdate();
-            else await Run(ToggleMining);
-        };
+        _miningButton.Click += async (_, _) => await HandleMiningClickAsync();
         _miningThreads.Value = _settings.GetMiningThreadCount();
         UpdateThreadCount();
         _miningThreads.ValueChanged += (_, _) =>
@@ -178,7 +182,7 @@ internal sealed partial class MainWindow : Window
             await Run(Initialize);
         };
         Closing += OnClosing;
-        Closed += (_, _) => StopUpdateChecks();
+        Closed += (_, _) => { StopUpdateChecks(); _diagnostics?.Dispose(); };
         UpdateControls();
     }
 
@@ -282,7 +286,7 @@ internal sealed partial class MainWindow : Window
     {
         int threads = _settings.GetMiningThreadCount();
         _threadCount.Text = $"{threads} CPU thread{(threads == 1 ? "" : "s")} selected";
-        _miningSettingsText.Text = _mining?.Active == true
+        _miningSettingsText.Text = _mining?.Active == true || _miningStatusUnknown
             ? $"Next start: {threads} thread{(threads == 1 ? "" : "s")}. Settings"
             : $"{threads} CPU thread{(threads == 1 ? "" : "s")}. Change in Settings";
     }
@@ -355,61 +359,159 @@ internal sealed partial class MainWindow : Window
     {
         if (_busy || _polling || !_ready || _closing) return;
         _polling = true;
+        using var cancellation = new CancellationTokenSource();
+        _pollCancellation = cancellation;
+        long generation = _refreshGeneration;
         try
         {
-            if (_settings.AutoLockEnabled && !_locked && DateTimeOffset.UtcNow - _lastInput >= TimeSpan.FromMinutes(_settings.AutoLockMinutes)) await LockWallet();
-            await Refresh();
+            if (_settings.AutoLockEnabled && !_locked && DateTimeOffset.UtcNow - _lastInput >= TimeSpan.FromMinutes(_settings.AutoLockMinutes))
+                await LockWalletCore(cancellation.Token).WaitAsync(cancellation.Token);
+            await RefreshCore(cancellation.Token, generation);
         }
-        catch { _status.Text = "Local node not responding. Last balance shown below may be out of date."; }
-        finally { _polling = false; UpdateControls(); }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested || generation != _refreshGeneration) { }
+        catch (Exception ex)
+        {
+            _status.Text = "The status check did not finish. Slithy will try again.";
+            Log("Status refresh failed (" + ex.GetType().Name + ").");
+        }
+        finally
+        {
+            if (ReferenceEquals(_pollCancellation, cancellation)) _pollCancellation = null;
+            _polling = false;
+            UpdateControls();
+        }
     }
 
-    private async Task Refresh()
+    private void CancelBackgroundPoll()
+    {
+        // Cancel the reads, not the miner. The Stop RPC is sent after the poll leaves the UI.
+        _refreshGeneration++;
+        _pollCancellation?.Cancel();
+    }
+
+    private void CheckRefresh(CancellationToken cancellationToken, long generation)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (generation != _refreshGeneration || _closing) throw new OperationCanceledException(cancellationToken);
+    }
+
+    private Task Refresh() => RefreshCore(CancellationToken.None, _refreshGeneration);
+
+    private async Task RefreshCore(CancellationToken cancellationToken, long generation)
     {
         if (_endpoint == null) return;
-        _chain = await _node.GetInfoAsync(_endpoint); _mining = await _node.GetMiningInfoAsync(_endpoint);
-        var peers = await _node.GetPeerNetworkStatusAsync(_endpoint, _chain.Height);
-        _status.Text = _chain.Synchronized && peers.Connections > 0 ? "Everything is ready" : $"Catching up: {_chain.Height:N0} / {_chain.Headers:N0} blocks, {peers.Connections} peers";
-        _sync.IsIndeterminate = _chain.Headers == 0 && !_chain.Synchronized;
-        _sync.Value = _chain.Headers > 0 ? Math.Min(100, 100d * _chain.Height / _chain.Headers) : 0;
-        _network.Text = $"Local node: {_chain.Height:N0} blocks, {_chain.Headers:N0} headers\nConnected peers: {peers.Connections}\nNetwork: {_chain.NetworkType}\nData folder: {_store.DataDirectory}";
-        var storage = await Task.Run(_host.GetStorage);
-        _storage.Text = $"Node files: {storage.NodeBytes / 1073741824d:N2} GiB. Free disk space: {storage.FreeBytes / 1073741824d:N1} GiB.";
-        if (storage.FreeBytes < 1073741824) _status.Text = "Low disk space: less than 1 GiB remains on the node drive.";
+        CheckRefresh(cancellationToken, generation);
+        try
+        {
+            var chain = await _node.GetInfoAsync(_endpoint, cancellationToken: cancellationToken).WaitAsync(cancellationToken);
+            var peers = await _node.GetPeerNetworkStatusAsync(_endpoint, chain.Height, cancellationToken).WaitAsync(cancellationToken);
+            CheckRefresh(cancellationToken, generation);
+            _chain = chain;
+            _status.Text = _chain.Synchronized && peers.Connections > 0 ? "Everything is ready" : $"Catching up: {_chain.Height:N0} / {_chain.Headers:N0} blocks, {peers.Connections} peers";
+            _sync.IsIndeterminate = _chain.Headers == 0 && !_chain.Synchronized;
+            _sync.Value = _chain.Headers > 0 ? Math.Min(100, 100d * _chain.Height / _chain.Headers) : 0;
+            _network.Text = $"Local node: {_chain.Height:N0} blocks, {_chain.Headers:N0} headers\nConnected peers: {peers.Connections}\nNetwork: {_chain.NetworkType}\nData folder: {_store.DataDirectory}";
+        }
+        catch (Exception ex)
+        {
+            CheckRefresh(cancellationToken, generation);
+            _chain = null;
+            _sync.IsIndeterminate = true;
+            _sync.Value = 0;
+            _status.Text = "Network status is unavailable. Slithy will check again.";
+            _network.Text = "Waiting for fresh network details.";
+            Log("Network status refresh failed (" + ex.GetType().Name + ").");
+        }
+
+        // A balance, history or disk check cannot change what the miner just reported.
+        try
+        {
+            var mining = await _node.GetMiningInfoAsync(_endpoint, cancellationToken).WaitAsync(cancellationToken);
+            CheckRefresh(cancellationToken, generation);
+            _mining = mining;
+            _miningStatusUnknown = false;
+            _miningTitle.Text = _mining.Active ? "Mining is on" : "Earn Slithy";
+            _miningStatus.Text = MiningStatusText(_mining, _chain?.Height);
+            ToolTip.SetTip(_miningStatus, _mining.Active ? "Mining address: " + _mining.Address : null);
+        }
+        catch (Exception ex)
+        {
+            CheckRefresh(cancellationToken, generation);
+            _miningStatusUnknown = true;
+            _miningTitle.Text = "Checking miner";
+            _miningStatus.Text = "The local node did not answer. Mining state is unknown. You can still request a stop.";
+            _status.Text = "Mining status is unavailable. Slithy will check again.";
+            Log("Mining status check failed (" + ex.GetType().Name + ").");
+        }
+        UpdateControls();
+
+        try
+        {
+            var storage = await Task.Run(_readStorage, cancellationToken).WaitAsync(cancellationToken);
+            CheckRefresh(cancellationToken, generation);
+            _storage.Text = storage.FreeBytes < 0
+                ? "Free disk space could not be read."
+                : $"Node files: {storage.NodeBytes / 1073741824d:N2} GiB. Free disk space: {storage.FreeBytes / 1073741824d:N1} GiB.";
+            if (storage.FreeBytes is >= 0 and < 1073741824) _status.Text = "Low disk space: less than 1 GiB remains on the node drive.";
+        }
+        catch (Exception ex)
+        {
+            CheckRefresh(cancellationToken, generation);
+            _storage.Text = "Disk usage could not be read. Slithy will try again.";
+            Log("Disk usage check failed (" + ex.GetType().Name + ").");
+        }
         if (!string.IsNullOrEmpty(_walletName))
         {
-            _snapshot = await _wallet.GetSnapshotAsync(_endpoint);
-            JsonElement balances = await _node.CallAsync(_endpoint, _walletName, "getbalances", Array.Empty<object>());
-            var mine = balances.GetProperty("mine");
-            _balance.Text = $"{_snapshot.Balance:N8} SLTHY";
-            _available.Text = $"{_snapshot.UnlockedBalance:N8} spendable\n{mine.GetProperty("immature").GetDecimal():N8} immature mining rewards\n{mine.GetProperty("untrusted_pending").GetDecimal():N8} pending incoming";
-            // The open UI session is separate from Core's short signing-key unlock.
-            // Sending asks for the password again even when the wallet view stays open.
-            _walletStatus.Text = _walletName + (_locked ? " | Locked for spending" : " | Open");
-            await RefreshHistoryIfNeeded();
+            try
+            {
+                var snapshot = await _wallet.GetSnapshotAsync(_endpoint, cancellationToken).WaitAsync(cancellationToken);
+                CheckRefresh(cancellationToken, generation);
+                string available = $"{snapshot.UnlockedBalance:N8} spendable\n{snapshot.ImmatureBalance:N8} immature mining rewards\n{snapshot.PendingBalance:N8} pending incoming";
+                // Every amount comes from the same getbalances reply.
+                _snapshot = snapshot;
+                _balance.Text = $"{snapshot.Balance:N8} SLTHY";
+                _available.Text = available;
+                // The open UI session is separate from Core's short signing-key unlock.
+                // Sending asks for the password again even when the wallet view stays open.
+                _walletStatus.Text = _walletName + (_locked ? " | Locked for spending" : " | Open");
+            }
+            catch (Exception ex)
+            {
+                CheckRefresh(cancellationToken, generation);
+                _walletStatus.Text = _walletName + " | Balance update delayed";
+                if (_snapshot == null) _balance.Text = "Balance unavailable";
+                _available.Text = _snapshot == null
+                    ? "Waiting for the wallet balance."
+                    : "Last balance shown. Waiting for a fresh balance.";
+                Log("Wallet balance refresh failed (" + ex.GetType().Name + ").");
+            }
+            await RefreshHistoryIfNeeded(cancellationToken);
+            CheckRefresh(cancellationToken, generation);
         }
-        _miningTitle.Text = _mining.Active ? "Mining is on" : "Earn Slithy";
-        _miningStatus.Text = MiningStatusText(_mining, _chain.Height);
-        ToolTip.SetTip(_miningStatus, _mining.Active ? "Mining address: " + _mining.Address : null);
-        if (DateTimeOffset.UtcNow - _lastTreasury > TimeSpan.FromMinutes(1)) await RefreshTreasury();
+        if (DateTimeOffset.UtcNow - _lastTreasury > TimeSpan.FromMinutes(1)) await RefreshTreasury(cancellationToken);
+        CheckRefresh(cancellationToken, generation);
         UpdateControls();
     }
 
-    internal static string MiningStatusText(MiningInfo mining, long chainHeight) => mining.Active
-        ? $"{mining.Speed:N0} H/s with {mining.Threads} workers.\nNext block: {chainHeight + 1:N0}.\nBlocks found this session: {mining.Blocks:N0}.\nTo: {AddressPreview(mining.Address)}"
+    internal static string MiningStatusText(MiningInfo mining, long? chainHeight) => mining.Active
+        ? $"{mining.Speed:N0} H/s with {mining.Threads} workers.\n" +
+            (chainHeight.HasValue ? $"Next block: {chainHeight + 1:N0}.\n" : "") +
+            $"Blocks found this session: {mining.Blocks:N0}.\nTo: {AddressPreview(mining.Address)}"
         : "Mining is stopped. Start when you are ready.";
 
     private static string AddressPreview(string address) => address.Length > 30 ? address[..14] + "..." + address[^8..] : address;
 
-    private async Task RefreshTreasury()
+    private async Task RefreshTreasury(CancellationToken cancellationToken = default)
     {
         _lastTreasury = DateTimeOffset.UtcNow;
         try
         {
-            var result = await new TreasuryStatusService().TryGetPublicStatusAsync("https://slithy.io/data/treasury-beta-20260909.json");
+            var result = await new TreasuryStatusService().TryGetPublicStatusAsync("https://slithy.io/data/treasury-beta-20260909.json").WaitAsync(cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             if (result == null) throw new InvalidDataException();
             _treasury.Text = $"Literacy fund: {result.CurrentBalance:N8} SLTHY\nUpdated {result.UpdatedAt.ToLocalTime():g}";
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
         catch { _treasury.Text = "Literacy fund: fresh data is unavailable."; }
     }
 
@@ -466,10 +568,14 @@ internal sealed partial class MainWindow : Window
         _available.Text = "Open a wallet to view its balance."; ResetHistory();
     }
 
-    private async Task LockWallet()
+    private Task LockWallet() => LockWalletCore(CancellationToken.None);
+
+    private async Task LockWalletCore(CancellationToken cancellationToken)
     {
         if (_walletName.Length == 0) return;
-        await _wallet.LockWalletOnlyAsync(_endpoint!); _locked = true;
+        await _wallet.LockWalletOnlyAsync(_endpoint!, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
+        _locked = true;
         _walletStatus.Text = _walletName + " | Locked for spending";
         Log("Wallet locked. Mining and balance updates continue."); UpdateControls();
     }
@@ -608,10 +714,25 @@ internal sealed partial class MainWindow : Window
         _settings.LastWalletName = input.Name; Save(); LoadPending(); await Refresh();
     }
 
-    private async Task ToggleMining()
+    private async Task HandleMiningClickAsync()
     {
+        if (_installingUpdate) { await StopMiningForUpdate(); return; }
+        bool stopRequested = _miningStatusUnknown || _mining?.Active == true;
+        await Run(() => ChangeMining(stopRequested), interruptPolling: stopRequested);
+    }
+
+    private Task ToggleMining() => ChangeMining(_miningStatusUnknown || _mining?.Active == true);
+
+    private async Task ChangeMining(bool stopRequested)
+    {
+        // A stop click remains a stop request if the status reply was lost.
+        if (stopRequested)
+        {
+            await RequestMiningStop();
+            return;
+        }
         var current = await _node.GetMiningInfoAsync(_endpoint!);
-        if (current.Active) { await _node.StopMiningAsync(_endpoint!); await Refresh(); return; }
+        if (current.Active) { await RequestMiningStop(); return; }
         var chain = await _node.GetInfoAsync(_endpoint!);
         if (!_regtest)
         {
@@ -619,16 +740,51 @@ internal sealed partial class MainWindow : Window
             var peers = await _node.GetPeerNetworkStatusAsync(_endpoint!, chain.Height);
             string? problem = NodeRpcClient.MiningPeerProblem(peers, chain.Height); if (problem != null) throw new InvalidOperationException(problem);
         }
-        var disk = await Task.Run(_host.GetStorage); if (disk.FreeBytes < 1073741824) throw new IOException("Less than 1 GiB of disk space remains. Free some space before starting mining.");
+        var disk = await Task.Run(_readStorage);
+        if (disk.FreeBytes < 0) throw new IOException("Free disk space could not be read. Check the node drive before starting mining.");
+        if (disk.FreeBytes < 1073741824) throw new IOException("Less than 1 GiB of disk space remains. Free some space before starting mining.");
         string address = _custom.IsChecked == true ? _miningAddress.Text?.Trim() ?? "" : _snapshot?.Address ?? "";
         if (string.IsNullOrEmpty(address) || !(await _wallet.ValidateAddressAsync(_endpoint!, address)).Valid) throw new InvalidOperationException("Open a wallet or enter a valid mining address first.");
         int threads = _settings.GetMiningThreadCount();
-        await _node.StartMiningAsync(_endpoint!, address, threads); await Refresh();
+        try { await _node.StartMiningAsync(_endpoint!, address, threads); }
+        catch (Exception ex) { ShowMiningCommandUnknown(stopping: false, ex); throw; }
+        await Refresh();
+    }
+
+    private async Task RequestMiningStop()
+    {
+        try { await _node.StopMiningAsync(_endpoint!); }
+        catch (Exception ex) { ShowMiningCommandUnknown(stopping: true, ex); throw; }
+        ShowMiningStopped();
+    }
+
+    private void ShowMiningCommandUnknown(bool stopping, Exception error)
+    {
+        // A lost reply does not tell us whether the node carried out the command.
+        _miningStatusUnknown = true;
+        _miningTitle.Text = "Checking miner";
+        _miningStatus.Text = stopping
+            ? "The stop request was not confirmed. You can request a stop again."
+            : "The start request was not confirmed. Slithy will check again. You can still request a stop.";
+        ToolTip.SetTip(_miningStatus, null);
+        Log((stopping ? "Mining stop was not confirmed (" : "Mining start was not confirmed (") + error.GetType().Name + ").");
+        UpdateControls();
+    }
+
+    private void ShowMiningStopped()
+    {
+        _mining = new MiningInfo(false, 0, 0, "", _mining?.Algorithm ?? "yespower", _mining?.Blocks ?? 0);
+        _miningStatusUnknown = false;
+        _miningTitle.Text = "Earn Slithy";
+        _miningStatus.Text = "Mining is stopped. Start when you are ready.";
+        ToolTip.SetTip(_miningStatus, null);
+        Log("CPU mining stopped.");
+        UpdateControls();
     }
 
     private void UpdateControls()
     {
-        bool active = _mining?.Active == true;
+        bool active = _mining?.Active == true || _miningStatusUnknown;
         _walletButton.IsEnabled = _ready && !_busy && !_historyBusy; _lockButton.IsEnabled = _ready && !_busy && _walletName.Length > 0 && !_locked;
         _sendButton.IsEnabled = _ready && !_busy && !_historyBusy && !_paymentBlocked && _walletName.Length > 0; _receiveButton.IsEnabled = _snapshot != null && !_busy && !_historyBusy;
         bool canStopDuringUpdate = _installingUpdate && _updateAllowsStop && active && !_stoppingMiningForUpdate;
@@ -642,14 +798,19 @@ internal sealed partial class MainWindow : Window
         UpdateHistoryControls();
     }
 
-    private async Task Run(Func<Task> action)
+    private async Task Run(Func<Task> action, bool interruptPolling = false)
     {
         if (_busy || _preview || _closing) return;
         _busy = true; UpdateControls();
-        while (_polling) await Task.Delay(50);
-        try { await action(); }
+        try
+        {
+            if (interruptPolling) CancelBackgroundPoll();
+            while (_polling && !_closing) await Task.Delay(50);
+            if (!_closing) await action();
+        }
         catch (Exception ex)
         {
+            if (_closing) return;
             string message = FriendlyError(ex);
             _status.Text = message; Log(message);
             await Dialogs.Message(this, "Slithy could not finish that", message);
@@ -668,6 +829,7 @@ internal sealed partial class MainWindow : Window
 
     private void Log(string message)
     {
+        _diagnostics?.RecordMessage(message);
         string entry = DateTime.Now.ToString("HH:mm:ss") + "  " + message;
         _log.Text = string.Join("\n", (entry + "\n" + _log.Text).Split('\n').Take(40));
     }
@@ -706,8 +868,9 @@ internal sealed partial class MainWindow : Window
     private async Task Quit()
     {
         if (_busy || _closing) return;
-        if (_mining?.Active == true && !await Dialogs.Confirm(this, "Quit Slithy?", "Quitting stops mining and closes the local node started by this app. Your wallet files stay on disk.", "Stop and quit")) return;
+        if ((_mining?.Active == true || _miningStatusUnknown) && !await Dialogs.Confirm(this, "Quit Slithy?", "Quitting stops mining and closes the local node started by this app. Your wallet files stay on disk.", "Stop and quit")) return;
         _closing = true; _timer.Stop(); _historyCancellation?.Cancel();
+        CancelBackgroundPoll();
         while (_historyBusy) await Task.Delay(50);
         while (_polling) await Task.Delay(50);
         try { if (_walletName.Length > 0) await _wallet.LockWalletOnlyAsync(_endpoint!); }

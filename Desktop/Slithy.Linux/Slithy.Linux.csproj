@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>slithy-desktop</AssemblyName>
     <RootNamespace>Slithy.Linux</RootNamespace>
-    <Version>0.1.50</Version>
-    <InformationalVersion>0.1.50-beta.1</InformationalVersion>
+    <Version>0.1.51</Version>
+    <InformationalVersion>0.1.51-beta.1</InformationalVersion>
     <Product>Slithy Tove Linux GUI Beta</Product>
     <Company>CS Idea Labs LLC</Company>
     <Description>Linux wallet and CPU miner for the Slithy test network.</Description>
@@ -29,6 +29,7 @@
     <Compile Include="../Slithy Tove/Slithy Tove/TreasuryStatusService.cs" Link="Core/TreasuryStatusService.cs" />
     <Compile Include="../Slithy Tove/Slithy Tove/TreasuryStatusCalculator.cs" Link="Core/TreasuryStatusCalculator.cs" />
     <Compile Include="../../shared/RecoveryWords.cs" Link="Core/RecoveryWords.cs" />
+    <Compile Include="../../shared/AppDiagnosticLog.cs" Link="Core/AppDiagnosticLog.cs" />
     <EmbeddedResource Include="../../licenses/BETA-TERMS.txt" LogicalName="Slithy.BetaTerms" />
     <EmbeddedResource Include="../Slithy Tove/Slithy Tove/Assets/slithy-mark.png" LogicalName="Slithy.HeaderMark" />
     <EmbeddedResource Include="../Slithy Tove/Slithy Tove/Assets/slithy-icon-256.png" LogicalName="Slithy.AppIcon" />

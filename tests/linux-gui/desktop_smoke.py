@@ -326,11 +326,13 @@ class Suite:
         assert not missing, "Install the documented native node dependencies: " + ", ".join(missing)
         run([str(app.parent / "Binaries/slithyd"), "--version"], env)
         self.passed("bundled native node runtime dependencies")
-        for flag in ("--self-test", "--update-test", "--ui-test"):
+        fixture_env = dict(env, HTTP_PROXY="http://127.0.0.1:1", HTTPS_PROXY="http://127.0.0.1:1",
+                           NO_PROXY="127.0.0.1,localhost")
+        for flag in ("--self-test", "--integration-test", "--update-test", "--ui-test", "--installer-ui-test"):
             command = [str(app), flag]
-            if flag == "--ui-test":
-                command += ["--screenshots", str(self.output / "ui-fixtures")]
-            result = run(command, env, timeout=180)
+            if flag in ("--ui-test", "--installer-ui-test"):
+                command += ["--screenshots", str(self.output / (flag[2:] + "-fixtures"))]
+            result = run(command, fixture_env, timeout=600 if flag == "--integration-test" else 180)
             (self.output / (flag[2:] + ".log")).write_text(result.stdout + result.stderr)
             self.passed("published package " + flag)
 

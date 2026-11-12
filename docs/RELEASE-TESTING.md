@@ -31,3 +31,15 @@ The package also contains runtime, wallet and updater fixture tests. These cover
 The workflow uploads test reports and screenshots as artifacts. It does not upload the temporary home directory, wallet databases or node authentication files. A failed step fails the job even when evidence upload succeeds.
 
 For a new release, review and update the pinned URLs and hashes in the test scripts. Do not change a pin to make a failing download pass without checking the release first. Passing these tests does not publish software or change an update feed.
+
+## Mining status checks
+
+Run `dotnet run --project tests/mining-status-ui/MiningStatusUiTests.csproj -c Release` on Windows. It uses temporary settings and simulated RPC replies. No user wallet or node is opened.
+
+The checks cover delayed replies during Start, Stop and wallet changes. A failed balance read must leave a confirmed mining result intact. A failed mining-status request must leave Stop available and recover when replies resume. Routine balance polling and stopping workers must not rescan the blockchain.
+
+Run `pwsh -NoProfile -File tests/mining-status-ui/native-balance-tracking.ps1` after building the Windows native tools. It creates a disconnected regtest node and disposable wallets. It checks reward maturity, an incoming payment before and after confirmation, and a tip rollback followed by reconsideration. No check requests a rescan. The script shuts down its own node and removes its temporary directory when finished.
+
+The Linux GUI's `--ui-test` includes the same balance-versus-miner failure checks, plus failed network and disk reads. It also tests Stop during delayed replies and verifies that a lost Start reply does not lead to a second Start. Headless UI tests do not replace a long mining session on a physical Windows or Linux computer. Desktop testing should also cover sustained CPU load, sleep and wake.
+
+Run `dotnet run --project tests/diagnostic-log/DiagnosticLogTests.csproj -c Release` to check local diagnostic files. The tests cover rotation, private permissions and rejection of linked paths. Raw messages containing disposable secret markers must never appear in the saved files. Run on Linux as well as Windows to exercise the platform-specific file checks.

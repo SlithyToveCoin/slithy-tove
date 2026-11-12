@@ -94,12 +94,12 @@ internal sealed class NodeRpcClient : IDisposable
         return "Starting the local Slithy node...";
     }
 
-    public async Task<NodeInfo> GetInfoAsync(Uri nodeUri, TimeSpan? timeout = null)
+    public async Task<NodeInfo> GetInfoAsync(Uri nodeUri, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
         // The node reports chain, network, and mempool details through separate RPC calls.
-        JsonElement blockchain = await CallAsync(nodeUri, "", "getblockchaininfo", Array.Empty<object>(), timeout);
-        JsonElement network = await CallAsync(nodeUri, "", "getnetworkinfo", Array.Empty<object>(), timeout);
-        JsonElement mempool = await CallAsync(nodeUri, "", "getmempoolinfo", Array.Empty<object>(), timeout);
+        JsonElement blockchain = await CallAsync(nodeUri, "", "getblockchaininfo", Array.Empty<object>(), timeout, cancellationToken);
+        JsonElement network = await CallAsync(nodeUri, "", "getnetworkinfo", Array.Empty<object>(), timeout, cancellationToken);
+        JsonElement mempool = await CallAsync(nodeUri, "", "getmempoolinfo", Array.Empty<object>(), timeout, cancellationToken);
 
         string chain = ReadString(blockchain, "chain");
         bool synchronized = !ReadBoolean(blockchain, "initialblockdownload") &&
@@ -109,7 +109,7 @@ internal sealed class NodeRpcClient : IDisposable
         if (chain == "test" && ReadInt64(blockchain, "blocks") == 0 &&
             ReadInt64(blockchain, "headers") == 0 && ReadString(blockchain, "bestblockhash") == BetaGenesisHash)
         {
-            PeerNetworkStatus peers = await GetPeerNetworkStatusAsync(nodeUri, 0);
+            PeerNetworkStatus peers = await GetPeerNetworkStatusAsync(nodeUri, 0, cancellationToken);
             synchronized = CanBootstrapBeta(chain, 0, 0, ReadString(blockchain, "bestblockhash"), peers);
         }
 
@@ -209,14 +209,14 @@ internal sealed class NodeRpcClient : IDisposable
         return fetchedAny;
     }
 
-    public async Task<MiningInfo> GetMiningInfoAsync(Uri nodeUri)
+    public async Task<MiningInfo> GetMiningInfoAsync(Uri nodeUri, CancellationToken cancellationToken = default)
     {
         JsonElement mining = await CallAsync(
             nodeUri,
             "",
             "getcpumininginfo",
             Array.Empty<object>(),
-            TimeSpan.FromSeconds(5));
+            TimeSpan.FromSeconds(5), cancellationToken);
 
         return new MiningInfo(
             ReadBoolean(mining, "active"),
@@ -227,14 +227,14 @@ internal sealed class NodeRpcClient : IDisposable
             ReadInt64(mining, "blocks"));
     }
 
-    public async Task<PeerNetworkStatus> GetPeerNetworkStatusAsync(Uri nodeUri, long localHeight)
+    public async Task<PeerNetworkStatus> GetPeerNetworkStatusAsync(Uri nodeUri, long localHeight, CancellationToken cancellationToken = default)
     {
         JsonElement peers = await CallAsync(
             nodeUri,
             "",
             "getpeerinfo",
             Array.Empty<object>(),
-            TimeSpan.FromSeconds(5));
+            TimeSpan.FromSeconds(5), cancellationToken);
 
         return ParsePeerNetworkStatus(peers, localHeight);
     }

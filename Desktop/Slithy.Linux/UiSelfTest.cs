@@ -59,6 +59,7 @@ internal static class UiSelfTest
             Console.WriteLine("PASS: pending payment records reject missing fields and malformed data.");
             CheckWalletPicker(output);
             UiWalletSelfTest.Run(output);
+            UiMiningStatusSelfTest.Run();
             CheckSavedMiningShortcut(output);
             foreach (int width in new[] { 1200, 980, 760 })
             {

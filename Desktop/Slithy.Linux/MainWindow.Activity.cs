@@ -76,28 +76,29 @@ internal sealed partial class MainWindow
         UpdateHistoryControls();
     }
 
-    private async Task RefreshHistoryIfNeeded()
+    private async Task RefreshHistoryIfNeeded(CancellationToken cancellationToken = default)
     {
         if (_historyBusy || _walletName.Length == 0) return;
         bool changedWallet = _historyWallet != _walletName;
         // A deep filtered search should not run again on every balance poll.
         if (!changedWallet && (_historyPage != 0 || _historyQuery.Length > 0 || _historyType != "all" || _historyState != "all")) return;
         if (!changedWallet && DateTimeOffset.UtcNow - _historyUpdated < TimeSpan.FromSeconds(30)) return;
-        await LoadHistoryPage(changedWallet ? 0 : _historyPage, duringRefresh: true);
+        await LoadHistoryPage(changedWallet ? 0 : _historyPage, duringRefresh: true, cancellationToken);
     }
 
-    private async Task LoadHistoryPage(int page, bool duringRefresh = false)
+    private async Task LoadHistoryPage(int page, bool duringRefresh = false, CancellationToken cancellationToken = default)
     {
         if (_historyBusy || _closing || _walletName.Length == 0 || (!duringRefresh && _busy)) return;
         _historyBusy = true;
-        _historyCancellation = new CancellationTokenSource();
+        _historyCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         string walletName = _walletName;
         _activity.Text = "Reading wallet history...";
         UpdateControls();
         try
         {
             WalletHistoryPage result = _preview ? PreviewHistory(page) : await _wallet.GetHistoryPageAsync(
-                _endpoint!, page, HistoryPageSize, _historyQuery, _historyType, _historyState, _historyCancellation.Token);
+                _endpoint!, page, HistoryPageSize, _historyQuery, _historyType, _historyState, _historyCancellation.Token).WaitAsync(_historyCancellation.Token);
+            cancellationToken.ThrowIfCancellationRequested();
             if (_closing || walletName != _walletName) return;
             _historyWallet = walletName; _historyPage = result.Page; _historyHasMore = result.HasMore;
             _historyUpdated = DateTimeOffset.UtcNow;
@@ -106,8 +107,13 @@ internal sealed partial class MainWindow
             _activity.Text = result.Entries.Count == 0 ? "No matching transactions." :
                 $"{result.Entries.Count} entries shown. Select one for its full details.";
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
         catch (OperationCanceledException) { if (!_closing) _activity.Text = "History request cancelled."; }
-        catch (Exception ex) { if (!_closing) _activity.Text = FriendlyError(ex); }
+        catch (Exception ex)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_closing) _activity.Text = FriendlyError(ex);
+        }
         finally
         {
             _historyCancellation.Dispose(); _historyCancellation = null;

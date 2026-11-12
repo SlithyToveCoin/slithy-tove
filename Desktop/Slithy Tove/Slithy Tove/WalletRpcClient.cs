@@ -17,10 +17,14 @@ internal sealed record WalletSnapshot(
     ulong BalanceAtomic,
     ulong UnlockedBalanceAtomic,
     long BlocksToUnlock,
-    long LastProcessedBlockHeight)
+    long LastProcessedBlockHeight,
+    ulong ImmatureBalanceAtomic = 0,
+    ulong PendingBalanceAtomic = 0)
 {
     public decimal Balance => BalanceAtomic / 100_000_000m;
     public decimal UnlockedBalance => UnlockedBalanceAtomic / 100_000_000m;
+    public decimal ImmatureBalance => ImmatureBalanceAtomic / 100_000_000m;
+    public decimal PendingBalance => PendingBalanceAtomic / 100_000_000m;
 }
 
 // This tells the UI whether the wallet is still scanning blocks.
@@ -189,18 +193,19 @@ internal sealed partial class WalletRpcClient : IDisposable
         }
     }
 
-    public async Task LockWalletOnlyAsync(Uri endpoint)
+    public async Task LockWalletOnlyAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
         EnsureWalletOpen();
         string wallet = _walletName;
-        if (!_walletEncrypted && !await IsWalletEncryptedAsync(endpoint))
+        if (!_walletEncrypted && !await IsWalletEncryptedAsync(endpoint, cancellationToken))
         {
             return;
         }
         EnsureSameWallet(wallet);
-        await _rpc.CallAsync(endpoint, wallet, "walletlock", Array.Empty<object>(), LongWalletOperationTimeout);
+        await _rpc.CallAsync(endpoint, wallet, "walletlock", Array.Empty<object>(), LongWalletOperationTimeout, cancellationToken);
         EnsureSameWallet(wallet);
-        JsonElement locked = await _rpc.CallAsync(endpoint, wallet, "getwalletinfo", Array.Empty<object>(), LongWalletOperationTimeout);
+        JsonElement locked = await _rpc.CallAsync(endpoint, wallet, "getwalletinfo", Array.Empty<object>(), LongWalletOperationTimeout, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
         EnsureSameWallet(wallet);
         if (!locked.TryGetProperty("unlocked_until", out JsonElement until) || until.GetInt64() != 0)
             throw new InvalidOperationException("Wallet spending lock could not be confirmed.");
@@ -443,22 +448,24 @@ internal sealed partial class WalletRpcClient : IDisposable
         };
     }
 
-    public async Task<WalletSnapshot> GetSnapshotAsync(Uri endpoint)
+    public async Task<WalletSnapshot> GetSnapshotAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
         // Reuse a known receiving address so opening a restored wallet does not consume a key.
         EnsureWalletOpen();
+        cancellationToken.ThrowIfCancellationRequested();
         string wallet = _walletName;
         if (string.IsNullOrWhiteSpace(_currentAddress))
         {
-            IReadOnlyList<WalletReceivingAddress> addresses = await GetReceivingAddressesAsync(endpoint);
+            IReadOnlyList<WalletReceivingAddress> addresses = await GetReceivingAddressesAsync(endpoint, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
             EnsureSameWallet(wallet);
             _currentAddress = addresses.FirstOrDefault()?.Address ?? "";
             if (_currentAddress.Length == 0)
             {
-                try { _currentAddress = (await CreateReceivingAddressAsync(endpoint)).Address; }
+                try { _currentAddress = (await CreateReceivingAddressAsync(endpoint, cancellationToken: cancellationToken)).Address; }
                 catch (RecoveryWindowExceededException)
                 {
-                    _currentAddress = await GetRecoverySafeReceivingAddressAsync(endpoint, wallet)
+                    _currentAddress = await GetRecoverySafeReceivingAddressAsync(endpoint, wallet, cancellationToken)
                         ?? throw new InvalidOperationException("No receiving address is available. Back up this wallet file before changing its recovery range.");
                 }
             }
@@ -466,7 +473,8 @@ internal sealed partial class WalletRpcClient : IDisposable
         }
 
         JsonElement balanceResult = await _rpc.CallAsync(
-            endpoint, wallet, "getbalances", Array.Empty<object>());
+            endpoint, wallet, "getbalances", Array.Empty<object>(), cancellationToken: cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
         EnsureSameWallet(wallet);
         JsonElement mine = balanceResult.GetProperty("mine");
         decimal trusted = ReadDecimal(mine, "trusted");
@@ -487,7 +495,9 @@ internal sealed partial class WalletRpcClient : IDisposable
             totalAtomic,
             trustedAtomic,
             blocksToUnlock,
-            lastProcessedBlockHeight);
+            lastProcessedBlockHeight,
+            ToAtomic(immature),
+            ToAtomic(pending));
     }
 
     public async Task<AddressValidation> ValidateAddressAsync(Uri endpoint, string address)
@@ -641,10 +651,10 @@ internal sealed partial class WalletRpcClient : IDisposable
         }
     }
 
-    private async Task<bool> IsWalletEncryptedAsync(Uri endpoint)
+    private async Task<bool> IsWalletEncryptedAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
         EnsureWalletOpen();
-        JsonElement info = await _rpc.CallAsync(endpoint, _walletName, "getwalletinfo", Array.Empty<object>());
+        JsonElement info = await _rpc.CallAsync(endpoint, _walletName, "getwalletinfo", Array.Empty<object>(), cancellationToken: cancellationToken);
         return info.TryGetProperty("unlocked_until", out _);
     }
 

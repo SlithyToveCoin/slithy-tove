@@ -55,16 +55,32 @@ function Set-Phase([string]$Name) {
 
 function Call-App($Client, [string]$Method, [object[]]$Values, [int]$DeadlineSeconds = 185) {
     $instance = $Client.PSObject.BaseObject
-    # Coin selection adds an overload. Match the argument count used by this test.
+    # Newer builds add optional cancellation tokens. The same fixture also tests older installers.
     $methods = @($instance.GetType().GetMethods([Reflection.BindingFlags]'Public,Instance') | Where-Object {
-        $_.Name -ceq $Method -and $_.GetParameters().Length -eq $Values.Count
+        if ($_.Name -cne $Method) { return $false }
+        $parameters = $_.GetParameters()
+        if ($parameters.Length -lt $Values.Count) { return $false }
+        for ($i = $Values.Count; $i -lt $parameters.Length; $i++) {
+            if (-not $parameters[$i].IsOptional) { return $false }
+        }
+        return $true
     })
+    $exact = @($methods | Where-Object { $_.GetParameters().Length -eq $Values.Count })
+    if ($exact.Count -eq 1) { $methods = $exact }
     if ($methods.Count -ne 1) { throw "Expected one installed app method: $Method with $($Values.Count) arguments." }
     $methodInfo = $methods[0]
     # Reflection needs the CLR objects, not PowerShell's wrappers around records.
-    $arguments = [object[]]::new($Values.Count)
+    $parameters = $methodInfo.GetParameters()
+    $arguments = [object[]]::new($parameters.Length)
     for ($i = 0; $i -lt $Values.Count; $i++) {
         if ($null -ne $Values[$i]) { $arguments[$i] = $Values[$i].PSObject.BaseObject }
+    }
+    for ($i = $Values.Count; $i -lt $parameters.Length; $i++) {
+        $value = $parameters[$i].DefaultValue
+        if ($null -eq $value -and $parameters[$i].ParameterType.IsValueType) {
+            $value = [Activator]::CreateInstance($parameters[$i].ParameterType)
+        }
+        $arguments[$i] = $value
     }
     $task = [Threading.Tasks.Task]$methodInfo.Invoke($instance, $arguments)
     [void]$task.WaitAsync([TimeSpan]::FromSeconds($DeadlineSeconds)).GetAwaiter().GetResult()

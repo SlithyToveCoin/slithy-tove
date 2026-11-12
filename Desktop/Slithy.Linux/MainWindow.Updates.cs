@@ -209,6 +209,7 @@ internal sealed partial class MainWindow
             await _updateInstaller.ActivateAndLaunchAsync(preparedUpdate, async () =>
             {
                 _timer.Stop();
+                CancelBackgroundPoll();
                 while (_polling || _stoppingMiningForUpdate) await Task.Delay(50);
                 try { if (_walletName.Length > 0 && _endpoint != null) await _wallet.LockWalletOnlyAsync(_endpoint); }
                 catch { Log("Wallet lock was not confirmed. Stopping this app's local node before updating."); }
@@ -263,14 +264,15 @@ internal sealed partial class MainWindow
 
     private async Task StopMiningForUpdate()
     {
-        if (!_updateAllowsStop || _stoppingMiningForUpdate || _mining?.Active != true || _endpoint == null) return;
+        if (!_updateAllowsStop || _stoppingMiningForUpdate || (_mining?.Active != true && !_miningStatusUnknown) || _endpoint == null) return;
         _stoppingMiningForUpdate = true;
+        CancelBackgroundPoll();
         UpdateControls();
         try
         {
-            while (_polling) await Task.Delay(50);
-            await _node.StopMiningAsync(_endpoint);
-            await Refresh();
+            while (_polling && !_closing) await Task.Delay(50);
+            if (_closing) return;
+            await RequestMiningStop();
             Log("Mining stopped. The update download can continue.");
         }
         catch { Log("Mining did not confirm that it stopped. Cancel the update download to try again."); }

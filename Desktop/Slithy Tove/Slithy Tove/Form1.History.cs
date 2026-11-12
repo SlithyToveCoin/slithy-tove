@@ -172,6 +172,7 @@ public partial class Form1
 
     private DialogResult ShowWalletDialog(Form dialog)
     {
+        _miningStateVersion++;
         bool previous = _walletDialogOpen;
         _walletDialogOpen = true;
         try { return dialog.ShowDialog(this); }

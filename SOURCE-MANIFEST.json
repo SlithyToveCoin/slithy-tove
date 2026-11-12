@@ -9,7 +9,7 @@
   },
   {
     "path": ".github/workflows/source-checks.yml",
-    "sha256": "670787b1c08f4fb988ed074b1cbcfad1f13af5797f16c6040eb6fdc149103818"
+    "sha256": "e4ab8f4d48f7c2b497a57b74fe3a5f90c885fdaa1fdf38ef13842b9fa8ccf7b5"
   },
   {
     "path": ".gitignore",
@@ -72,8 +72,12 @@
     "sha256": "3e90fff9c1e6e1eb35a7f73c63223cf76609a773438303775217f4dcb525785f"
   },
   {
+    "path": "Desktop/Slithy Tove/Slithy Tove/Form1.Diagnostics.cs",
+    "sha256": "dc7d8427f7f716d178d66f50d7550da87b2b8e99f719ed1334034291cbb34162"
+  },
+  {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.History.cs",
-    "sha256": "f3f5e2efa696e5f7906cb6086f0e5913eaf1cb2559becf04ff88d9165dbce460"
+    "sha256": "12e08f36bced6f23cd78f7227677e028c2f2e02ad129c39d1df93afffe4efae3"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.MiningLayout.cs",
@@ -84,8 +88,12 @@
     "sha256": "43511c65da82a25a2e8bd979c82c80abf9fac16d29b77dd8b9ac902c035e2eb2"
   },
   {
+    "path": "Desktop/Slithy Tove/Slithy Tove/Form1.MiningStatus.cs",
+    "sha256": "e9476c4cbf7d72c6d2b1ecfb86e096a32417f1b109c6a103049fa0bf9617471c"
+  },
+  {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.cs",
-    "sha256": "a297ae42b77a9e63bf25dd370519201dcba2b3cae001b66746cf734736b4009e"
+    "sha256": "810db138b33447f21a7ace717fdcd8f7af01b6d305701a0a665e8c0efd12e435"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Form1.resx",
@@ -109,7 +117,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/NodeRpcClient.cs",
-    "sha256": "53881319b350b88236111af24c2a53dcb78a81f285536e2cf1b4aef0b1f1d272"
+    "sha256": "ee4c2cdd6e3d1c0700ef04c46c72cf239af09b8904a71e4ecfbc9edc83f31743"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/NodeStartupWaiter.cs",
@@ -185,7 +193,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/Slithy Tove.csproj",
-    "sha256": "19ae4f81bf058d9355dc1354d3220b97a9cb4ec3de9c6a855e44fbd3cf683214"
+    "sha256": "4c248e76b865ed73f48b40a07e93677e598b431a24a30d0bf854681e62ed498c"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/SlithySeedPhrase.cs",
@@ -277,7 +285,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.CoinControl.cs",
-    "sha256": "372759477707721d65d2697d7c025047f09182ffd7ec232c0b06f351c1f09df8"
+    "sha256": "3c9a36289caa8fa614ae813e14ecbc2598019b1a20b65ea372714cc293e896e9"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.History.cs",
@@ -285,7 +293,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcClient.cs",
-    "sha256": "7aa8e1a181383c54aaaf2aaf14245e8a035c75952faf8bcf1871defab7892544"
+    "sha256": "bfcb116d82e885ab961784d6bf39f4128c029e3ce54a758555a75fc00a5a269f"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/WalletRpcTransportSelfTest.cs",
@@ -353,11 +361,11 @@
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.Activity.cs",
-    "sha256": "a74b71f0ea82a18042dc8bc4fb87971519fa4b6f3a4d02a2df86b34838f4ed54"
+    "sha256": "aa875b100560457bc3b4c0bd67830e8c6694f4fdaf3d624f484d883e9be068d5"
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.Updates.cs",
-    "sha256": "81392c478a49b3548058343192215ef8681f0a7e9bc8e318b92ec3d5d4bb96fb"
+    "sha256": "1b466867e6eea4f930e7a4679684f2a16843e4ad538b8c8e9111f1d1b2275aba"
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.Wallet.cs",
@@ -365,7 +373,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.cs",
-    "sha256": "9fe5ee91d5861e806a0b8615b5087fab5b708f0a51118b083ead4735a20b87fa"
+    "sha256": "5492cf47d6ae9925dcf54413e782f6bc40074fab22e860103548277ede27d397"
   },
   {
     "path": "Desktop/Slithy.Linux/Program.cs",
@@ -373,11 +381,15 @@
   },
   {
     "path": "Desktop/Slithy.Linux/Slithy.Linux.csproj",
-    "sha256": "7ab060c93438162ef78148b2d18d3d5083f069ac0969bc2f9eb508a8d49a7cc8"
+    "sha256": "b6cbec01ad3f5291cdf1b561ab4990891f9be98d9095f75a75be1d26f11f0416"
+  },
+  {
+    "path": "Desktop/Slithy.Linux/UiMiningStatusSelfTest.cs",
+    "sha256": "99c54642d5d662e7639fe2e25c678415829c444ce0c48cb027a2bac5debda54c"
   },
   {
     "path": "Desktop/Slithy.Linux/UiSelfTest.cs",
-    "sha256": "fd3e749a01bb153d9c3433bc8947295b0f14b70604304b4b981ac8b7354e6298"
+    "sha256": "ba63525e6575f503d43167d686adab00b3630b4336b571262f433d25a25d741f"
   },
   {
     "path": "Desktop/Slithy.Linux/UiWalletSelfTest.cs",
@@ -12164,8 +12176,12 @@
     "sha256": "a747bd1bdeedead83d6bcb6c79d4416bbd2c6a8847d4b1b62bfb647109afeb1b"
   },
   {
+    "path": "docs/RELEASE-0.1.51.md",
+    "sha256": "6c78771c477fb07d014c4b95b5a667830006f68daa259e08561250ac3ec9d003"
+  },
+  {
     "path": "docs/RELEASE-TESTING.md",
-    "sha256": "4d6427406b01932807ae9e915005e3d843d6922eb901ac7f203bd80e3e5fc170"
+    "sha256": "2abdc688cb628db7a1bd7628c7371f3bcd6d84c7547a97e7fa66fe9ec5adc52f"
   },
   {
     "path": "docs/SOURCE-PROVENANCE.md",
@@ -12336,6 +12352,10 @@
     "sha256": "0cb14431f438a2abb0dcdfb1614e7a50540ec46d1b9b7e21346fb5e529e5845d"
   },
   {
+    "path": "shared/AppDiagnosticLog.cs",
+    "sha256": "88d01b30249a409b40157bd5924deda3e44ba99536c03ebad785845d28789a3a"
+  },
+  {
     "path": "shared/RecoveryWords.cs",
     "sha256": "f982d090162285fa18ca4b85444b85e3742da6dfb2e055b772f8a8ed49e820f2"
   },
@@ -12373,7 +12393,7 @@
   },
   {
     "path": "site/downloads.html",
-    "sha256": "b44397922734ffe1662999a8025e417e2a342a641756cb9d47ca20fd3eb84695"
+    "sha256": "3de13dcbdb778332cc292305d141ec8c0ba59cb41fafd6f85ddaca21e6a3d674"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12513,7 +12533,7 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "07574605a6ba4bfa60b6ebad0bdab58950f86e0dbc771fb82b2ff99f335a0d16"
+    "sha256": "71687a2c59050f8d4e0eba0e3b7014f6898b5e29302f09fe37cf6b8f8a7bb584"
   },
   {
     "path": "site/home-full.html",
@@ -12569,7 +12589,7 @@
   },
   {
     "path": "site/privacy.html",
-    "sha256": "a7e52c2f80f5f5a4df32ec95a1dc706e8d973586a01f6ae77c56f5bff02477d4"
+    "sha256": "66eb27c83f9e3c5c5425250ff15dbe1660f5a5a9e018ef1e566ad716e57a22cf"
   },
   {
     "path": "site/robots.txt",
@@ -12624,6 +12644,18 @@
     "sha256": "5369a756fe80a8a2d2ccfc413533894249bb29515f8c30ee506e7439d167bdb2"
   },
   {
+    "path": "tests/diagnostic-log/DiagnosticLogTests.csproj",
+    "sha256": "d419b7cf41995fb6614071ac25d095b715c0ecd8c7ed0fd84cc2b585cdf3c5e0"
+  },
+  {
+    "path": "tests/diagnostic-log/Program.cs",
+    "sha256": "ef8e06ca8d6b5051127b5f5fb175e8c946fe4f4101efd8b9d3455f17685cc122"
+  },
+  {
+    "path": "tests/diagnostic-log/README.md",
+    "sha256": "d7e66b2e430fe749456b2b0b78f780a0a3317cd41013858312ec276ca6c786ef"
+  },
+  {
     "path": "tests/installer/InstallerTests.csproj",
     "sha256": "9c5e8a48785de6e785e3ed88b01a21f8a777755841e4b0ad0f77421acbf70f6c"
   },
@@ -12637,7 +12669,7 @@
   },
   {
     "path": "tests/installer/Test-InstalledWalletTransactions.ps1",
-    "sha256": "afe6dd5ec03b110311728ca4f5474fe38f12ad05b36fc0d3d0610ff155841bbc"
+    "sha256": "81a38b0edd0ff20de0af730b09d8d17ce7c741956f8461f334d9dbc747e87de8"
   },
   {
     "path": "tests/installer/Test-PublishedWindowsInstaller.ps1",
@@ -12661,7 +12693,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "886cac2b2fb05d49d066f4cdceff8166d178951437b95feabf61ca109fa7f7bb"
+    "sha256": "3d4258349b7efac69fdc51c23e7e78d1c7da67e83bf966e940154cd74e0341ff"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",
@@ -12689,7 +12721,7 @@
   },
   {
     "path": "tests/mining-settings/MiningCardLayoutTests.cs",
-    "sha256": "40af117845686f2e1463e3250a6164a972b7e11756230900d2b466c9c9706373"
+    "sha256": "07373480a313a41a622d51fdf1c29f57fc0b5a060c1235bff00633748166a94e"
   },
   {
     "path": "tests/mining-settings/MiningSettingsTests.csproj",
@@ -12698,6 +12730,22 @@
   {
     "path": "tests/mining-settings/Program.cs",
     "sha256": "cbde7e38afb6d50d78dee9e5d66d75202cac36e0aac4cda1f64e7f1c06dd5f98"
+  },
+  {
+    "path": "tests/mining-status-ui/MiningStatusUiTests.csproj",
+    "sha256": "18a0f03a0228073f82db8e762a4078ed98829c3b892eadae6141731ef33f2902"
+  },
+  {
+    "path": "tests/mining-status-ui/Program.cs",
+    "sha256": "c0328032a53bf046817ae64e2b49138942714f8bf64e901ca6940353331150cf"
+  },
+  {
+    "path": "tests/mining-status-ui/README.md",
+    "sha256": "0f629ddd1856b93e6601dc14c9c8c9e94010d544dfbda21a2ceb3ef29cccd1a8"
+  },
+  {
+    "path": "tests/mining-status-ui/native-balance-tracking.ps1",
+    "sha256": "a02f03baf42c54ae83f840882e9391a431b32e83a3c66a394136d7b336e0b173"
   },
   {
     "path": "tests/node-startup-ui/NodeStartupUiTests.csproj",
@@ -12953,7 +13001,7 @@
   },
   {
     "path": "tools/public-source.json",
-    "sha256": "381d92f3794eeb56a695f14bbe1681b17855522e9fcc819d1366192f2a439fa5"
+    "sha256": "b93f7da1412925b25a52c21d32b3a64a7cff5167c07c75f0fcdd78f967ecd662"
   },
   {
     "path": "tools/scan-source.py",

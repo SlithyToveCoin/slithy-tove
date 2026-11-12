@@ -113,6 +113,8 @@ internal static partial class Program
                     description.Text = "The local node did not answer. Mining state is unknown.";
                     status.Text = "Slithy will check again. You can still request a stop.";
                     Verify("unknown mining state, " + suffix);
+                    status.Text = "Last reply: 11:59:59 PM. Retrying. You can request a stop.";
+                    Verify("unknown mining state with last reply, " + suffix);
                     if (screenshots != null && useCustom)
                         Capture(form, Path.Combine(screenshots, $"mining-status-{size.Width}.png"));
                 }

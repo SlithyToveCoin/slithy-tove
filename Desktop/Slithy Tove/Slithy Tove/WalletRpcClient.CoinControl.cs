@@ -26,18 +26,19 @@ internal sealed partial class WalletRpcClient
         return (options, false);
     }
 
-    private async Task<string?> GetRecoverySafeReceivingAddressAsync(Uri endpoint, string wallet)
+    private async Task<string?> GetRecoverySafeReceivingAddressAsync(Uri endpoint, string wallet, CancellationToken cancellationToken = default)
     {
-        JsonElement descriptors = await _rpc.CallAsync(endpoint, wallet, "listdescriptors", new object[] { false }, LongWalletOperationTimeout);
+        JsonElement descriptors = await _rpc.CallAsync(endpoint, wallet, "listdescriptors", new object[] { false }, LongWalletOperationTimeout, cancellationToken);
         EnsureSameWallet(wallet);
         string? descriptor = descriptors.GetProperty("descriptors").EnumerateArray()
             .Where(item => ReadBoolean(item, "active") && !ReadBoolean(item, "internal"))
             .Select(item => ReadString(item, "desc")).FirstOrDefault(item => item.StartsWith("wpkh(", StringComparison.Ordinal) && item.Contains("/*", StringComparison.Ordinal));
         if (descriptor is null) return null;
-        JsonElement addresses = await _rpc.CallAsync(endpoint, "", "deriveaddresses", new object[] { descriptor, new[] { 0, 0 } }, LongWalletOperationTimeout);
+        JsonElement addresses = await _rpc.CallAsync(endpoint, "", "deriveaddresses", new object[] { descriptor, new[] { 0, 0 } }, LongWalletOperationTimeout, cancellationToken);
         EnsureSameWallet(wallet);
         string address = addresses[0].GetString()!;
-        JsonElement own = await _rpc.CallAsync(endpoint, wallet, "getaddressinfo", new object[] { address });
+        JsonElement own = await _rpc.CallAsync(endpoint, wallet, "getaddressinfo", new object[] { address }, cancellationToken: cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
         EnsureSameWallet(wallet);
         if (!ReadBoolean(own, "ismine")) throw new InvalidOperationException("The recovery-safe receiving address does not belong to this wallet.");
         return address;
@@ -164,17 +165,17 @@ internal sealed partial class WalletRpcClient
         EnsureSameWallet(wallet);
     }
 
-    public async Task<IReadOnlyList<WalletReceivingAddress>> GetReceivingAddressesAsync(Uri endpoint)
+    public async Task<IReadOnlyList<WalletReceivingAddress>> GetReceivingAddressesAsync(Uri endpoint, CancellationToken cancellationToken = default)
     {
         EnsureWalletOpen();
         string wallet = _walletName;
-        JsonElement result = await _rpc.CallAsync(endpoint, wallet, "listreceivedbyaddress", new object?[] { 0, true, false, null, true }, LongWalletOperationTimeout);
+        JsonElement result = await _rpc.CallAsync(endpoint, wallet, "listreceivedbyaddress", new object?[] { 0, true, false, null, true }, LongWalletOperationTimeout, cancellationToken);
         // The receive address book avoids one RPC per address on a large restored wallet.
         HashSet<string> owned = new(StringComparer.Ordinal);
-        JsonElement labels = await _rpc.CallAsync(endpoint, wallet, "listlabels", new object[] { "receive" });
+        JsonElement labels = await _rpc.CallAsync(endpoint, wallet, "listlabels", new object[] { "receive" }, cancellationToken: cancellationToken);
         foreach (JsonElement label in labels.EnumerateArray())
         {
-            JsonElement entries = await _rpc.CallAsync(endpoint, wallet, "getaddressesbylabel", new object[] { label.GetString()! }, LongWalletOperationTimeout);
+            JsonElement entries = await _rpc.CallAsync(endpoint, wallet, "getaddressesbylabel", new object[] { label.GetString()! }, LongWalletOperationTimeout, cancellationToken);
             foreach (JsonProperty entry in entries.EnumerateObject())
                 if (ReadString(entry.Value, "purpose") == "receive") owned.Add(entry.Name);
         }
@@ -188,31 +189,33 @@ internal sealed partial class WalletRpcClient
         }
         if (_currentAddress.Length > 0 && addresses.All(item => item.Address != _currentAddress))
         {
-            JsonElement info = await _rpc.CallAsync(endpoint, wallet, "getaddressinfo", new object[] { _currentAddress });
+            JsonElement info = await _rpc.CallAsync(endpoint, wallet, "getaddressinfo", new object[] { _currentAddress }, cancellationToken: cancellationToken);
             if (ReadBoolean(info, "ismine") && !ReadBoolean(info, "ischange")) addresses.Add(new(_currentAddress, "", 0, 0, false));
         }
         EnsureSameWallet(wallet);
+        cancellationToken.ThrowIfCancellationRequested();
         return addresses.OrderByDescending(item => item.Address == _currentAddress).ThenBy(item => item.Label, StringComparer.OrdinalIgnoreCase).ThenBy(item => item.Address, StringComparer.Ordinal).ToArray();
     }
 
-    public async Task<WalletReceivingAddress> CreateReceivingAddressAsync(Uri endpoint, string label = "")
+    public async Task<WalletReceivingAddress> CreateReceivingAddressAsync(Uri endpoint, string label = "", CancellationToken cancellationToken = default)
     {
         EnsureWalletOpen();
         if (label.Length > 128 || label.Any(char.IsControl)) throw new ArgumentException("Use a label of up to 128 characters without control characters.", nameof(label));
         string wallet = _walletName;
-        await EnsureRecoveryGenerationRangeAsync(endpoint, internalAddress: false);
+        await EnsureRecoveryGenerationRangeAsync(endpoint, internalAddress: false, cancellationToken);
         EnsureSameWallet(wallet);
-        JsonElement result = await _rpc.CallAsync(endpoint, wallet, "getnewaddress", new object[] { label, "bech32" }, LongWalletOperationTimeout);
+        JsonElement result = await _rpc.CallAsync(endpoint, wallet, "getnewaddress", new object[] { label, "bech32" }, LongWalletOperationTimeout, cancellationToken);
+        cancellationToken.ThrowIfCancellationRequested();
         EnsureSameWallet(wallet);
         string address = result.GetString() ?? throw new InvalidOperationException("The wallet did not return a receiving address.");
         _currentAddress = address;
         return new(address, label, 0, 0, false);
     }
 
-    private async Task EnsureRecoveryGenerationRangeAsync(Uri endpoint, bool internalAddress)
+    private async Task EnsureRecoveryGenerationRangeAsync(Uri endpoint, bool internalAddress, CancellationToken cancellationToken = default)
     {
         string wallet = _walletName;
-        JsonElement result = await _rpc.CallAsync(endpoint, wallet, "listdescriptors", new object[] { false }, LongWalletOperationTimeout);
+        JsonElement result = await _rpc.CallAsync(endpoint, wallet, "listdescriptors", new object[] { false }, LongWalletOperationTimeout, cancellationToken);
         EnsureSameWallet(wallet);
         foreach (JsonElement descriptor in result.GetProperty("descriptors").EnumerateArray())
         {

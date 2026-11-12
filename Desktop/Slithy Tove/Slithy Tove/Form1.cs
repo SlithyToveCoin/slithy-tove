@@ -431,25 +431,39 @@ public partial class Form1 : Form
     }
 
     private async void statusTimer_Tick(object? sender, EventArgs e)
+        => await RefreshStatusAsync();
+
+    private async Task RefreshStatusAsync()
     {
-        await RefreshNodeStatusAsync();
-        if (_walletSnapshot is not null && !_walletOpening)
+        // A slow reply must finish before the next timer tick starts another poll.
+        if (_statusRefreshInProgress || ShouldPauseMiningPoll()) return;
+        _statusRefreshInProgress = true;
+        try
         {
-            if (!_walletDialogOpen && !_walletBusy && _settings.ShouldAutoLock(_activityFilter.LastActivityUtc, DateTimeOffset.UtcNow))
+            await RefreshNodeStatusAsync();
+            if (ShouldPauseMiningPoll()) return;
+            if (_walletSnapshot is not null)
             {
-                await LockWalletAsync("Wallet locked after inactivity.");
-                return;
+                if (_settings.ShouldAutoLock(_activityFilter.LastActivityUtc, DateTimeOffset.UtcNow))
+                {
+                    await LockWalletAsync("Wallet locked after inactivity.");
+                    return;
+                }
+                await RefreshMiningStatusAsync();
+                if (!_miningStartedByApp && !_miningStatusUnknown && !ShouldPauseMiningPoll())
+                    await RefreshWalletAsync();
             }
-            await RefreshMiningStatusAsync();
-            if (!_miningStartedByApp)
+            else if (_miningStartedByApp || _miningStatusUnknown)
             {
-                await RefreshWalletAsync();
+                await RefreshMiningStatusAsync();
             }
         }
-        else if (_miningStartedByApp && !_walletOpening)
+        catch (Exception ex)
         {
-            await RefreshMiningStatusAsync();
+            if (!_closingForExit && !IsDisposed)
+                AppendLog($"Status refresh failed: {ex.Message}");
         }
+        finally { _statusRefreshInProgress = false; }
     }
 
     private async void connectionModeComboBox_SelectedIndexChanged(object? sender, EventArgs e)
@@ -545,10 +559,11 @@ public partial class Form1 : Form
     {
         await _nodeStartupGate.WaitAsync(_applicationLifetime.Token);
         _miningChangeInProgress = true;
+        _miningStateVersion++;
         try
         {
             Uri localNode = BuildLocalNodeUri();
-            bool wasMining = _miningStartedByApp ||
+            bool wasMining = _miningStartedByApp || _miningStatusUnknown ||
                              miningToggleButton.Text.StartsWith("Stop", StringComparison.OrdinalIgnoreCase);
             if (wasMining)
             {
@@ -657,6 +672,7 @@ public partial class Form1 : Form
         }
 
         _walletDialogOpen = true;
+        _miningStateVersion++;
         walletButton.Enabled = false;
         WalletAccessDialog? dialog = null;
         try
@@ -1099,9 +1115,11 @@ public partial class Form1 : Form
 
     private async void miningToggleButton_Click(object? sender, EventArgs e)
     {
+        if (_miningChangeInProgress || _closingForExit) return;
         // Mining must happen on this computer. Public nodes verify and relay.
-        bool stopRequested = _miningStartedByApp ||
+        bool stopRequested = _miningStartedByApp || _miningStatusUnknown ||
                              miningToggleButton.Text.StartsWith("Stop", StringComparison.OrdinalIgnoreCase);
+        bool startRequestSent = false;
         if (!stopRequested && _walletSnapshot is null && !mineToAddressCheckBox.Checked)
         {
             walletButton.PerformClick();
@@ -1119,11 +1137,13 @@ public partial class Form1 : Form
         try
         {
             _miningChangeInProgress = true;
+            _miningStateVersion++;
             miningToggleButton.Enabled = false;
             Uri miningNode = BuildLocalNodeUri();
             if (stopRequested)
             {
                 await _rpcClient.StopMiningAsync(miningNode);
+                _lastMiningStatusUtc = DateTimeOffset.UtcNow;
                 _miningStartedByApp = false;
                 _lastMiningBlocksCount = -1;
                 AppendLog("CPU mining stopped.");
@@ -1137,7 +1157,9 @@ public partial class Form1 : Form
                 await EnsureLocalMiningNodeAsync();
                 string miningAddress = await GetMiningRewardAddressAsync(miningNode);
                 int threads = MiningThreadCount();
+                startRequestSent = true;
                 await _rpcClient.StartMiningAsync(miningNode, miningAddress, threads);
+                _lastMiningStatusUtc = DateTimeOffset.UtcNow;
                 _miningStartedByApp = true;
                 _lastMiningWalletRefreshUtc = DateTimeOffset.MinValue;
                 _lastMiningBlocksCount = -1;
@@ -1150,18 +1172,7 @@ public partial class Form1 : Form
         {
             if (_closingForExit || IsDisposed) return;
             AppendLog($"Mining control failed: {ex.Message}");
-            if (stopRequested && IsLocalNodeUnavailable(ex))
-            {
-                miningTitleLabel.Text = "Stop not confirmed";
-                miningDescriptionLabel.Text = "The local node did not answer. Slithy will check again.";
-                miningToggleButton.Text = "Stop mining";
-                _bookMiningAnimation.Mining = false;
-                SetConnectionState("Checking connection", StatusKind.Neutral);
-                statusMessageLabel.Text =
-                    "The local node did not answer. Mining state could not be confirmed.";
-                AppendLog("The stop request could not be confirmed. Mining state is unknown.");
-                return;
-            }
+            if (TryShowUnconfirmedMiningChange(stopRequested, startRequestSent, ex)) return;
 
             MessageBox.Show(this,
                 $"Mining could not be changed.\n\nSlithy mines on this computer, not on the public nodes.\n\n{ex.Message}",
@@ -1293,7 +1304,7 @@ public partial class Form1 : Form
     {
         for (Exception? current = ex; current is not null; current = current.InnerException)
         {
-            if (current is HttpRequestException ||
+            if (current is HttpRequestException or OperationCanceledException or TimeoutException ||
                 current is SocketException socketException &&
                 socketException.SocketErrorCode is SocketError.ConnectionRefused or SocketError.ConnectionReset)
             {
@@ -1556,7 +1567,8 @@ public partial class Form1 : Form
         statusMessageLabel.Text = message;
         AppendLog(message);
         sendButton.Enabled = false;
-        miningToggleButton.Enabled = _miningStartedByApp && !_miningChangeInProgress && !_walletBusy;
+        miningToggleButton.Enabled = (_miningStartedByApp || _miningStatusUnknown) &&
+            !_miningChangeInProgress && !_walletBusy;
     }
 
     private void openDataFolderButton_Click(object? sender, EventArgs e)
@@ -1648,6 +1660,7 @@ public partial class Form1 : Form
             $"Blockchain data: {blockchainDataValueLabel.Text}",
             $"Free disk space: {freeDiskValueLabel.Text}",
             $"Mining: {miningTitleLabel.Text}",
+            $"Last mining reply: {(_lastMiningStatusUtc is { } replyTime ? replyTime.ToString("O") : "Not checked")}",
             $"Wallet open: {(_walletSnapshot is null ? "No" : "Yes")}",
             "",
             "Technical log",
@@ -1700,36 +1713,46 @@ public partial class Form1 : Form
 
         _walletRefreshing = true;
         bool refreshFlagStillOwned = true;
+        // A settled read owns the loading display before taking its session snapshot.
+        if (waitForSettledBalance && !_walletBusy) SetWalletBusy(true, "Loading current balance...");
+        string wallet = _openWalletName;
+        long version = _miningStateVersion;
+        bool IsCurrentWallet() => !_closingForExit && !IsDisposed && !Disposing &&
+            version == _miningStateVersion && wallet.Equals(_openWalletName, StringComparison.Ordinal) &&
+            (!_walletOpening || waitForSettledBalance);
         try
         {
             if (forceRefresh)
             {
                 await _walletRpcClient.RefreshAsync(WalletRpcUri, rescanStartHeight);
+                if (!IsCurrentWallet()) return;
             }
-            _walletSnapshot = waitForSettledBalance
+            WalletSnapshot snapshot = waitForSettledBalance
                 ? await GetSettledWalletSnapshotAsync()
                 : await _walletRpcClient.GetSnapshotAsync(WalletRpcUri);
-            if (_walletOpening && !waitForSettledBalance)
-            {
-                return;
-            }
-            ApplyWalletSnapshotToDisplay(_walletSnapshot, saveCache: true);
+            if (!IsCurrentWallet()) return;
+            _walletSnapshot = snapshot;
+            ApplyWalletSnapshotToDisplay(snapshot, saveCache: true);
             _walletRefreshing = false;
             refreshFlagStillOwned = false;
             try
             {
                 IReadOnlyList<WalletTransfer> transfers = await _walletRpcClient.GetTransfersAsync(WalletRpcUri);
+                if (!IsCurrentWallet() || !ReferenceEquals(_walletSnapshot, snapshot)) return;
                 PopulateRecentActivity(transfers);
             }
             catch (Exception ex)
             {
-                AppendLog($"Activity refresh failed: {ex.Message}");
+                if (IsCurrentWallet()) AppendLog($"Activity refresh failed: {ex.Message}");
             }
         }
         catch (Exception ex)
         {
+            if (!IsCurrentWallet()) return;
             AppendLog($"Wallet refresh failed: {ex.Message}");
             if (waitForSettledBalance) throw;
+            if (_walletSnapshot is not null)
+                availableBalanceLabel.Text = "Last known balance. Checking for an update...";
         }
         finally
         {
@@ -1823,81 +1846,16 @@ public partial class Form1 : Form
         return await _walletRpcClient.GetSnapshotAsync(WalletRpcUri);
     }
 
-    private async Task RefreshMiningStatusAsync()
-    {
-        if (_miningChangeInProgress)
-        {
-            return;
-        }
-
-        try
-        {
-            MiningInfo mining = await _rpcClient.GetMiningInfoAsync(BuildLocalNodeUri());
-            if (mining.Active)
-            {
-                TrackMiningBlocks(mining.Blocks);
-                _miningStartedByApp = true;
-                ShowMiningStarted(Math.Max(1, mining.Threads), mining.Speed);
-                await RefreshWalletForMiningProgressAsync();
-            }
-            else
-            {
-                _miningStartedByApp = false;
-                ShowMiningStopped();
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            AppendLog($"Mining status refresh failed: {ex.Message}");
-            miningTitleLabel.Text = "Checking miner";
-            miningDescriptionLabel.Text = "The local node did not answer. Mining state is unknown.";
-            miningStatusLineLabel.Text = "Slithy will check again. You can still request a stop.";
-            miningToggleButton.Text = "Stop mining";
-            _bookMiningAnimation.Mining = false;
-        }
-    }
-
     private async Task RefreshWalletAfterMiningChangeAsync()
     {
         try
         {
-            await RefreshWalletAsync(forceRefresh: true);
+            // Starting or stopping workers does not change the wallet's scan range.
+            await RefreshWalletAsync();
         }
         catch (Exception ex)
         {
             AppendLog($"Wallet refresh after mining change failed: {ex.Message}");
-        }
-    }
-
-    private async Task RefreshWalletForMiningProgressAsync()
-    {
-        if (_walletSnapshot is null ||
-            _walletOpening ||
-            DateTimeOffset.UtcNow - _lastMiningWalletRefreshUtc < TimeSpan.FromSeconds(4))
-        {
-            return;
-        }
-
-        _lastMiningWalletRefreshUtc = DateTimeOffset.UtcNow;
-        NodeInfo nodeInfo = await _rpcClient.GetInfoAsync(BuildLocalNodeUri(), TimeSpan.FromSeconds(3));
-        if (nodeInfo.Height <= _lastWalletRefreshHeight)
-        {
-            return;
-        }
-
-        long startHeight = Math.Max(0, _lastWalletRefreshHeight + 1);
-        await _walletRpcClient.RefreshAsync(WalletRpcUri, startHeight);
-        ulong priorBalance = _walletSnapshot.BalanceAtomic;
-        _walletSnapshot = await _walletRpcClient.GetSnapshotAsync(WalletRpcUri);
-        if (_walletSnapshot.BalanceAtomic > priorBalance)
-        {
-            _lastMiningRewardUtc = DateTimeOffset.Now;
-        }
-        ApplyWalletSnapshotToDisplay(_walletSnapshot, saveCache: true);
-        if (_miningStartedByApp)
-        {
-            miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         }
     }
 
@@ -1913,12 +1871,14 @@ public partial class Form1 : Form
 
     private void ShowMiningStarted(int threads, ulong speed)
     {
+        _miningStatusUnknown = false;
         miningTitleLabel.Text = "Mining is on";
         miningDescriptionLabel.Text = speed > 0
             ? $"Mining at {speed:N0} H/s.\n{threads} CPU thread{(threads == 1 ? "" : "s")}."
             : $"Mining with {threads} CPU thread{(threads == 1 ? "" : "s")}.\nWaiting for a block.";
         miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         miningToggleButton.Text = "Stop mining";
+        miningToggleButton.Enabled = CanMine();
         UpdateMiningThreadLabels();
         _bookMiningAnimation.Mining = true;
     }
@@ -1935,6 +1895,7 @@ public partial class Form1 : Form
 
     private void ShowMiningStopped()
     {
+        _miningStatusUnknown = false;
         miningTitleLabel.Text = "Earn Slithy";
         miningDescriptionLabel.Text =
             mineToAddressCheckBox.Checked
@@ -2041,6 +2002,7 @@ public partial class Form1 : Form
 
     private void SetWalletBusy(bool busy, string? message = null, int progressPercent = -1)
     {
+        if (busy && !_walletBusy) _miningStateVersion++;
         _walletBusy = busy;
         // Turns wallet controls off during long work so the user cannot start two operations at once.
         UseWaitCursor = busy;
@@ -2097,6 +2059,7 @@ public partial class Form1 : Form
 
     private void ClearWallet(bool locked = false)
     {
+        _miningStateVersion++;
         // Clears wallet labels and buttons when no wallet is open.
         _walletSnapshot = null;
         _openWalletName = "";
@@ -2112,8 +2075,9 @@ public partial class Form1 : Form
         sendButton.Enabled = false;
         receiveButton.Enabled = false;
         miningToggleButton.Enabled = CanMine();
-        _bookMiningAnimation.Mining = _miningStartedByApp;
-        if (_miningStartedByApp) miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
+        _bookMiningAnimation.Mining = _miningStartedByApp && !_miningStatusUnknown;
+        if (_miningStartedByApp && !_miningStatusUnknown)
+            miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         recentActivityListView.Items.Clear();
         _walletActivityListView.Items.Clear();
         ResetWalletHistory();
@@ -2485,7 +2449,7 @@ public partial class Form1 : Form
                 treasuryStatusLabel.Text =
                     $"Literacy fund: {treasury.Accrued:N2} SLTHY est.";
             }
-            miningToggleButton.Enabled = (_miningStartedByApp || info.Synchronized) && CanMine();
+            miningToggleButton.Enabled = (_miningStartedByApp || _miningStatusUnknown || info.Synchronized) && CanMine();
             return true;
         }
         catch (Exception ex)
@@ -2495,7 +2459,7 @@ public partial class Form1 : Form
             UpdateDiskSpaceDisplay();
             bool recentlyHealthy =
                 DateTimeOffset.UtcNow - _lastSuccessfulNodeRefreshUtc < TimeSpan.FromMinutes(1);
-            bool miningLikelyStillRunning = _miningStartedByApp || _bookMiningAnimation.Mining;
+            bool miningLikelyStillRunning = _miningStartedByApp || _miningStatusUnknown || _bookMiningAnimation.Mining;
             bool shouldShowHardFailure =
                 !miningLikelyStillRunning &&
                 (_consecutiveNodeRefreshFailures >= 3 || !recentlyHealthy);
@@ -2779,11 +2743,11 @@ public partial class Form1 : Form
         miningAddressTextBox.Enabled = custom;
         miningAddressLabel.Visible = custom;
         miningAddressTextBox.Visible = custom;
-        if (!_miningStartedByApp)
+        if (!_miningStartedByApp && !_miningStatusUnknown)
         {
             ShowMiningStopped();
         }
-        else
+        else if (!_miningStatusUnknown)
         {
             miningStatusLineLabel.Text = BuildMiningDestinationText(active: true);
         }
@@ -2809,7 +2773,8 @@ public partial class Form1 : Form
 
     private bool CanMine()
     {
-        if (_miningStartedByApp && !_miningChangeInProgress) return true;
+        if (_closingForExit) return false;
+        if ((_miningStartedByApp || _miningStatusUnknown) && !_miningChangeInProgress) return true;
         if (_networkLockedByUpdate || _miningChangeInProgress || !IsMiningAvailable())
         {
             return false;
@@ -2957,6 +2922,7 @@ public partial class Form1 : Form
             BeginInvoke(() => AppendLog(message));
             return;
         }
+        RecordAppDiagnostic(message);
         logTextBox.AppendText($"[{DateTime.Now:HH:mm:ss}] {message}{Environment.NewLine}");
     }
 
@@ -3063,6 +3029,7 @@ public partial class Form1 : Form
 
         e.Cancel = true;
         _closingForExit = true;
+        _miningStateVersion++;
         _applicationLifetime.Cancel();
         Enabled = false;
         statusTimer.Stop();
@@ -3070,7 +3037,7 @@ public partial class Form1 : Form
         try
         {
             SaveControlsToSettings();
-            if (_miningStartedByApp)
+            if (_miningStartedByApp || _miningStatusUnknown)
             {
                 try
                 {

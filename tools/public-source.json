@@ -3,7 +3,7 @@
     ".gitignore", ".gitattributes", "README.md", "LICENSE", "NOTICE", "SECURITY.md", "CONTRIBUTING.md",
     "docs/BUILDING.md", "docs/LINUX-NATIVE-RELEASE-BUILD.md", "docs/SOURCE-PROVENANCE.md", "docs/ARTWORK.md", "docs/NETWORK-TEST-COVERAGE.md",
     "docs/TERMS-ACCEPTANCE.md", "docs/LINUX-GUI-PREVIEW.md", "docs/RELEASE-TESTING.md", "docs/WALLET-TOOLS.md",
-    "docs/RELEASE-0.1.42.md", "docs/RELEASE-0.1.43.md", "docs/RELEASE-0.1.44.md", "docs/RELEASE-0.1.48.md", "docs/RELEASE-0.1.49.md", "docs/RELEASE-0.1.50.md", "docs/SUPPLY-SCHEDULE.md",
+    "docs/RELEASE-0.1.42.md", "docs/RELEASE-0.1.43.md", "docs/RELEASE-0.1.44.md", "docs/RELEASE-0.1.48.md", "docs/RELEASE-0.1.49.md", "docs/RELEASE-0.1.50.md", "docs/RELEASE-0.1.51.md", "docs/SUPPLY-SCHEDULE.md",
     "installer/SlithyTove.iss", "installer/RuntimeCleanup.iss", "installer/runtime-files-0.1.48.iss",
     "installer/build-installer.ps1", "installer/prepare-signing-tools.ps1",
     "installer/azure-signing-metadata.sample.json", "installer/BUILD-INSTALLER.md", "installer/README.md",
