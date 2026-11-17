@@ -21,7 +21,9 @@ internal static class Program
         void Check(bool value, string message) { if (!value) throw new Exception(message); Console.WriteLine("PASS " + message); }
         Check(!Accepted(terms), "First run requires agreement");
         Check(Encoding.UTF8.GetString(terms).Contains("11. Changes and questions"), "Full terms bundled offline");
-        Check(Encoding.UTF8.GetString(terms).Contains("December 1, 2026 is the target"), "Current launch target bundled offline");
+        Check(Encoding.UTF8.GetString(terms).Contains("The live network launches on January 1, 2027. The exact start time will be announced before launch."), "Firm launch date bundled offline");
+        Check(Encoding.UTF8.GetString(terms).Contains("Terms version: 1.1")
+            && (string)storeType.GetField("CurrentVersion")!.GetRawConstantValue()! == "1.1", "Terms version matches acceptance store");
         Type updaterType = app.GetType("Slithy_Tove.UpdateInstaller", true)!;
         string updates = Path.Combine(root, "updates");
         updaterType.GetMethod("CreatePendingUpdate")!.Invoke(null,
@@ -58,10 +60,11 @@ internal static class Program
         }
         object reopened = Activator.CreateInstance(storeType, root)!;
         Check((bool)storeType.GetMethod("IsAccepted")!.Invoke(reopened, [terms])!, "Acceptance survives restart");
+        string savedRecord = File.ReadAllText(Path.Combine(root, "terms-acceptance.json"));
         Check(!Accepted(Encoding.UTF8.GetBytes("Updated terms")), "Changed terms need fresh agreement");
         File.WriteAllText(Path.Combine(root, "terms-acceptance.json"), "broken");
         Check(!Accepted(terms), "Damaged acceptance record fails closed");
-        File.WriteAllText(Path.Combine(root, "terms-acceptance.json"), "{\"Version\":\"old\"}");
+        File.WriteAllText(Path.Combine(root, "terms-acceptance.json"), savedRecord.Replace("\"Version\":\"1.1\"", "\"Version\":\"1.0\""));
         Check(!Accepted(terms), "Old version needs fresh agreement");
         Console.WriteLine("Test files: " + root);
     }

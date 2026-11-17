@@ -1,5 +1,5 @@
 Slithy Tove Terms of Use and Beta Testing
-Terms version: 1.0
+Terms version: 1.1
 https://slithy.io/terms.html
 
 Terms of use
@@ -8,7 +8,7 @@ Using Slithy during beta
 
 Please read this before testing the wallet or miner. Slithy is experimental software. The test coins will reset before launch, and mining uses your computer's resources.
 
-Version 1.0  |  Effective September 10, 2026
+Version 1.1  |  Effective November 17, 2026
 
 1. Who these terms cover
 
@@ -22,7 +22,7 @@ The current downloads connect to a test network. Test SLTHY has no market value 
 
 The test chain and wallets will reset before the live launch. Further resets may be needed during beta. A reset can remove test balances and transaction history from the active network. Old wallet files may remain on your computer and may not work with a replacement network.
 
-December 1, 2026 is the target for the live launch. Testing may require that date to change.
+The live network launches on January 1, 2027. The exact start time will be announced before launch.
 
 3. Mining uses your computer
 

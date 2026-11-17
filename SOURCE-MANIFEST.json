@@ -205,7 +205,7 @@
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/TermsAcceptanceStore.cs",
-    "sha256": "01e18292c6350e7b8a86d050616d8b3ec40048d74aea979834bf9810d5d67b9b"
+    "sha256": "b253f27bff57289c07a06ca2aab29e3e5a424259960f7f1e3077bd51e096bc2d"
   },
   {
     "path": "Desktop/Slithy Tove/Slithy Tove/TermsDialog.Designer.cs",
@@ -373,7 +373,7 @@
   },
   {
     "path": "Desktop/Slithy.Linux/MainWindow.cs",
-    "sha256": "5492cf47d6ae9925dcf54413e782f6bc40074fab22e860103548277ede27d397"
+    "sha256": "f67630e5dca7ac33205f2faef35ba4d5fd4ab328910dfa20289295dde2d3a6ea"
   },
   {
     "path": "Desktop/Slithy.Linux/Program.cs",
@@ -413,7 +413,7 @@
   },
   {
     "path": "README.md",
-    "sha256": "f76b5361177a6475e08253a889527aae30458c077afde4664b1a12cbffed5179"
+    "sha256": "7e0d9edf6822674874efeb698c6c0e9fa571a7dbe89e40f204faf87526b0a518"
   },
   {
     "path": "SECURITY.md",
@@ -12140,8 +12140,12 @@
     "sha256": "1fdcf6b6a6b1a5705d7142d53860c620c19ba9be86f6492134ea0bb1ef25bd72"
   },
   {
+    "path": "docs/LAUNCH.md",
+    "sha256": "8c6bb695399fb581d04553a3f429bb1c65217b85002576373e366f64207199ac"
+  },
+  {
     "path": "docs/LINUX-GUI-PREVIEW.md",
-    "sha256": "1616444e957988cff5236e1694df6e82762971e2eacc10700d6c760c9ceee7da"
+    "sha256": "d4dc05a897c37a72b6e5bc818a7451f3218e43ed024bb5330f0db518da1ec816"
   },
   {
     "path": "docs/LINUX-NATIVE-RELEASE-BUILD.md",
@@ -12157,11 +12161,11 @@
   },
   {
     "path": "docs/RELEASE-0.1.43.md",
-    "sha256": "aae7abe0918d0d56af1b1706530a595d2ed0506e9bac18de1f1df6bcaa1f5a9d"
+    "sha256": "eefc212e1e26935b8eacf776dbdecaf5fe82d114080dee49697690d008586015"
   },
   {
     "path": "docs/RELEASE-0.1.44.md",
-    "sha256": "b811cc3858b4f902159c703c4d18d35a204cb1d481f2231815d8529f2e891c3e"
+    "sha256": "4f8a95132c54aa4161716a58393f2966986931fdf5713fa9ca3cce382d325467"
   },
   {
     "path": "docs/RELEASE-0.1.48.md",
@@ -12273,7 +12277,7 @@
   },
   {
     "path": "licenses/BETA-TERMS.txt",
-    "sha256": "feb390dbd15ff7669948111666ad36e22d2680a9f7982f88d2614f666d20bfae"
+    "sha256": "9a3c1b5f0543a20e6b2dfbfa8c9db9b758e1391fc3f57a5211fe11bfe571a4e7"
   },
   {
     "path": "licenses/DOTNET-LICENSE.txt",
@@ -12361,19 +12365,19 @@
   },
   {
     "path": "site/about.html",
-    "sha256": "13170fcc9fd033083a7ea8610a165e56a20e6dc81ae25b0f0e8c39846b9c4677"
+    "sha256": "d9c6d094e07215efcdc0a65eec15d05850d7cdfa5d5b2e797658a7b7f8d688bd"
   },
   {
     "path": "site/beta-testing.html",
-    "sha256": "516528feeb71caf2be9f341e17fd578e54a0ccb29d394d583c6c1ccb96f70af4"
+    "sha256": "f28550807be42043cf9c2e1570170bb02e5bea9cf1da230d2ff295503282b97f"
   },
   {
     "path": "site/bug-report.html",
-    "sha256": "4886c34fe19b23ebea685d15b5988ba296ace5aaa804e3f94447b48997ad6b6b"
+    "sha256": "9de040b097d99b1b683e7eb8f4d65ecddfa504eb29d1c9b4357bfcee49bfd1b7"
   },
   {
     "path": "site/community.html",
-    "sha256": "56e814c9f02e8d6e831d205ce9c0d2457c7525d14088506e62fe3c41bfd9fefb"
+    "sha256": "49d8607cfeba95f06484c0777ef50220f47c62d52e83438699174a5f5df1b275"
   },
   {
     "path": "site/data/explorer.json",
@@ -12389,11 +12393,11 @@
   },
   {
     "path": "site/download.html",
-    "sha256": "5334e8c3a56ba864b1f6efb530377627c78d503084e527dc27b9cc226ef44cec"
+    "sha256": "9ecb6cf4a76d4ef4d1ab5071e43476fb7d953a7e5a01c4e55580ddeec94bb265"
   },
   {
     "path": "site/downloads.html",
-    "sha256": "3de13dcbdb778332cc292305d141ec8c0ba59cb41fafd6f85ddaca21e6a3d674"
+    "sha256": "221297ade5bf6050bb52301a00166203bd945c56fb912e31ecea91f5ea02c3e5"
   },
   {
     "path": "site/downloads/SHA256SUMS.txt",
@@ -12537,7 +12541,7 @@
   },
   {
     "path": "site/explorer.html",
-    "sha256": "06ad2d46e0fc2f92243a786c30bccd4bf4a08f3f54f4d0c33bed1635ea9f3e11"
+    "sha256": "a8ed4235b4034f70d61904e2d4f97a10ce79bc1eb01b29f1bf8f291a287d3b31"
   },
   {
     "path": "site/explorer.js",
@@ -12553,15 +12557,15 @@
   },
   {
     "path": "site/guide.html",
-    "sha256": "71687a2c59050f8d4e0eba0e3b7014f6898b5e29302f09fe37cf6b8f8a7bb584"
+    "sha256": "d5c9c39df12fa44ffb51c52f72f2e369298856625a3aa75385191faed98f5830"
   },
   {
     "path": "site/home-full.html",
-    "sha256": "60476edc5e482d6d49e646836842bf0218c882b7689b03c17d3eea5b0aae7eb6"
+    "sha256": "cbb3e45a302a79d6f31b6e41a38813feb1d4953fd6f706dc8ec98d235df1374a"
   },
   {
     "path": "site/index.html",
-    "sha256": "46639d7ae1058fd2fa425b0541a02e13c4264e685691da8b11a402a469828ae2"
+    "sha256": "1151189a69c0d98305734f3b0a14ec405c17acc4c770b1cddc71265b3b2b43eb"
   },
   {
     "path": "site/install/linux/README.txt",
@@ -12569,7 +12573,7 @@
   },
   {
     "path": "site/install/linux/slithy",
-    "sha256": "92fe64701b3db8e1f34d78a0bdd2c24b69cda4c3239dc8a01754d374c4a686fc"
+    "sha256": "b00b82e5603d4bccd5b5b2c3e503dfbb6739c9a1f34b5c87cb15232f2ab433da"
   },
   {
     "path": "site/install/linux/slithy-common.sh",
@@ -12605,11 +12609,87 @@
   },
   {
     "path": "site/nodes.html",
-    "sha256": "5f2c811e4c4de97286ad81431574f7e902715a7d61f7faaf71f8a58d2eb20a99"
+    "sha256": "b105afbfbeb2c7a3d0d40ea3d3864501b37a1bc18bb7aaaabaff63e27c252439"
+  },
+  {
+    "path": "site/press-kit/README.txt",
+    "sha256": "33268abea880b7b4c994c48eeaf285bcabd6aa1ea95fdc1f52a791d016d324d5"
+  },
+  {
+    "path": "site/press-kit/SHA256SUMS.txt",
+    "sha256": "c0a0e55b150600cb2c1537de033e461052fc39059e0ad81d2712cffadd91d110"
+  },
+  {
+    "path": "site/press-kit/assets.json",
+    "sha256": "ac08cbb06731a798a7a4001556c8f4d5751bf97c470b4c2405ed8e6f8ce58e57"
+  },
+  {
+    "path": "site/press-kit/index.html",
+    "sha256": "7cdd03cc3b3fdadfa654a2e2ccb3623679d2cabf761899f2d7beaf05ba1afd3a"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-logo-1024.png",
+    "sha256": "869cd9c0f041591a8a197232b41a6ab819a8b6c9be1655023df4c6e4d466cfa0"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-logo-256.png",
+    "sha256": "da2d4e264e240a79997df229b13f5441055fb5ac5e1786219fa4c3e1046ad844"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-logo-512.png",
+    "sha256": "18ffa5039b98197d35e8eaf76c97036463075dc6c2c9b45294059ee607c37ea8"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-logo.svg",
+    "sha256": "3e4fd230d028b2faed86fd5c1dd0f134df07772d7d8c3076f412722686cce707"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-mark-cream-1024.png",
+    "sha256": "e6c05b257f1fbe984f86edb2b89a72dba5a5ded47272a180847679deb1c8c079"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-mark-cream.svg",
+    "sha256": "92ece7307ca68d604ce7e842463a2e6334aa51a48ddd2a3dacce01aaa16c370f"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-mark-dark-1024.png",
+    "sha256": "275c9ef1efce3aae3102c6cc331e9680cd13e16539e43b75511cc10437c405a8"
+  },
+  {
+    "path": "site/press-kit/logos/slithy-tove-mark-dark.svg",
+    "sha256": "b50635e7538f4ae48f87c06f7fc73504e170e10b594efdb6ffae99ad704abbc8"
+  },
+  {
+    "path": "site/press-kit/press-kit.css",
+    "sha256": "54876e4798b6f4dc9774ad40d033a1e6b80f42dbb62a3a6487c105bf8f4cf0f8"
+  },
+  {
+    "path": "site/press-kit/screenshots/slithy-tove-linux-home.png",
+    "sha256": "30adfef4ac5b0bfe0fdb4d8b2742188950b112d2ead25c1a3f075095f46bb39d"
+  },
+  {
+    "path": "site/press-kit/screenshots/slithy-tove-linux-mining-settings.png",
+    "sha256": "cb7eb062210efcb96ce0a8559870e6fbe47819c27e1215027c749d87fa673f47"
+  },
+  {
+    "path": "site/press-kit/screenshots/slithy-tove-windows-home.png",
+    "sha256": "19c14df6e53b7505b87721a2d1ab505ca1da5adfba451c327f68f603e031f17f"
+  },
+  {
+    "path": "site/press-kit/screenshots/slithy-tove-windows-mining-settings.png",
+    "sha256": "f62a282559534d4815e83a2a02229a0f9858086de2f899f2f2116fdef45bceed"
+  },
+  {
+    "path": "site/press-kit/slithy-tove-facts.txt",
+    "sha256": "22840ea0dee423ba894a9ecbdb75b76a6cf55328ed255a383799aba419a02d20"
+  },
+  {
+    "path": "site/press-kit/social/slithy-tove-beta-card.png",
+    "sha256": "0ad7c3836a3db4d255aa39ff71c60ff7e8c2cfb6ad3cd904fda286bb77a3e685"
   },
   {
     "path": "site/privacy.html",
-    "sha256": "66eb27c83f9e3c5c5425250ff15dbe1660f5a5a9e018ef1e566ad716e57a22cf"
+    "sha256": "68938a584a46e346e6b48b51e68eafa04c264d882d3c94b6b04a3e3931ba9407"
   },
   {
     "path": "site/robots.txt",
@@ -12625,11 +12705,11 @@
   },
   {
     "path": "site/terms.html",
-    "sha256": "5272fbe4075aa2f2ea8763d6035520868dbb40a79a1d174789c794e11833f904"
+    "sha256": "54739769842db015660cec16efe60cf272e9e3af0105d069a148fe339ad410f5"
   },
   {
     "path": "site/treasury.html",
-    "sha256": "196898dd96eaca2025d6d52cac6f98fa5776d797b5e540d5d97fa254d3de9e42"
+    "sha256": "240cee51e4319e694789599ed5dd086eb7ad1a30c39b02c578b39ebaa1cddd1d"
   },
   {
     "path": "site/treasury.js",
@@ -12661,7 +12741,7 @@
   },
   {
     "path": "site/whitepaper.html",
-    "sha256": "5369a756fe80a8a2d2ccfc413533894249bb29515f8c30ee506e7439d167bdb2"
+    "sha256": "3b33c2de7db4a6654cbfee0d5fd4c0d51c3f86b6599ab354efbb12da848f82e8"
   },
   {
     "path": "tests/diagnostic-log/DiagnosticLogTests.csproj",
@@ -12713,7 +12793,7 @@
   },
   {
     "path": "tests/linux-gui/desktop_smoke.py",
-    "sha256": "38e85699e32d121655e0a4499c1d4e3dc692e7a129f28640dae9be8598d9ae2a"
+    "sha256": "00fa51f37396f30e0d3ac70fda30ac0f14199da598afbbe04ef21936a0b16008"
   },
   {
     "path": "tests/linux-gui/graphical_install_smoke.py",
@@ -12801,7 +12881,7 @@
   },
   {
     "path": "tests/security/core-mining-integration.py",
-    "sha256": "975896c8ff9b7877004843aed47bee99e6485f0b398ff0dc8ba708d153696e68"
+    "sha256": "085a77edf0ade4452b128e391f4ba37c0307a376f3ef34a22379eba285724a38"
   },
   {
     "path": "tests/security/linux-common-test.sh",
@@ -12813,7 +12893,7 @@
   },
   {
     "path": "tests/security/linux-gui-package-update/Program.cs",
-    "sha256": "77c6b744ee7a2088d1c723e23e557d2413b4472efa1fb10407e81c2de463c029"
+    "sha256": "db4158152dd5641c1281b07cd75495d21090eab79ed1674dc72d62d5cf181170"
   },
   {
     "path": "tests/security/linux-gui-package-update/README.md",
@@ -12916,12 +12996,16 @@
     "sha256": "0112638ab05cd673c38dbd8f1c482594f36666a57cfb50d7f32a53033773c14f"
   },
   {
+    "path": "tests/site/launch-date.test.cjs",
+    "sha256": "0daa8fafab050a857640a4315e2aadf81e4dfb153dd0e130562d8120c6a27c78"
+  },
+  {
     "path": "tests/site/network-summary.test.cjs",
     "sha256": "b23bccd483927aa2ec5f6a17d2ac8797cc4bc8f322afddf280008b184210a2fa"
   },
   {
     "path": "tests/terms/Program.cs",
-    "sha256": "eaf246dff738c677d853e5090d20a521623e19b9408e662f2d5aaf3ec412acf1"
+    "sha256": "efcdfa415e6c89f9e4fa6255dee29003b00bb8f60db22f69ee5600fa6ed6f02a"
   },
   {
     "path": "tests/terms/TermsTests.csproj",
@@ -12929,7 +13013,7 @@
   },
   {
     "path": "tests/terms/linux-terms-test.py",
-    "sha256": "c0932762aad9bec3496cd2de17b68165d3b8a659f047a9c4ecfc921e71e6cc2e"
+    "sha256": "873c89ed1d17c77c00ebc3d06f9f50fb74946490c33a328ac17e6b3e007f85a3"
   },
   {
     "path": "tests/wallet-features/Program.cs",
@@ -13017,7 +13101,11 @@
   },
   {
     "path": "tools/build-linux-release-tarball.sh",
-    "sha256": "7ff8a4e0091e923b20d0eb2bd27ee234439b725188302216e8c319df9f26c73c"
+    "sha256": "f6ed848da9c790a496c9bf3e8cfbf3be2433088ca2d28872c23bf416c28edd6e"
+  },
+  {
+    "path": "tools/build-press-kit.py",
+    "sha256": "42aabc66602bfde915a98213218f59408b4e2aae46c0b7badc2541be6fae5baf"
   },
   {
     "path": "tools/export-public-source.ps1",
@@ -13029,7 +13117,7 @@
   },
   {
     "path": "tools/public-source.json",
-    "sha256": "b93f7da1412925b25a52c21d32b3a64a7cff5167c07c75f0fcdd78f967ecd662"
+    "sha256": "057c1b8c8677ab0d0bc144021da8a630716347d1ebded2035c0a6488173d35ce"
   },
   {
     "path": "tools/scan-source.py",

@@ -1,6 +1,6 @@
 # Linux desktop beta
 
-This guide covers Linux desktop test package 0.1.50-beta.1. It connects to the public test network. Test SLTHY has no market value. The live-network target is December 1, 2026. Wallets and the chain will reset before that launch.
+This guide covers Linux desktop test package 0.1.50-beta.1. It connects to the public test network. Test SLTHY has no market value. The live network launches on January 1, 2027. The exact UTC launch time will be announced. Wallets and the chain will reset before that launch. See the [current launch details](LAUNCH.md).
 
 If you already use the terminal app, your existing installation and wallets stay in place. This GUI has its own installer and update feed.
 

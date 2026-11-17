@@ -411,8 +411,11 @@ class Suite:
         config = Path(env["XDG_CONFIG_HOME"]) / "slithy-tove-gui/beta-20260909"
         config.mkdir(parents=True, mode=0o700)
         terms = (app.parent / "licenses/BETA-TERMS.txt").read_bytes().decode("utf-8-sig")
+        terms_version = next((line.removeprefix("Terms version: ").strip()
+                              for line in terms.splitlines() if line.startswith("Terms version: ")), "")
+        assert terms_version, "The package has no terms version"
         settings = {"AutoCheckUpdates": False, "MinimizeToTrayOnClose": False,
-                    "TermsAcceptedVersion": "1.0:" + hashlib.sha256(terms.encode()).hexdigest().upper()}
+                    "TermsAcceptedVersion": terms_version + ":" + hashlib.sha256(terms.encode()).hexdigest().upper()}
         (config / "settings.json").write_text(json.dumps(settings))
         (config / "settings.json").chmod(0o600)
         run(["bash", str(app.parent / "install-desktop.sh")], env)

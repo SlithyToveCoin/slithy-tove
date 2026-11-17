@@ -20,6 +20,8 @@ with tempfile.TemporaryDirectory(prefix='slithy-terms-') as scratch:
         (binary / name).write_text((repo / 'site/install/linux' / name).read_text())
     terms = binary / 'slithy-terms.txt'
     terms.write_text((repo / 'licenses/BETA-TERMS.txt').read_text())
+    assert 'The live network launches on January 1, 2027. The exact start time will be announced before launch.' in terms.read_text()
+    assert 'Terms version: 1.1' in terms.read_text()
     for name in ('slithyd', 'slithy-cli'):
         tool = binary / name
         tool.write_text('#!/bin/sh\ncat >/dev/null\nprintf "%s\\n" "$*" >> "$CALL_LOG"\ncase "$*" in *getblockhash*) echo 000f888cdb70403cd5310d02d7983951ee146ac799485bca337a7b52c24643f2;; *) echo "{}";; esac\n')
@@ -80,10 +82,14 @@ with tempfile.TemporaryDirectory(prefix='slithy-terms-') as scratch:
     print('PASS Decline leaves acceptance unset')
     interactive('AGREE')
     value = json.loads(record.read_text())
-    assert value['version'] == '1.0' and value['sha256'] == hashlib.sha256(terms.read_bytes()).hexdigest()
+    assert value['version'] == '1.1' and value['sha256'] == hashlib.sha256(terms.read_bytes()).hexdigest()
     assert record.stat().st_mode & 0o777 == 0o600
     assert 'Agreement needed' not in run('test-no-operation').stderr
     print('PASS Explicit agreement stored privately and remembered')
+    record.write_text(json.dumps(dict(value, version='1.0')))
+    assert 'Agreement needed' in run('create-wallet').stderr
+    record.write_text(json.dumps(value))
+    print('PASS Version 1.0 acceptance does not cover version 1.1 terms')
     terms.write_text(terms.read_text() + '\nRevised test content\n')
     assert 'Agreement needed' in run('create-wallet').stderr
     print('PASS Changed terms require agreement')

@@ -333,7 +333,7 @@ internal sealed partial class MainWindow : Window
         if (_settingsError != null) throw new InvalidOperationException(_settingsError);
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Slithy.BetaTerms") ?? throw new InvalidOperationException("The bundled beta terms are missing.");
         using var reader = new StreamReader(stream); string terms = await reader.ReadToEndAsync();
-        string version = "1.0:" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(terms)));
+        string version = "1.1:" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(terms)));
         if (_settings.TermsAcceptedVersion != version)
         {
             if (!await Dialogs.Confirm(this, "Slithy beta terms", terms, "I agree")) { _closing = true; Close(); return; }

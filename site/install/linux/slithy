@@ -1363,12 +1363,12 @@ try:
     if action == 'check':
         value = json.loads(record.read_text())
         stamp = datetime.datetime.fromisoformat(value['acceptedUtc'])
-        sys.exit(0 if value['version'] == '1.0' and value['sha256'] == digest and stamp.tzinfo else 1)
+        sys.exit(0 if value['version'] == '1.1' and value['sha256'] == digest and stamp.tzinfo else 1)
     record.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     fd, temporary = tempfile.mkstemp(prefix='.terms-', dir=record.parent)
     try:
         with os.fdopen(fd, 'w') as output:
-            json.dump({'version': '1.0', 'sha256': digest,
+            json.dump({'version': '1.1', 'sha256': digest,
                        'acceptedUtc': datetime.datetime.now(datetime.timezone.utc).isoformat()}, output)
         os.replace(temporary, record)
     finally:

@@ -6,7 +6,7 @@ namespace Slithy_Tove;
 // This record belongs to this Windows user, not to a wallet or a beta chain.
 internal sealed class TermsAcceptanceStore(string directory)
 {
-    public const string CurrentVersion = "1.0";
+    public const string CurrentVersion = "1.1";
     private string RecordPath => Path.Combine(directory, "terms-acceptance.json");
     internal sealed record Acceptance(string Version, string Sha256, DateTimeOffset AcceptedUtc);
 

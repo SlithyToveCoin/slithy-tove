@@ -5,7 +5,9 @@ Windows and Linux and a Linux terminal interface. Ten percent of the block subsi
 public literacy treasury. Transaction fees go to the miner.
 
 Slithy is in public beta. Test coins have no market value. The test chain and
-wallets will reset before the live launch, currently planned for December 1, 2026.
+wallets will reset before the live launch, scheduled for January 1, 2027.
+The exact UTC launch time will be announced. See the
+[launch details](docs/LAUNCH.md).
 
 ## Try Slithy
 

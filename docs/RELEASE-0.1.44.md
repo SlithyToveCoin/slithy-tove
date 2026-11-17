@@ -1,5 +1,7 @@
 # Desktop update notices and the Linux GUI
 
+Schedule update, November 17, 2026: The live network launches on January 1, 2027. The exact UTC launch time will be announced. The older date below is retained as release history and is superseded by the [current launch details](LAUNCH.md).
+
 This release covers Windows 0.1.44, Linux desktop 0.1.44-beta.2 and Linux
 terminal 0.1.50-testnet. These remain test-network builds. The live-network
 target is December 1, 2026, subject to testing.

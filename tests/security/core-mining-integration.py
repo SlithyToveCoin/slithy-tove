@@ -360,7 +360,7 @@ def recovery_test(node, helper, root, binaries, menu):
         agreement = home / "agreement"
         agreement.mkdir(mode=0o700)
         record = agreement / "terms-acceptance.json"
-        record.write_text(json.dumps({"version": "1.0", "sha256": hashlib.sha256(terms.read_bytes()).hexdigest(),
+        record.write_text(json.dumps({"version": "1.1", "sha256": hashlib.sha256(terms.read_bytes()).hexdigest(),
             "acceptedUtc": datetime.datetime.now(datetime.timezone.utc).isoformat()}))
         record.chmod(0o600)
         env = os.environ | {"HOME": str(home), "SLITHY_BIN_DIR": str(tools), "SLITHY_CHAIN": "regtest",

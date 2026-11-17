@@ -1,0 +1,60 @@
+SLITHY TOVE
+Project facts and descriptions
+Updated November 17, 2026
+https://slithy.io/press-kit/
+
+SHORT DESCRIPTION
+
+Slithy Tove is an open-source cryptocurrency project that uses CPU mining to support a public fund for children's literacy. Ten percent of each block's newly created coins goes to the fund. The Windows and Linux apps include a wallet, a local node and a miner.
+
+The project is in public beta. Test coins have no market value and will not carry over to the live network.
+
+LONGER DESCRIPTION
+
+Slithy Tove is an open-source, proof-of-work cryptocurrency project with a treasury for children's literacy. Its desktop apps combine a wallet, local node and CPU miner. It is a fork of Bitcoin Core with its own blockchain and uses yespower for mining.
+
+Each block initially creates 10 SLTHY: 9 for the miner and 1 for the literacy treasury. Transaction fees also go to the miner. Nodes check the required treasury payment before accepting a block. The intention is to use the fund for books and reading programs.
+
+CS Idea Labs LLC publishes the software and operates the official website and servers. It will control the treasury wallet at launch. Community voting on spending is planned. It is not available yet.
+
+Slithy Tove is currently on a public test network. Test coins have no market value. The test chain and balances will reset before launch, and testers should expect to create new wallets. Test balances will not convert into live coins or give a claim to future coins.
+
+The live network launches on January 1, 2027. This is the confirmed launch date. The exact start time will be announced before launch. The launch plan has no premine or private sale.
+
+FACT SHEET
+
+Name: Slithy Tove
+Symbol: SLTHY
+Status: Public beta on a test network
+Publisher: CS Idea Labs LLC
+Software: Open-source fork of Bitcoin Core with its own blockchain
+Desktop apps: Windows and Linux x64
+Mining: CPU proof of work using yespower
+yespower parameters: N=2048, r=8, personalization "Slithy Tove"
+Target block interval: 2 minutes on average
+Initial block subsidy: 10 SLTHY
+Miner share: 9 SLTHY, plus transaction fees
+Literacy treasury share: 1 SLTHY, or 10 percent of the block subsidy
+Halving interval: 1,051,200 blocks
+Treasury purpose: Children's books, reading programs and directly related costs
+Treasury control: CS Idea Labs LLC will control the treasury wallet at launch
+Community voting: Planned; not available yet
+Live launch date: January 1, 2027 (confirmed; exact start time to be announced)
+Launch plan: No premine or private sale
+Name origin: The "slithy toves" in Lewis Carroll's poem Jabberwocky
+
+LINKS AND CONTACT
+
+Website: https://slithy.io/
+Downloads: https://slithy.io/downloads.html
+User guide: https://slithy.io/guide.html
+White paper: https://slithy.io/whitepaper.html
+Literacy treasury: https://slithy.io/treasury.html
+Block explorer: https://slithy.io/explorer.html
+Source code: https://github.com/SlithyToveCoin/slithy-tove
+Community: https://slithy.io/community.html
+Discord: https://discord.gg/hPhAgNFQjw
+Press kit: https://slithy.io/press-kit/
+Contact: Dan, support@slithy.io
+
+Nothing in this fact sheet is an offer or invitation to invest. No market value is promised for SLTHY.

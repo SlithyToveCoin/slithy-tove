@@ -1,0 +1,135 @@
+{
+  "project": "Slithy Tove",
+  "updated": "2026-11-17",
+  "pressKit": "https://slithy.io/press-kit/",
+  "contact": "support@slithy.io",
+  "credit": "Slithy Tove / CS Idea Labs LLC",
+  "screenshots": "Actual beta app interfaces with sample data. Not live balances or mining benchmarks.",
+  "assets": [
+    {
+      "file": "logos/slithy-tove-logo.svg",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-logo.svg",
+      "bytes": 439,
+      "sha256": "3e4fd230d028b2faed86fd5c1dd0f134df07772d7d8c3076f412722686cce707",
+      "caption": "Slithy Tove profile logo. Vector, with transparent corners."
+    },
+    {
+      "file": "logos/slithy-tove-logo-256.png",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-logo-256.png",
+      "bytes": 10610,
+      "sha256": "da2d4e264e240a79997df229b13f5441055fb5ac5e1786219fa4c3e1046ad844",
+      "caption": "Slithy Tove profile logo, 256 pixels square.",
+      "width": 256,
+      "height": 256
+    },
+    {
+      "file": "logos/slithy-tove-logo-512.png",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-logo-512.png",
+      "bytes": 26090,
+      "sha256": "18ffa5039b98197d35e8eaf76c97036463075dc6c2c9b45294059ee607c37ea8",
+      "caption": "Slithy Tove profile logo, 512 pixels square.",
+      "width": 512,
+      "height": 512
+    },
+    {
+      "file": "logos/slithy-tove-logo-1024.png",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-logo-1024.png",
+      "bytes": 67907,
+      "sha256": "869cd9c0f041591a8a197232b41a6ab819a8b6c9be1655023df4c6e4d466cfa0",
+      "caption": "Slithy Tove profile logo, 1024 pixels square.",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "file": "logos/slithy-tove-mark-dark.svg",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-mark-dark.svg",
+      "bytes": 475,
+      "sha256": "b50635e7538f4ae48f87c06f7fc73504e170e10b594efdb6ffae99ad704abbc8",
+      "caption": "Dark green Slithy Tove mark. Transparent vector."
+    },
+    {
+      "file": "logos/slithy-tove-mark-dark-1024.png",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-mark-dark-1024.png",
+      "bytes": 47402,
+      "sha256": "275c9ef1efce3aae3102c6cc331e9680cd13e16539e43b75511cc10437c405a8",
+      "caption": "Dark green Slithy Tove mark. Transparent PNG.",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "file": "logos/slithy-tove-mark-cream.svg",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-mark-cream.svg",
+      "bytes": 470,
+      "sha256": "92ece7307ca68d604ce7e842463a2e6334aa51a48ddd2a3dacce01aaa16c370f",
+      "caption": "Cream Slithy Tove mark. Transparent vector."
+    },
+    {
+      "file": "logos/slithy-tove-mark-cream-1024.png",
+      "url": "https://slithy.io/press-kit/logos/slithy-tove-mark-cream-1024.png",
+      "bytes": 48470,
+      "sha256": "e6c05b257f1fbe984f86edb2b89a72dba5a5ded47272a180847679deb1c8c079",
+      "caption": "Cream Slithy Tove mark. Transparent PNG.",
+      "width": 1024,
+      "height": 1024
+    },
+    {
+      "file": "screenshots/slithy-tove-windows-home.png",
+      "url": "https://slithy.io/press-kit/screenshots/slithy-tove-windows-home.png",
+      "bytes": 79752,
+      "sha256": "19c14df6e53b7505b87721a2d1ab505ca1da5adfba451c327f68f603e031f17f",
+      "caption": "Slithy Tove Windows beta 0.1.51: wallet and CPU miner. Actual app UI with sample data, not live balances or mining results.",
+      "width": 1521,
+      "height": 1077
+    },
+    {
+      "file": "screenshots/slithy-tove-windows-mining-settings.png",
+      "url": "https://slithy.io/press-kit/screenshots/slithy-tove-windows-mining-settings.png",
+      "bytes": 72765,
+      "sha256": "f62a282559534d4815e83a2a02229a0f9858086de2f899f2f2116fdef45bceed",
+      "caption": "Slithy Tove Windows beta 0.1.51: CPU thread settings. Actual app UI with sample data.",
+      "width": 1521,
+      "height": 1077
+    },
+    {
+      "file": "screenshots/slithy-tove-linux-home.png",
+      "url": "https://slithy.io/press-kit/screenshots/slithy-tove-linux-home.png",
+      "bytes": 56652,
+      "sha256": "30adfef4ac5b0bfe0fdb4d8b2742188950b112d2ead25c1a3f075095f46bb39d",
+      "caption": "Slithy Tove Linux beta 0.1.51-beta.1: wallet and CPU miner in preview mode. Actual app UI rendered in a headless test session, not a Linux desktop capture. Sample data, not live balances or mining results.",
+      "width": 1200,
+      "height": 720
+    },
+    {
+      "file": "screenshots/slithy-tove-linux-mining-settings.png",
+      "url": "https://slithy.io/press-kit/screenshots/slithy-tove-linux-mining-settings.png",
+      "bytes": 43201,
+      "sha256": "cb7eb062210efcb96ce0a8559870e6fbe47819c27e1215027c749d87fa673f47",
+      "caption": "Slithy Tove Linux beta 0.1.51-beta.1: CPU thread settings in preview mode. Actual app UI rendered in a headless test session, not a Linux desktop capture.",
+      "width": 1200,
+      "height": 720
+    },
+    {
+      "file": "social/slithy-tove-beta-card.png",
+      "url": "https://slithy.io/press-kit/social/slithy-tove-beta-card.png",
+      "bytes": 48772,
+      "sha256": "0ad7c3836a3db4d255aa39ff71c60ff7e8c2cfb6ad3cd904fda286bb77a3e685",
+      "caption": "Slithy Tove public beta sharing image. Test coins have no market value.",
+      "width": 1200,
+      "height": 630
+    },
+    {
+      "file": "slithy-tove-facts.txt",
+      "url": "https://slithy.io/press-kit/slithy-tove-facts.txt",
+      "bytes": 3207,
+      "sha256": "22840ea0dee423ba894a9ecbdb75b76a6cf55328ed255a383799aba419a02d20",
+      "caption": "Project descriptions, fact sheet, official links and contact."
+    },
+    {
+      "file": "README.txt",
+      "url": "https://slithy.io/press-kit/README.txt",
+      "bytes": 2789,
+      "sha256": "33268abea880b7b4c994c48eeaf285bcabd6aa1ea95fdc1f52a791d016d324d5",
+      "caption": "File notes, credits, suggested captions and beta notice."
+    }
+  ]
+}

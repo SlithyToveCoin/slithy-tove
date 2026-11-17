@@ -93,9 +93,10 @@ This package uses beta-20260909. Updating an existing installation on that
 network preserves your wallets and balances. Use the update option in the
 terminal menu; the installer will not overwrite an existing installation.
 
-The live-network target is December 1, 2026, subject to testing. Test coins
-have no monetary value and will not convert to live coins. The test chain
-and balances will reset before the live launch.
+The live network launches on January 1, 2027. The exact start time will be
+announced before launch. Test coins have no monetary value and will not
+convert to live coins. The test chain and balances will reset before the
+live launch.
 
 The full beta terms are included in bin/slithy-terms.txt. If those terms
 change, the terminal asks for your agreement again before wallet or mining
